@@ -1,0 +1,20 @@
+version: "1.0.0"
+source_field: "Assessments_Contributing Factors / Situations"
+description: "Multi-label aviation incident taxonomy based on ASRS Coding Taxonomy"
+
+categories:
+  Flight_Operations:
+    keywords: ["Human Factors", "Procedure", "Training/Qualification"]
+    description: "Crew procedures, CRM, decision-making"
+  Equipment_System:
+    keywords: ["Aircraft", "Equipment/Tooling", "MEL"]
+    description: "Mechanical, avionics, systems failures"
+  ATC_Communication:
+    keywords: ["Communication Breakdown", "ATC Issue", "Clearance"]
+    description: "Frequency, readback, clearance deviations"
+  Environment:
+    keywords: ["Weather", "Turbulence", "Terrain"]
+    description: "External weather or terrain factors"
+  Airspace_Navigation:
+    keywords: ["Airspace", "NAVAID", "Chart/Publication"]
+    description: "Incursion, deviation, loss of separation"

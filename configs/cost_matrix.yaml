@@ -1,0 +1,10 @@
+version: "1.0.0"
+description: "Asymmetric cost matrix for severity triage evaluation"
+
+# Rows represent ACTUAL severity, Columns represent PREDICTED severity
+# Missing a Critical (3) is 100x more costly than over-triaging a Minor (0)
+costs:
+  actual_0: {pred_0: 0, pred_1: 1, pred_2: 2, pred_3: 3}
+  actual_1: {pred_0: 5, pred_1: 0, pred_2: 1, pred_3: 2}
+  actual_2: {pred_0: 20, pred_1: 5, pred_2: 0, pred_3: 1}
+  actual_3: {pred_0: 100, pred_1: 20, pred_2: 5, pred_3: 0}
