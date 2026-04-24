@@ -1,0 +1,15 @@
+project:
+  name: "Flight Risk Analysis Rebuild"
+  version: "1.0.0"
+
+paths:
+  raw_data: "data/raw/asrs_full.parquet"
+  processed_data: "data/processed/"
+  configs: "configs/"
+
+data:
+  hf_dataset: "elihoole/asrs-aviation-reports"
+  time_col: "Time_Date"
+  
+seeds:
+  global_seed: 42

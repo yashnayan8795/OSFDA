@@ -1,0 +1,23 @@
+version: "1.0.0"
+description: "Initial deterministic rubric for incident severity based on physical outcomes"
+standards:
+  - "NTSB 49 CFR 830.2"
+  - "FAA Order 7210.56 (Category A Separation)"
+  - "ICAO Accident Definition"
+
+thresholds:
+  miss_distance_ft: 500  # Category A TCAS RA threshold
+
+levels:
+  3:
+    label: "Critical"
+    criteria: ["destroyed", "fatal", "evacuation", "loss of control"]
+  2:
+    label: "Substantial"
+    criteria: ["substantial damage", "minor injury", "serious injury", "emergency"]
+  1:
+    label: "Moderate"
+    criteria: ["minor damage", "miss_distance < 500ft"]
+  0:
+    label: "Minor"
+    criteria: ["routine", "none"]
