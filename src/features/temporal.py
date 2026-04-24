@@ -23,11 +23,12 @@ def extract_temporal_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     df = df.copy()
 
-    # Year and month
+    # Year and month (Time_Date can be string or int YYYYMM)
+    td = pd.to_numeric(df["Time_Date"], errors="coerce").astype("Int64")
     if "year" not in df.columns:
-        df["year"] = df["Time_Date"] // 100
+        df["year"] = td // 100
     if "month" not in df.columns:
-        df["month"] = df["Time_Date"] % 100
+        df["month"] = td % 100
 
     # Quarter
     df["quarter"] = ((df["month"] - 1) // 3) + 1
