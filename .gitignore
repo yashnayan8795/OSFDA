@@ -3,6 +3,7 @@ data/raw/*.csv
 data/raw/*.parquet
 data/processed/*.parquet
 data/processed/*.npy
+data/processed/*.npy
 data/raw/column_inventory.csv
 
 # Model files (large binary files)
