@@ -1,9 +1,15 @@
 # Data files
 data/raw/*.csv
+data/raw/*.parquet
+data/processed/*.parquet
 data/processed/*.npy
+data/raw/column_inventory.csv
 
 # Model files (large binary files)
 models/*.pkl
+models/*.txt
+models/*.onnx
+models/*.joblib
 
 # Python cache
 __pycache__/
