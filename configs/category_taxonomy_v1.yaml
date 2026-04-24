@@ -1,20 +1,41 @@
-version: "1.0.0"
+version: "2.0"
 source_field: "Assessments_Contributing Factors / Situations"
-description: "Multi-label aviation incident taxonomy based on ASRS Coding Taxonomy"
+description: "Multi-label aviation incident taxonomy — v2, calibrated against real ASRS keyword values"
 
 categories:
   Flight_Operations:
-    keywords: ["Human Factors", "Procedure", "Training/Qualification"]
-    description: "Crew procedures, CRM, decision-making"
+    keywords:
+      - "Human Factors"
+      - "Procedure"
+      - "Company Policy"
+      - "Staffing"
+      - "Manuals"
+    description: "Crew procedures, CRM, human factors, company policy, staffing"
+
   Equipment_System:
-    keywords: ["Aircraft", "Equipment/Tooling", "MEL"]
-    description: "Mechanical, avionics, systems failures"
+    keywords:
+      - "Aircraft"
+      - "Equipment / Tooling"
+      - "MEL"
+      - "Incorrect / Not Installed / Unavailable Part"
+      - "Software and Automation"
+      - "Logbook Entry"
+    description: "Mechanical, avionics, parts, software, maintenance records"
+
   ATC_Communication:
-    keywords: ["Communication Breakdown", "ATC Issue", "Clearance"]
-    description: "Frequency, readback, clearance deviations"
+    keywords:
+      - "ATC Equipment / Nav Facility / Buildings"
+      - "Airspace Structure"
+      - "Airport"
+    description: "ATC equipment, airspace structure, airport infrastructure issues"
+
   Environment:
-    keywords: ["Weather", "Turbulence", "Terrain"]
-    description: "External weather or terrain factors"
+    keywords:
+      - "Weather"
+      - "Environment - Non Weather Related"
+    description: "External weather or environmental factors"
+
   Airspace_Navigation:
-    keywords: ["Airspace", "NAVAID", "Chart/Publication"]
-    description: "Incursion, deviation, loss of separation"
+    keywords:
+      - "Chart Or Publication"
+    description: "Navigation charts, publications, airspace deviations"
