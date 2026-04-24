@@ -122,7 +122,8 @@ def parse_time_date(df: pd.DataFrame, time_col: str = "Time_Date") -> pd.DataFra
         Copy of df with ``year`` and ``month`` columns added.
     """
     df = df.copy()
-    # Time_Date is an integer encoded as YYYYMM
-    df["year"] = df[time_col] // 100
-    df["month"] = df[time_col] % 100
+    # Time_Date may be string or integer encoded as YYYYMM
+    td = pd.to_numeric(df[time_col], errors="coerce").astype("Int64")
+    df["year"] = td // 100
+    df["month"] = td % 100
     return df
