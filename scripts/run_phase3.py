@@ -264,8 +264,8 @@ def print_comparison(results):
         )
     # Gate check
     best_macro = max(r['macro_f1'] for r in results.values())
-    gate = "✅ PASSED" if best_macro >= 0.55 else "⚠️  BELOW TARGET (0.55)"
-    print(f"\n  G4 Quality Gate (Macro-F1 ≥ 0.55): {gate}")
+    gate = "PASSED" if best_macro >= 0.55 else "BELOW TARGET (0.55)"
+    print(f"\n  G4 Quality Gate (Macro-F1 >= 0.55): {gate}")
     print(f"  Best Macro-F1: {best_macro:.4f}")
 
 
