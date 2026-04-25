@@ -18,7 +18,7 @@ from src.features.encoding import (
     identify_column_types, prepare_for_lgbm, bucket_experience,
 )
 from src.models.severity import (
-    train_lgbm_severity, calibrate_model, predict_calibrated, save_model,
+    train_lgbm_severity, calibrate_model, predict_calibrated, save_model, train_catboost_severity
 )
 from src.evaluation.ordinal_metrics import full_severity_report
 from src.evaluation.calibration import expected_calibration_error
@@ -92,36 +92,71 @@ cat_features = [c for c in col_types["categorical"] if c in feature_cols]
 # Train LightGBM
 # ============================================================
 print("\nTraining LightGBM severity model...")
-model, history = train_lgbm_severity(X_train, y_train, X_val, y_val, cat_features)
-print(f"Best iteration: {history['best_iteration']}")
+lgb_model, lgb_history = train_lgbm_severity(X_train, y_train, X_val, y_val, cat_features)
+print(f"Best iteration: {lgb_history['best_iteration']}")
 
-# ============================================================
-# Calibration
-# ============================================================
-print("\nCalibrating...")
-calibrators = calibrate_model(model, X_val, y_val)
-
-# ============================================================
-# Evaluate on test set
-# ============================================================
-print("\n" + "="*50)
-print("  TEST SET EVALUATION")
-print("="*50)
-
-cal_probs = predict_calibrated(model, X_test, calibrators)
-y_pred = cal_probs.argmax(axis=1)
+print("Calibrating LightGBM...")
+lgb_calibrators = calibrate_model(lgb_model, X_val, y_val)
+lgb_cal_probs = predict_calibrated(lgb_model, X_test, lgb_calibrators)
+lgb_y_pred = lgb_cal_probs.argmax(axis=1)
 
 cost_config = load_cost_matrix()
-report = full_severity_report(y_test.values, y_pred, cost_config.get("costs"))
+lgb_report = full_severity_report(y_test.values, lgb_y_pred, cost_config.get("costs"))
 
-print(f"  QWK:          {report['qwk']:.4f}")
-print(f"  QWK 95% CI:   [{report['qwk_bootstrap']['ci_low']:.4f}, {report['qwk_bootstrap']['ci_high']:.4f}]")
-print(f"  Ordinal MAE:  {report['ordinal_mae']:.4f}")
-if "asymmetric_cost" in report:
-    print(f"  Asym. Cost:   {report['asymmetric_cost']:.4f}")
+# ============================================================
+# Train CatBoost
+# ============================================================
+print("\nTraining CatBoost severity model...")
+cb_model, X_train_cb, X_val_cb = train_catboost_severity(X_train, y_train, X_val, y_val, cat_features)
 
-# Per-class metrics
-cls_report = report["classification_report"]
+print("Calibrating CatBoost...")
+cb_calibrators = calibrate_model(cb_model, X_val_cb, y_val)
+
+X_test_cb = X_test.copy()
+for col in cat_features:
+    X_test_cb[col] = X_test_cb[col].astype(str).replace('nan', 'Missing').fillna('Missing')
+
+cb_cal_probs = predict_calibrated(cb_model, X_test_cb, cb_calibrators)
+cb_y_pred = cb_cal_probs.argmax(axis=1)
+cb_report = full_severity_report(y_test.values, cb_y_pred, cost_config.get("costs"))
+
+# ============================================================
+# Compare & Save
+# ============================================================
+print("\n" + "="*50)
+print("  MODEL COMPARISON (Test Set)")
+print("="*50)
+print(f"  LightGBM QWK: {lgb_report['qwk']:.4f}  (Macro-F1: {lgb_report['classification_report']['macro avg']['f1-score']:.4f})")
+print(f"  CatBoost QWK: {cb_report['qwk']:.4f}  (Macro-F1: {cb_report['classification_report']['macro avg']['f1-score']:.4f})")
+
+if cb_report['qwk'] > lgb_report['qwk']:
+    print("\n  CatBoost is better! Saving CatBoost model...")
+    best_model = cb_model
+    best_report = cb_report
+    best_probs = cb_cal_probs
+    best_name = "CatBoost"
+    model_path = resolve_path("models/severity_catboost.cbm")
+    best_model.save_model(str(model_path))
+    print(f"Model saved: {model_path}")
+else:
+    print("\n  LightGBM is better! Saving LightGBM model...")
+    best_model = lgb_model
+    best_report = lgb_report
+    best_probs = lgb_cal_probs
+    best_name = "LightGBM"
+    model_path = save_model(best_model, str(resolve_path("models")), "severity_lgbm")
+    print(f"Model saved: {model_path}")
+
+print("\n" + "="*50)
+print(f"  BEST MODEL ({best_name}) EVALUATION")
+print("="*50)
+print(f"  QWK:          {best_report['qwk']:.4f}")
+print(f"  QWK 95% CI:   [{best_report['qwk_bootstrap']['ci_low']:.4f}, {best_report['qwk_bootstrap']['ci_high']:.4f}]")
+print(f"  Ordinal MAE:  {best_report['ordinal_mae']:.4f}")
+if "asymmetric_cost" in best_report:
+    print(f"  Asym. Cost:   {best_report['asymmetric_cost']:.4f}")
+
+cls_report = best_report["classification_report"]
 print("\n  Per-class metrics:")
 for cls in ["0", "1", "2", "3"]:
     if cls in cls_report:
@@ -131,22 +166,70 @@ for cls in ["0", "1", "2", "3"]:
 print(f"\n  Macro-F1:  {cls_report['macro avg']['f1-score']:.4f}")
 print(f"  Weighted-F1: {cls_report['weighted avg']['f1-score']:.4f}")
 
-# ECE per class
 print("\n  Calibration (ECE):")
 for cls in range(4):
-    ece = expected_calibration_error(
-        (y_test == cls).astype(int).values, cal_probs[:, cls]
-    )
+    ece = expected_calibration_error((y_test == cls).astype(int).values, best_probs[:, cls])
     print(f"    Class {cls}: {ece:.4f}")
 
-# Confusion matrix
 print("\n  Confusion Matrix (rows=actual, cols=predicted):")
-cm = report["confusion_matrix"]
+cm = best_report["confusion_matrix"]
 print(f"  {'':>10} pred_0  pred_1  pred_2  pred_3")
 for i, row in enumerate(cm):
     print(f"  actual_{i}  {row[0]:>6}  {row[1]:>6}  {row[2]:>6}  {row[3]:>6}")
 
-# Save model
-model_path = save_model(model, str(resolve_path("models")), "severity_lgbm")
-print(f"\nModel saved: {model_path}")
+# Add SHAP + Slice Analysis for the best model!
+print("\n" + "="*50)
+print("  SHAP & SLICE ANALYSIS (Tier 2)")
+print("="*50)
+
+# Slice by Flight Phase
+if "Aircraft 1.2_Flight Phase" in X_test.columns or "Aircraft 1.1_Flight Phase" in X_test.columns:
+    phase_col = "Aircraft 1.2_Flight Phase" if "Aircraft 1.2_Flight Phase" in X_test.columns else "Aircraft 1.1_Flight Phase"
+    print(f"  Slice Analysis: {phase_col}")
+    X_test_slice = X_test_cb if best_name == "CatBoost" else X_test
+    phases = X_test_slice[phase_col].value_counts().head(5).index
+    
+    for phase in phases:
+        idx = X_test_slice[phase_col] == phase
+        y_true_slice = y_test[idx]
+        y_pred_slice = best_probs[idx].argmax(axis=1)
+        if len(y_true_slice) > 0:
+            slice_rep = full_severity_report(y_true_slice.values, y_pred_slice, cost_config.get("costs"))
+            print(f"    Phase: {phase:<25} QWK: {slice_rep['qwk']:.4f} (n={len(y_true_slice)})")
+
+print("\n  Computing SHAP feature importance...")
+from src.models.severity import compute_shap_values
+import shap
+
+if best_name == "LightGBM":
+    shap_vals = compute_shap_values(best_model, X_test)
+    if isinstance(shap_vals, list):
+        mean_shap = np.mean([np.abs(sv).mean(axis=0) for sv in shap_vals], axis=0)
+    else:
+        # Some versions return array of shape (N, feats, classes)
+        if len(shap_vals.shape) == 3:
+            mean_shap = np.abs(shap_vals).mean(axis=(0, 2))
+        else:
+            mean_shap = np.abs(shap_vals).mean(axis=0)
+    
+    top_indices = np.argsort(mean_shap)[::-1][:10]
+    print("\n  Top 10 Global SHAP Features:")
+    for idx in top_indices:
+        print(f"    {feature_cols[idx]:<40} : {mean_shap[idx]:.4f}")
+else:
+    # CatBoost SHAP
+    explainer = shap.TreeExplainer(best_model)
+    shap_vals = explainer.shap_values(X_test_cb)
+    if isinstance(shap_vals, list):
+        mean_shap = np.mean([np.abs(sv).mean(axis=0) for sv in shap_vals], axis=0)
+    elif len(shap_vals.shape) == 3:
+        mean_shap = np.abs(shap_vals).mean(axis=(0, 2))
+    else:
+        mean_shap = np.abs(shap_vals).mean(axis=0)
+        
+    top_indices = np.argsort(mean_shap)[::-1][:10]
+    print("\n  Top 10 Global SHAP Features:")
+    for idx in top_indices:
+        print(f"    {feature_cols[idx]:<40} : {mean_shap[idx]:.4f}")
+
 print("\nPhase 2 complete!")
