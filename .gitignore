@@ -4,6 +4,8 @@ data/raw/*.parquet
 data/processed/*.parquet
 data/processed/*.npy
 data/processed/*.npy
+data/processed/*.json
+data/processed/*.csv
 data/raw/column_inventory.csv
 
 # Model files (large binary files)
