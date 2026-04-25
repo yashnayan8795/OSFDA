@@ -23,6 +23,7 @@ def fit_bertopic(
     from bertopic import BERTopic
     from sklearn.decomposition import PCA
     from sklearn.cluster import HDBSCAN
+    from sklearn.cluster import MiniBatchKMeans
     from sklearn.feature_extraction.text import CountVectorizer
 
     # PCA for dimensionality reduction (bypassing UMAP/Numba issues)
