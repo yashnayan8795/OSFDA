@@ -182,54 +182,32 @@ print("\n" + "="*50)
 print("  SHAP & SLICE ANALYSIS (Tier 2)")
 print("="*50)
 
-# Slice by Flight Phase
-if "Aircraft 1.2_Flight Phase" in X_test.columns or "Aircraft 1.1_Flight Phase" in X_test.columns:
-    phase_col = "Aircraft 1.2_Flight Phase" if "Aircraft 1.2_Flight Phase" in X_test.columns else "Aircraft 1.1_Flight Phase"
-    print(f"  Slice Analysis: {phase_col}")
-    X_test_slice = X_test_cb if best_name == "CatBoost" else X_test
-    phases = X_test_slice[phase_col].value_counts().head(5).index
-    
-    for phase in phases:
-        idx = X_test_slice[phase_col] == phase
-        y_true_slice = y_test[idx]
-        y_pred_slice = best_probs[idx].argmax(axis=1)
-        if len(y_true_slice) > 0:
-            slice_rep = full_severity_report(y_true_slice.values, y_pred_slice, cost_config.get("costs"))
-            print(f"    Phase: {phase:<25} QWK: {slice_rep['qwk']:.4f} (n={len(y_true_slice)})")
+# Slice by Year
+print(f"  Slice Analysis: year")
+X_test_slice = X_test_cb if best_name == "CatBoost" else X_test
+years = sorted(X_test_slice["year"].unique())
 
-print("\n  Computing SHAP feature importance...")
-from src.models.severity import compute_shap_values
-import shap
+for yr in years:
+    idx = X_test_slice["year"] == yr
+    y_true_slice = y_test[idx]
+    y_pred_slice = best_probs[idx].argmax(axis=1)
+    if len(y_true_slice) > 0:
+        slice_rep = full_severity_report(y_true_slice.values, y_pred_slice, cost_config.get("costs"))
+        print(f"    Year: {yr:<25} QWK: {slice_rep['qwk']:.4f} (n={len(y_true_slice)})")
+
+print("\n  Computing built-in feature importance (skipping SHAP due to Numba DLL restrictions)...")
 
 if best_name == "LightGBM":
-    shap_vals = compute_shap_values(best_model, X_test)
-    if isinstance(shap_vals, list):
-        mean_shap = np.mean([np.abs(sv).mean(axis=0) for sv in shap_vals], axis=0)
-    else:
-        # Some versions return array of shape (N, feats, classes)
-        if len(shap_vals.shape) == 3:
-            mean_shap = np.abs(shap_vals).mean(axis=(0, 2))
-        else:
-            mean_shap = np.abs(shap_vals).mean(axis=0)
-    
-    top_indices = np.argsort(mean_shap)[::-1][:10]
-    print("\n  Top 10 Global SHAP Features:")
+    importance = best_model.feature_importance(importance_type='gain')
+    top_indices = np.argsort(importance)[::-1][:10]
+    print("\n  Top 10 Global Features (by gain):")
     for idx in top_indices:
-        print(f"    {feature_cols[idx]:<40} : {mean_shap[idx]:.4f}")
+        print(f"    {feature_cols[idx]:<40} : {importance[idx]:.4f}")
 else:
-    # CatBoost SHAP
-    explainer = shap.TreeExplainer(best_model)
-    shap_vals = explainer.shap_values(X_test_cb)
-    if isinstance(shap_vals, list):
-        mean_shap = np.mean([np.abs(sv).mean(axis=0) for sv in shap_vals], axis=0)
-    elif len(shap_vals.shape) == 3:
-        mean_shap = np.abs(shap_vals).mean(axis=(0, 2))
-    else:
-        mean_shap = np.abs(shap_vals).mean(axis=0)
-        
-    top_indices = np.argsort(mean_shap)[::-1][:10]
-    print("\n  Top 10 Global SHAP Features:")
+    importance = best_model.get_feature_importance()
+    top_indices = np.argsort(importance)[::-1][:10]
+    print("\n  Top 10 Global Features (by prediction values change):")
     for idx in top_indices:
-        print(f"    {feature_cols[idx]:<40} : {mean_shap[idx]:.4f}")
+        print(f"    {feature_cols[idx]:<40} : {importance[idx]:.4f}")
 
 print("\nPhase 2 complete!")

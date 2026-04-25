@@ -91,7 +91,10 @@ def optuna_objective(trial, X_train, y_train, X_val, y_val, categorical_features
 
 def calibrate_model(model, X_val, y_val, num_classes=4):
     from sklearn.isotonic import IsotonicRegression
-    raw_probs = model.predict(X_val)
+    if hasattr(model, 'predict_proba'):
+        raw_probs = model.predict_proba(X_val)
+    else:
+        raw_probs = model.predict(X_val)
     calibrators = []
     for cls in range(num_classes):
         iso = IsotonicRegression(out_of_bounds="clip")
@@ -101,7 +104,10 @@ def calibrate_model(model, X_val, y_val, num_classes=4):
 
 
 def predict_calibrated(model, X, calibrators):
-    raw_probs = model.predict(X)
+    if hasattr(model, 'predict_proba'):
+        raw_probs = model.predict_proba(X)
+    else:
+        raw_probs = model.predict(X)
     cal_probs = np.column_stack([cal.predict(raw_probs[:, i]) for i, cal in enumerate(calibrators)])
     row_sums = cal_probs.sum(axis=1, keepdims=True)
     row_sums = np.where(row_sums == 0, 1, row_sums)

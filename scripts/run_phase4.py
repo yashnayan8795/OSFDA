@@ -70,7 +70,7 @@ def main():
 
     banner("1. BERTopic Clustering")
     start = time.time()
-    topic_model, topics = fit_bertopic(texts, embeddings, min_topic_size=150)
+    topic_model, topics = fit_bertopic(texts, embeddings, min_topic_size=50)
     topic_info = get_topic_info(topic_model)
     print(f"  Found {len(topic_info) - 1} active topics (excluding outlier class -1).")
     
