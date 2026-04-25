@@ -248,6 +248,14 @@ def run_phase4():
     subprocess.run(cmd, check=True)
 
 
+def run_phase5():
+    """Phase 5: Problem E — Contributing Factor Graph."""
+    banner("PHASE 5 — Problem E: Contributing Factor Graph")
+    print("  Running scripts/run_phase5.py (Semantic Graph & Critical Paths)...")
+    cmd = [sys.executable, "scripts/run_phase5.py"]
+    subprocess.run(cmd, check=True)
+
+
 def main():
     """Run the full pipeline."""
     start = time.time()
@@ -259,6 +267,7 @@ def main():
     model, calibrators, report = run_phase2(df, config)
     run_phase3()
     run_phase4()
+    run_phase5()
 
     elapsed = time.time() - start
     banner(f"PIPELINE COMPLETE — {elapsed/60:.1f} minutes")
