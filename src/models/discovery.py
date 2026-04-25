@@ -134,7 +134,7 @@ def score_emerging_risks(
         if len(signal) >= 18:
             recent_avg = np.mean(signal[-6:])
             past_avg = np.mean(signal[-18:-6])
-            growth = recent_avg / (past_avg + 1e-5)
+            growth = recent_avg / (past_avg + 0.1)
         else:
             growth = 1.0
             
