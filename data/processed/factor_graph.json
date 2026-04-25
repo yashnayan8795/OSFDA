@@ -1,0 +1,923 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "count": 23423,
+      "severity_sum": 27865,
+      "avg_severity": 1.1896426589249882,
+      "id": "Human Factors"
+    },
+    {
+      "count": 15664,
+      "severity_sum": 30560,
+      "avg_severity": 1.95097037793667,
+      "id": "Aircraft"
+    },
+    {
+      "count": 14711,
+      "severity_sum": 16266,
+      "avg_severity": 1.1057032152810822,
+      "id": "Procedure"
+    },
+    {
+      "count": 4112,
+      "severity_sum": 6290,
+      "avg_severity": 1.529669260700389,
+      "id": "Weather"
+    },
+    {
+      "count": 2808,
+      "severity_sum": 3534,
+      "avg_severity": 1.2585470085470085,
+      "id": "Airspace Structure"
+    },
+    {
+      "count": 3082,
+      "severity_sum": 2849,
+      "avg_severity": 0.9243997404282933,
+      "id": "Airport"
+    },
+    {
+      "count": 4690,
+      "severity_sum": 5598,
+      "avg_severity": 1.1936034115138592,
+      "id": "Environment - Non Weather Related"
+    },
+    {
+      "count": 2282,
+      "severity_sum": 1888,
+      "avg_severity": 0.8273444347063978,
+      "id": "Chart Or Publication"
+    },
+    {
+      "count": 3873,
+      "severity_sum": 3448,
+      "avg_severity": 0.890265943712884,
+      "id": "Company Policy"
+    },
+    {
+      "count": 332,
+      "severity_sum": 500,
+      "avg_severity": 1.5060240963855422,
+      "id": "Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "count": 1245,
+      "severity_sum": 896,
+      "avg_severity": 0.7196787148594378,
+      "id": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "count": 1092,
+      "severity_sum": 1323,
+      "avg_severity": 1.2115384615384615,
+      "id": "Manuals"
+    },
+    {
+      "count": 230,
+      "severity_sum": 340,
+      "avg_severity": 1.4782608695652173,
+      "id": "Logbook Entry"
+    },
+    {
+      "count": 647,
+      "severity_sum": 525,
+      "avg_severity": 0.8114374034003091,
+      "id": "Staffing"
+    },
+    {
+      "count": 513,
+      "severity_sum": 794,
+      "avg_severity": 1.5477582846003899,
+      "id": "MEL"
+    },
+    {
+      "count": 748,
+      "severity_sum": 876,
+      "avg_severity": 1.1711229946524064,
+      "id": "Equipment / Tooling"
+    },
+    {
+      "count": 174,
+      "severity_sum": 265,
+      "avg_severity": 1.5229885057471264,
+      "id": "Software and Automation"
+    }
+  ],
+  "links": [
+    {
+      "weight": 5920,
+      "severity_sum": 10065,
+      "avg_severity": 1.7001689189189189,
+      "source": "Human Factors",
+      "target": "Aircraft"
+    },
+    {
+      "weight": 10149,
+      "severity_sum": 10715,
+      "avg_severity": 1.0557690412848557,
+      "source": "Human Factors",
+      "target": "Procedure"
+    },
+    {
+      "weight": 2546,
+      "severity_sum": 3651,
+      "avg_severity": 1.43401413982718,
+      "source": "Human Factors",
+      "target": "Weather"
+    },
+    {
+      "weight": 1973,
+      "severity_sum": 1932,
+      "avg_severity": 0.9792194627470857,
+      "source": "Human Factors",
+      "target": "Airport"
+    },
+    {
+      "weight": 1418,
+      "severity_sum": 1307,
+      "avg_severity": 0.9217207334273625,
+      "source": "Human Factors",
+      "target": "Chart Or Publication"
+    },
+    {
+      "weight": 1929,
+      "severity_sum": 2548,
+      "avg_severity": 1.3208916537065838,
+      "source": "Human Factors",
+      "target": "Airspace Structure"
+    },
+    {
+      "weight": 239,
+      "severity_sum": 373,
+      "avg_severity": 1.5606694560669456,
+      "source": "Human Factors",
+      "target": "Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 640,
+      "severity_sum": 772,
+      "avg_severity": 1.20625,
+      "source": "Human Factors",
+      "target": "Manuals"
+    },
+    {
+      "weight": 164,
+      "severity_sum": 247,
+      "avg_severity": 1.5060975609756098,
+      "source": "Human Factors",
+      "target": "Logbook Entry"
+    },
+    {
+      "weight": 2606,
+      "severity_sum": 2209,
+      "avg_severity": 0.8476592478894858,
+      "source": "Human Factors",
+      "target": "Company Policy"
+    },
+    {
+      "weight": 529,
+      "severity_sum": 457,
+      "avg_severity": 0.8638941398865785,
+      "source": "Human Factors",
+      "target": "Staffing"
+    },
+    {
+      "weight": 2880,
+      "severity_sum": 2915,
+      "avg_severity": 1.0121527777777777,
+      "source": "Human Factors",
+      "target": "Environment - Non Weather Related"
+    },
+    {
+      "weight": 407,
+      "severity_sum": 498,
+      "avg_severity": 1.2235872235872236,
+      "source": "Human Factors",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 318,
+      "severity_sum": 494,
+      "avg_severity": 1.5534591194968554,
+      "source": "Human Factors",
+      "target": "MEL"
+    },
+    {
+      "weight": 599,
+      "severity_sum": 476,
+      "avg_severity": 0.7946577629382304,
+      "source": "Human Factors",
+      "target": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 91,
+      "severity_sum": 139,
+      "avg_severity": 1.5274725274725274,
+      "source": "Human Factors",
+      "target": "Software and Automation"
+    },
+    {
+      "weight": 3797,
+      "severity_sum": 6242,
+      "avg_severity": 1.6439294179615487,
+      "source": "Aircraft",
+      "target": "Procedure"
+    },
+    {
+      "weight": 1159,
+      "severity_sum": 2196,
+      "avg_severity": 1.894736842105263,
+      "source": "Aircraft",
+      "target": "Weather"
+    },
+    {
+      "weight": 282,
+      "severity_sum": 441,
+      "avg_severity": 1.5638297872340425,
+      "source": "Aircraft",
+      "target": "Airport"
+    },
+    {
+      "weight": 1129,
+      "severity_sum": 1755,
+      "avg_severity": 1.554472984942427,
+      "source": "Aircraft",
+      "target": "Company Policy"
+    },
+    {
+      "weight": 813,
+      "severity_sum": 1366,
+      "avg_severity": 1.6801968019680196,
+      "source": "Aircraft",
+      "target": "Environment - Non Weather Related"
+    },
+    {
+      "weight": 219,
+      "severity_sum": 360,
+      "avg_severity": 1.643835616438356,
+      "source": "Aircraft",
+      "target": "Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 320,
+      "severity_sum": 476,
+      "avg_severity": 1.4875,
+      "source": "Aircraft",
+      "target": "Airspace Structure"
+    },
+    {
+      "weight": 576,
+      "severity_sum": 956,
+      "avg_severity": 1.6597222222222223,
+      "source": "Aircraft",
+      "target": "Manuals"
+    },
+    {
+      "weight": 585,
+      "severity_sum": 809,
+      "avg_severity": 1.3829059829059829,
+      "source": "Aircraft",
+      "target": "Chart Or Publication"
+    },
+    {
+      "weight": 193,
+      "severity_sum": 300,
+      "avg_severity": 1.5544041450777202,
+      "source": "Aircraft",
+      "target": "Logbook Entry"
+    },
+    {
+      "weight": 447,
+      "severity_sum": 730,
+      "avg_severity": 1.633109619686801,
+      "source": "Aircraft",
+      "target": "MEL"
+    },
+    {
+      "weight": 243,
+      "severity_sum": 403,
+      "avg_severity": 1.6584362139917694,
+      "source": "Aircraft",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 202,
+      "severity_sum": 272,
+      "avg_severity": 1.3465346534653466,
+      "source": "Aircraft",
+      "target": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 115,
+      "severity_sum": 174,
+      "avg_severity": 1.5130434782608695,
+      "source": "Aircraft",
+      "target": "Staffing"
+    },
+    {
+      "weight": 91,
+      "severity_sum": 162,
+      "avg_severity": 1.7802197802197801,
+      "source": "Aircraft",
+      "target": "Software and Automation"
+    },
+    {
+      "weight": 1222,
+      "severity_sum": 1498,
+      "avg_severity": 1.225859247135843,
+      "source": "Procedure",
+      "target": "Weather"
+    },
+    {
+      "weight": 1377,
+      "severity_sum": 1314,
+      "avg_severity": 0.954248366013072,
+      "source": "Procedure",
+      "target": "Airport"
+    },
+    {
+      "weight": 2085,
+      "severity_sum": 1964,
+      "avg_severity": 0.9419664268585132,
+      "source": "Procedure",
+      "target": "Company Policy"
+    },
+    {
+      "weight": 191,
+      "severity_sum": 302,
+      "avg_severity": 1.581151832460733,
+      "source": "Procedure",
+      "target": "Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 1436,
+      "severity_sum": 1255,
+      "avg_severity": 0.8739554317548747,
+      "source": "Procedure",
+      "target": "Chart Or Publication"
+    },
+    {
+      "weight": 566,
+      "severity_sum": 363,
+      "avg_severity": 0.6413427561837456,
+      "source": "Procedure",
+      "target": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 689,
+      "severity_sum": 821,
+      "avg_severity": 1.1915820029027575,
+      "source": "Procedure",
+      "target": "Manuals"
+    },
+    {
+      "weight": 1895,
+      "severity_sum": 2263,
+      "avg_severity": 1.1941952506596305,
+      "source": "Procedure",
+      "target": "Airspace Structure"
+    },
+    {
+      "weight": 1988,
+      "severity_sum": 2571,
+      "avg_severity": 1.2932595573440644,
+      "source": "Procedure",
+      "target": "Environment - Non Weather Related"
+    },
+    {
+      "weight": 169,
+      "severity_sum": 252,
+      "avg_severity": 1.4911242603550297,
+      "source": "Procedure",
+      "target": "Logbook Entry"
+    },
+    {
+      "weight": 327,
+      "severity_sum": 288,
+      "avg_severity": 0.8807339449541285,
+      "source": "Procedure",
+      "target": "Staffing"
+    },
+    {
+      "weight": 328,
+      "severity_sum": 513,
+      "avg_severity": 1.5640243902439024,
+      "source": "Procedure",
+      "target": "MEL"
+    },
+    {
+      "weight": 320,
+      "severity_sum": 357,
+      "avg_severity": 1.115625,
+      "source": "Procedure",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 74,
+      "severity_sum": 114,
+      "avg_severity": 1.5405405405405406,
+      "source": "Procedure",
+      "target": "Software and Automation"
+    },
+    {
+      "weight": 245,
+      "severity_sum": 286,
+      "avg_severity": 1.1673469387755102,
+      "source": "Weather",
+      "target": "Airspace Structure"
+    },
+    {
+      "weight": 347,
+      "severity_sum": 414,
+      "avg_severity": 1.1930835734870318,
+      "source": "Weather",
+      "target": "Company Policy"
+    },
+    {
+      "weight": 292,
+      "severity_sum": 387,
+      "avg_severity": 1.3253424657534247,
+      "source": "Weather",
+      "target": "Environment - Non Weather Related"
+    },
+    {
+      "weight": 51,
+      "severity_sum": 55,
+      "avg_severity": 1.0784313725490196,
+      "source": "Weather",
+      "target": "Manuals"
+    },
+    {
+      "weight": 103,
+      "severity_sum": 106,
+      "avg_severity": 1.029126213592233,
+      "source": "Weather",
+      "target": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 416,
+      "severity_sum": 507,
+      "avg_severity": 1.21875,
+      "source": "Weather",
+      "target": "Airport"
+    },
+    {
+      "weight": 127,
+      "severity_sum": 114,
+      "avg_severity": 0.8976377952755905,
+      "source": "Weather",
+      "target": "Chart Or Publication"
+    },
+    {
+      "weight": 53,
+      "severity_sum": 67,
+      "avg_severity": 1.2641509433962264,
+      "source": "Weather",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 95,
+      "severity_sum": 63,
+      "avg_severity": 0.6631578947368421,
+      "source": "Weather",
+      "target": "Staffing"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 29,
+      "avg_severity": 1.8125,
+      "source": "Weather",
+      "target": "MEL"
+    },
+    {
+      "weight": 103,
+      "severity_sum": 78,
+      "avg_severity": 0.7572815533980582,
+      "source": "Airspace Structure",
+      "target": "Manuals"
+    },
+    {
+      "weight": 238,
+      "severity_sum": 272,
+      "avg_severity": 1.1428571428571428,
+      "source": "Airspace Structure",
+      "target": "Airport"
+    },
+    {
+      "weight": 397,
+      "severity_sum": 458,
+      "avg_severity": 1.1536523929471032,
+      "source": "Airspace Structure",
+      "target": "Chart Or Publication"
+    },
+    {
+      "weight": 283,
+      "severity_sum": 285,
+      "avg_severity": 1.0070671378091873,
+      "source": "Airspace Structure",
+      "target": "Company Policy"
+    },
+    {
+      "weight": 91,
+      "severity_sum": 104,
+      "avg_severity": 1.1428571428571428,
+      "source": "Airspace Structure",
+      "target": "Staffing"
+    },
+    {
+      "weight": 337,
+      "severity_sum": 479,
+      "avg_severity": 1.4213649851632046,
+      "source": "Airspace Structure",
+      "target": "Environment - Non Weather Related"
+    },
+    {
+      "weight": 157,
+      "severity_sum": 166,
+      "avg_severity": 1.0573248407643312,
+      "source": "Airspace Structure",
+      "target": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 33,
+      "severity_sum": 61,
+      "avg_severity": 1.8484848484848484,
+      "source": "Airspace Structure",
+      "target": "Software and Automation"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 21,
+      "avg_severity": 1.2352941176470589,
+      "source": "Airspace Structure",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 608,
+      "severity_sum": 603,
+      "avg_severity": 0.9917763157894737,
+      "source": "Airport",
+      "target": "Environment - Non Weather Related"
+    },
+    {
+      "weight": 372,
+      "severity_sum": 197,
+      "avg_severity": 0.5295698924731183,
+      "source": "Airport",
+      "target": "Chart Or Publication"
+    },
+    {
+      "weight": 44,
+      "severity_sum": 40,
+      "avg_severity": 0.9090909090909091,
+      "source": "Airport",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 225,
+      "severity_sum": 151,
+      "avg_severity": 0.6711111111111111,
+      "source": "Airport",
+      "target": "Company Policy"
+    },
+    {
+      "weight": 163,
+      "severity_sum": 117,
+      "avg_severity": 0.7177914110429447,
+      "source": "Airport",
+      "target": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 28,
+      "avg_severity": 0.6829268292682927,
+      "source": "Airport",
+      "target": "Manuals"
+    },
+    {
+      "weight": 40,
+      "severity_sum": 30,
+      "avg_severity": 0.75,
+      "source": "Airport",
+      "target": "Staffing"
+    },
+    {
+      "weight": 747,
+      "severity_sum": 529,
+      "avg_severity": 0.7081659973226239,
+      "source": "Environment - Non Weather Related",
+      "target": "Company Policy"
+    },
+    {
+      "weight": 57,
+      "severity_sum": 59,
+      "avg_severity": 1.0350877192982457,
+      "source": "Environment - Non Weather Related",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 184,
+      "severity_sum": 174,
+      "avg_severity": 0.9456521739130435,
+      "source": "Environment - Non Weather Related",
+      "target": "Chart Or Publication"
+    },
+    {
+      "weight": 133,
+      "severity_sum": 114,
+      "avg_severity": 0.8571428571428571,
+      "source": "Environment - Non Weather Related",
+      "target": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 156,
+      "severity_sum": 118,
+      "avg_severity": 0.7564102564102564,
+      "source": "Environment - Non Weather Related",
+      "target": "Staffing"
+    },
+    {
+      "weight": 52,
+      "severity_sum": 68,
+      "avg_severity": 1.3076923076923077,
+      "source": "Environment - Non Weather Related",
+      "target": "Manuals"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 32,
+      "avg_severity": 1.5238095238095237,
+      "source": "Environment - Non Weather Related",
+      "target": "Logbook Entry"
+    },
+    {
+      "weight": 32,
+      "severity_sum": 51,
+      "avg_severity": 1.59375,
+      "source": "Environment - Non Weather Related",
+      "target": "Software and Automation"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 21,
+      "avg_severity": 1.6153846153846154,
+      "source": "Environment - Non Weather Related",
+      "target": "MEL"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 26,
+      "avg_severity": 1.2380952380952381,
+      "source": "Environment - Non Weather Related",
+      "target": "Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 271,
+      "severity_sum": 364,
+      "avg_severity": 1.3431734317343174,
+      "source": "Chart Or Publication",
+      "target": "Manuals"
+    },
+    {
+      "weight": 319,
+      "severity_sum": 314,
+      "avg_severity": 0.9843260188087775,
+      "source": "Chart Or Publication",
+      "target": "Company Policy"
+    },
+    {
+      "weight": 67,
+      "severity_sum": 105,
+      "avg_severity": 1.5671641791044777,
+      "source": "Chart Or Publication",
+      "target": "Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 46,
+      "severity_sum": 53,
+      "avg_severity": 1.1521739130434783,
+      "source": "Chart Or Publication",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 21,
+      "avg_severity": 1.105263157894737,
+      "source": "Chart Or Publication",
+      "target": "Staffing"
+    },
+    {
+      "weight": 54,
+      "severity_sum": 31,
+      "avg_severity": 0.5740740740740741,
+      "source": "Chart Or Publication",
+      "target": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 45,
+      "severity_sum": 54,
+      "avg_severity": 1.2,
+      "source": "Chart Or Publication",
+      "target": "Software and Automation"
+    },
+    {
+      "weight": 29,
+      "severity_sum": 54,
+      "avg_severity": 1.8620689655172413,
+      "source": "Chart Or Publication",
+      "target": "Logbook Entry"
+    },
+    {
+      "weight": 49,
+      "severity_sum": 77,
+      "avg_severity": 1.5714285714285714,
+      "source": "Chart Or Publication",
+      "target": "MEL"
+    },
+    {
+      "weight": 356,
+      "severity_sum": 361,
+      "avg_severity": 1.0140449438202248,
+      "source": "Company Policy",
+      "target": "Manuals"
+    },
+    {
+      "weight": 85,
+      "severity_sum": 134,
+      "avg_severity": 1.576470588235294,
+      "source": "Company Policy",
+      "target": "Logbook Entry"
+    },
+    {
+      "weight": 247,
+      "severity_sum": 184,
+      "avg_severity": 0.7449392712550608,
+      "source": "Company Policy",
+      "target": "Staffing"
+    },
+    {
+      "weight": 84,
+      "severity_sum": 126,
+      "avg_severity": 1.5,
+      "source": "Company Policy",
+      "target": "Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 152,
+      "severity_sum": 149,
+      "avg_severity": 0.9802631578947368,
+      "source": "Company Policy",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 66,
+      "severity_sum": 49,
+      "avg_severity": 0.7424242424242424,
+      "source": "Company Policy",
+      "target": "ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 105,
+      "severity_sum": 160,
+      "avg_severity": 1.5238095238095237,
+      "source": "Company Policy",
+      "target": "MEL"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 17,
+      "avg_severity": 1.0,
+      "source": "Company Policy",
+      "target": "Software and Automation"
+    },
+    {
+      "weight": 65,
+      "severity_sum": 105,
+      "avg_severity": 1.6153846153846154,
+      "source": "Incorrect / Not Installed / Unavailable Part",
+      "target": "Manuals"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 28,
+      "avg_severity": 1.6470588235294117,
+      "source": "Incorrect / Not Installed / Unavailable Part",
+      "target": "Staffing"
+    },
+    {
+      "weight": 27,
+      "severity_sum": 40,
+      "avg_severity": 1.4814814814814814,
+      "source": "Incorrect / Not Installed / Unavailable Part",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 27,
+      "severity_sum": 46,
+      "avg_severity": 1.7037037037037037,
+      "source": "Incorrect / Not Installed / Unavailable Part",
+      "target": "MEL"
+    },
+    {
+      "weight": 32,
+      "severity_sum": 53,
+      "avg_severity": 1.65625,
+      "source": "Incorrect / Not Installed / Unavailable Part",
+      "target": "Logbook Entry"
+    },
+    {
+      "weight": 45,
+      "severity_sum": 30,
+      "avg_severity": 0.6666666666666666,
+      "source": "ATC Equipment / Nav Facility / Buildings",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 25,
+      "severity_sum": 25,
+      "avg_severity": 1.0,
+      "source": "ATC Equipment / Nav Facility / Buildings",
+      "target": "Staffing"
+    },
+    {
+      "weight": 25,
+      "severity_sum": 40,
+      "avg_severity": 1.6,
+      "source": "ATC Equipment / Nav Facility / Buildings",
+      "target": "Software and Automation"
+    },
+    {
+      "weight": 29,
+      "severity_sum": 15,
+      "avg_severity": 0.5172413793103449,
+      "source": "ATC Equipment / Nav Facility / Buildings",
+      "target": "Manuals"
+    },
+    {
+      "weight": 62,
+      "severity_sum": 87,
+      "avg_severity": 1.403225806451613,
+      "source": "Manuals",
+      "target": "Logbook Entry"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 64,
+      "avg_severity": 1.5609756097560976,
+      "source": "Manuals",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 22,
+      "avg_severity": 1.1578947368421053,
+      "source": "Manuals",
+      "target": "Staffing"
+    },
+    {
+      "weight": 108,
+      "severity_sum": 154,
+      "avg_severity": 1.4259259259259258,
+      "source": "Manuals",
+      "target": "MEL"
+    },
+    {
+      "weight": 72,
+      "severity_sum": 107,
+      "avg_severity": 1.4861111111111112,
+      "source": "Logbook Entry",
+      "target": "MEL"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 15,
+      "avg_severity": 1.3636363636363635,
+      "source": "Logbook Entry",
+      "target": "Staffing"
+    },
+    {
+      "weight": 22,
+      "severity_sum": 21,
+      "avg_severity": 0.9545454545454546,
+      "source": "Staffing",
+      "target": "Equipment / Tooling"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 20,
+      "avg_severity": 1.4285714285714286,
+      "source": "Staffing",
+      "target": "MEL"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 23,
+      "avg_severity": 1.5333333333333334,
+      "source": "MEL",
+      "target": "Equipment / Tooling"
+    }
+  ]
+}
