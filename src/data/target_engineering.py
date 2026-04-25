@@ -48,21 +48,10 @@ def _parse_miss_distance(miss_str: str) -> Optional[float]:
 
 def calculate_severity(row: pd.Series) -> int:
     """
-    Deterministic severity rubric v2.0.
+    Deterministic severity rubric v2.1.
 
     Derives ordinal severity (0–3) from physical outcome fields ONLY.
     These fields are POST-incident and must NEVER appear in the feature set.
-
-    Source fields:
-        - Events.5_Result         → action/outcome (semicolon-delimited)
-        - Events_Anomaly          → anomaly type/severity
-        - Events.1_Miss Distance  → "Horizontal N; Vertical N" in feet
-        - Component.3_Problem     → equipment failure class
-
-    Returns
-    -------
-    int
-        Severity level: 0 (Minor), 1 (Moderate), 2 (Substantial), 3 (Critical)
     """
     result = str(row.get("Events.5_Result", "")).lower()
     anomaly = str(row.get("Events_Anomaly", "")).lower()
@@ -70,82 +59,29 @@ def calculate_severity(row: pd.Series) -> int:
     component = str(row.get("Component.3_Problem", "")).lower()
 
     # ---- Level 3: Critical ----
-    # Emergency landing, divert, physical injury, CFTT/CFIT, fire/smoke with
-    # critical equipment + damage, regained aircraft control (loss-of-control event)
-    critical_result_kw = [
-        "landed in emergency condition",
-        "physical injury",
-        "regained aircraft control",
-    ]
-    critical_anomaly_kw = [
-        "cftt / cfit",       # Controlled flight into terrain
-    ]
-    if any(kw in result for kw in critical_result_kw):
-        return 3
-    if any(kw in anomaly for kw in critical_anomaly_kw):
-        return 3
-    # Aircraft damaged + critical equipment problem + fire/smoke
-    if (
-        "aircraft damaged" in result
-        and "equipment problem critical" in anomaly
-        and "smoke / fire / fumes" in anomaly
-    ):
-        return 3
+    crit_result = ["physical injury", "regained aircraft control"]
+    if any(kw in result for kw in crit_result): return 3
+    if "cftt / cfit" in anomaly: return 3
+    if "aircraft damaged" in result and "equipment problem critical" in anomaly and "smoke / fire / fumes" in anomaly: return 3
 
     # ---- Level 2: Substantial ----
-    # Aircraft damaged, diverted, rejected takeoff, go-around with evasive,
-    # critical equipment problem, NMAC, smoke/fire
-    substantial_result_kw = [
-        "aircraft damaged",
-        "diverted",
-        "returned to departure airport",
-        "rejected takeoff",
-    ]
-    substantial_anomaly_kw = [
-        "equipment problem critical",
-        "smoke / fire / fumes",
-        "conflict nmac",
-        "fuel issue",
-    ]
-    if any(kw in result for kw in substantial_result_kw):
-        return 2
-    if any(kw in anomaly for kw in substantial_anomaly_kw):
-        return 2
-    # Component failure (not just malfunction)
-    if "failed" in component:
-        return 2
+    sub_result = ["landed in emergency condition", "aircraft damaged", "rejected takeoff"]
+    sub_anomaly = ["smoke / fire / fumes", "conflict nmac"]
+    if any(kw in result for kw in sub_result): return 2
+    if any(kw in anomaly for kw in sub_anomaly): return 2
+    # Component failure + critical equipment problem
+    if "failed" in component and "equipment problem critical" in anomaly: return 2
 
     # ---- Level 1: Moderate ----
-    # Evasive action, go-around, landed as precaution, close miss (<500ft),
-    # less severe equipment problem, airborne conflict
-    moderate_result_kw = [
-        "took evasive action",
-        "executed go around",
-        "missed approach",
-        "landed as precaution",
-        "work refused",
-    ]
-    moderate_anomaly_kw = [
-        "equipment problem less severe",
-        "conflict airborne conflict",
-        "wake vortex encounter",
-        "passenger misconduct",
-    ]
-    if any(kw in result for kw in moderate_result_kw):
-        return 1
-    if any(kw in anomaly for kw in moderate_anomaly_kw):
-        return 1
-    # Close miss distance (<500 ft)
+    mod_result = ["diverted", "returned to departure airport", "took evasive action", "executed go around", "missed approach", "landed as precaution", "work refused"]
+    mod_anomaly = ["equipment problem critical", "fuel issue", "conflict airborne conflict", "wake vortex encounter", "passenger misconduct"]
+    if any(kw in result for kw in mod_result): return 1
+    if any(kw in anomaly for kw in mod_anomaly): return 1
     min_dist = _parse_miss_distance(miss_str)
-    if min_dist is not None and min_dist < 500:
-        return 1
-    # Component malfunction (not failure)
-    if "malfunctioning" in component:
-        return 1
+    if min_dist is not None and min_dist < 500: return 1
+    if "failed" in component: return 1
 
     # ---- Level 0: Minor ----
-    # Routine outcomes: none reported, reoriented, maintenance action,
-    # ATC issued clearance/advisory, returned to clearance, etc.
     return 0
 
 

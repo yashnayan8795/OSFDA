@@ -230,7 +230,7 @@ def run_tier3(splits, label_names, embeddings):
 
     # Fusion model
     print("  Training Fusion MLP heads...")
-    fusion = FusionMLP(hidden_dims=(256, 128), max_iter=200)
+    fusion = FusionMLP(hidden_dims=(256, 128), max_epochs=20)
     fusion.fit(
         emb_train, tab_train, splits["train"]["y"],
         emb_val,   tab_val,   splits["val"]["y"],
