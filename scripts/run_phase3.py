@@ -212,7 +212,7 @@ def run_tier3(splits, label_names, embeddings):
     def encode_split(sp_df):
         feats = []
         if cat_cols_present:
-            cat_enc = encoder.transform(sp_df[cat_cols_present].fillna("__missing__"))
+            cat_enc = encoder.transform(sp_df[cat_cols_present].astype(str).fillna("__missing__"))
             feats.append(cat_enc)
         if num_cols_present:
             num_arr = sp_df[num_cols_present].fillna(0).values.astype(np.float32)
@@ -221,7 +221,7 @@ def run_tier3(splits, label_names, embeddings):
 
     # Fit encoder on train
     if cat_cols_present:
-        encoder.fit(all_splits_dfs["train"][cat_cols_present].fillna("__missing__"))
+        encoder.fit(all_splits_dfs["train"][cat_cols_present].astype(str).fillna("__missing__"))
 
     tab_train = encode_split(all_splits_dfs["train"])
     tab_val   = encode_split(all_splits_dfs["val"])
