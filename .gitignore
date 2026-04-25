@@ -13,6 +13,11 @@ models/*.pkl
 models/*.txt
 models/*.onnx
 models/*.joblib
+models/*.cbm
+models/bertopic_model
+
+# CatBoost logs
+catboost_info/
 
 # Python cache
 __pycache__/
