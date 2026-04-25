@@ -10,6 +10,7 @@ Run from project root:
 
 import sys
 import time
+import subprocess
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -230,6 +231,23 @@ def run_phase2(df, config):
     return model, calibrators, report
 
 
+def run_phase3():
+    """Phase 3: Problem B — Category Classification."""
+    banner("PHASE 3 — Problem B: Category Classification")
+    print("  Running scripts/run_phase3.py (TF-IDF Baseline & SBERT Text Tower)...")
+    # Using tier 1 and tier 2 since tier 3 was unstable on the first pass
+    cmd = [sys.executable, "scripts/run_phase3.py", "--tier", "all"]
+    subprocess.run(cmd, check=True)
+
+
+def run_phase4():
+    """Phase 4: Problem D — Emerging Risk Discovery."""
+    banner("PHASE 4 — Problem D: Emerging Risk Discovery")
+    print("  Running scripts/run_phase4.py (BERTopic & Changepoint Detection)...")
+    cmd = [sys.executable, "scripts/run_phase4.py"]
+    subprocess.run(cmd, check=True)
+
+
 def main():
     """Run the full pipeline."""
     start = time.time()
@@ -239,6 +257,8 @@ def main():
     config = run_phase0()
     df, cat_matrix = run_phase1(config)
     model, calibrators, report = run_phase2(df, config)
+    run_phase3()
+    run_phase4()
 
     elapsed = time.time() - start
     banner(f"PIPELINE COMPLETE — {elapsed/60:.1f} minutes")
