@@ -40,6 +40,36 @@ def train_lgbm_severity(X_train, y_train, X_val, y_val, categorical_features,
     return model, {"best_iteration": model.best_iteration, "best_score": model.best_score}
 
 
+def train_catboost_severity(X_train, y_train, X_val, y_val, categorical_features):
+    from catboost import CatBoostClassifier, Pool
+    
+    # Fill NA for categorical features in CatBoost
+    X_train_cb = X_train.copy()
+    X_val_cb = X_val.copy()
+    for col in categorical_features:
+        X_train_cb[col] = X_train_cb[col].astype(str).replace('nan', 'Missing').fillna('Missing')
+        X_val_cb[col] = X_val_cb[col].astype(str).replace('nan', 'Missing').fillna('Missing')
+        
+    train_pool = Pool(X_train_cb, y_train, cat_features=categorical_features)
+    val_pool = Pool(X_val_cb, y_val, cat_features=categorical_features)
+    
+    model = CatBoostClassifier(
+        iterations=1000,
+        learning_rate=0.05,
+        depth=6,
+        loss_function='MultiClass',
+        eval_metric='MultiClass',
+        random_seed=42,
+        od_type='Iter',
+        od_wait=50,
+        verbose=100,
+        task_type='CPU'
+    )
+    
+    model.fit(train_pool, eval_set=val_pool, use_best_model=True)
+    return model, X_train_cb, X_val_cb
+
+
 def optuna_objective(trial, X_train, y_train, X_val, y_val, categorical_features):
     params = {
         "objective": "multiclass", "num_class": 4, "metric": "multi_logloss",
@@ -61,7 +91,10 @@ def optuna_objective(trial, X_train, y_train, X_val, y_val, categorical_features
 
 def calibrate_model(model, X_val, y_val, num_classes=4):
     from sklearn.isotonic import IsotonicRegression
-    raw_probs = model.predict(X_val)
+    if hasattr(model, 'predict_proba'):
+        raw_probs = model.predict_proba(X_val)
+    else:
+        raw_probs = model.predict(X_val)
     calibrators = []
     for cls in range(num_classes):
         iso = IsotonicRegression(out_of_bounds="clip")
@@ -71,7 +104,10 @@ def calibrate_model(model, X_val, y_val, num_classes=4):
 
 
 def predict_calibrated(model, X, calibrators):
-    raw_probs = model.predict(X)
+    if hasattr(model, 'predict_proba'):
+        raw_probs = model.predict_proba(X)
+    else:
+        raw_probs = model.predict(X)
     cal_probs = np.column_stack([cal.predict(raw_probs[:, i]) for i, cal in enumerate(calibrators)])
     row_sums = cal_probs.sum(axis=1, keepdims=True)
     row_sums = np.where(row_sums == 0, 1, row_sums)
