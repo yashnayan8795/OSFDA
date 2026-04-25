@@ -1,4 +1,0 @@
-Topic,Growth_Ratio,Recent_Changepoint,Avg_Severity,Risk_Score,Name,Representation,Count
-1,1.8725099601593627,False,2.111638954869359,3.849542447786053,1_flight_smell_odor_flight attendant,"['flight', 'smell', 'odor', 'flight attendant', 'attendant', 'cabin', 'smoke', 'fumes', 'crew', 'captain']",421
-0,0.7868252516010978,False,1.0912118408880667,1.216121767229523,0_aircraft_approach_runway_traffic,"['aircraft', 'approach', 'runway', 'traffic', 'controller', 'altitude', 'feet', 'atc', 'tower', 'pilot']",5405
-2,0.0,False,0.9027777777777778,0.0,2_mask_passenger_flight_policy,"['mask', 'passenger', 'flight', 'policy', 'face', 'wear', 'face mask', 'mask policy', 'attendant', 'passengers']",144
