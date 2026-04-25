@@ -15,7 +15,7 @@ from pathlib import Path
 def fit_bertopic(
     texts: pd.Series,
     embeddings: np.ndarray,
-    min_topic_size: int = 50,
+    min_topic_size: int = 150,
 ) -> Any:
     """
     Fits a BERTopic model on the provided texts and embeddings.
@@ -42,6 +42,7 @@ def fit_bertopic(
         vectorizer_model=vectorizer_model,
         language="english",
         calculate_probabilities=False,
+        nr_topics=30,
         verbose=True
     )
 
@@ -77,7 +78,7 @@ def calculate_temporal_trends(
 
 def detect_changepoints(
     monthly_counts: pd.DataFrame,
-    penalty: float = 10.0
+    penalty: float = 3.0
 ) -> Dict[int, List[int]]:
     """
     Detects structural shifts in monthly topic frequency using PELT.

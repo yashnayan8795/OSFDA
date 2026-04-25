@@ -217,35 +217,26 @@ def get_lgbm_leaf_embeddings(
 class FusionMLP:
     """
     Two-tower fusion: Sentence-BERT embeddings + tabular features
-    → MLP → per-label sigmoid heads.
-
-    Uses scikit-learn MLPClassifier under the hood for simplicity
-    (avoids PyTorch dependency). For production, replace with a
-    proper PyTorch model with BCEWithLogitsLoss.
+    → MLP → Multi-label BCE loss.
+    Implemented in PyTorch.
     """
-
     def __init__(
         self,
         hidden_dims: Tuple[int, int] = (256, 128),
-        alpha: float = 1e-4,
-        max_iter: int = 200,
+        lr: float = 5e-4,
+        max_epochs: int = 30,
+        batch_size: int = 128,
         random_state: int = 42,
     ):
         self.hidden_dims = hidden_dims
-        self.alpha = alpha
-        self.max_iter = max_iter
+        self.lr = lr
+        self.max_epochs = max_epochs
+        self.batch_size = batch_size
         self.random_state = random_state
-        self.classifiers: Dict[str, Any] = {}
+        self.model = None
+        self.scaler = None
         self.thresholds: Dict[str, float] = {}
         self.label_names: List[str] = []
-
-    def _build_fusion_features(
-        self,
-        text_embeddings: np.ndarray,
-        tabular_features: np.ndarray,
-    ) -> np.ndarray:
-        """Concatenate text and tabular towers."""
-        return np.hstack([text_embeddings, tabular_features])
 
     def fit(
         self,
@@ -257,44 +248,107 @@ class FusionMLP:
         y_val: pd.DataFrame,
         label_names: List[str],
     ):
-        from sklearn.neural_network import MLPClassifier
+        import torch
+        import torch.nn as nn
+        from torch.utils.data import TensorDataset, DataLoader
+        from sklearn.preprocessing import StandardScaler
 
+        torch.manual_seed(self.random_state)
         self.label_names = label_names
-        X_train_fusion = self._build_fusion_features(text_train, tabular_train)
-        X_val_fusion = self._build_fusion_features(text_val, tabular_val)
+        
+        X_tr_raw = np.hstack([text_train, tabular_train]).astype(np.float32)
+        X_va_raw = np.hstack([text_val, tabular_val]).astype(np.float32)
+        
+        self.scaler = StandardScaler()
+        X_tr = self.scaler.fit_transform(X_tr_raw)
+        X_va = self.scaler.transform(X_va_raw)
+        
+        Y_tr = y_train[label_names].values.astype(np.float32)
+        Y_va = y_val[label_names].values.astype(np.float32)
+        
+        input_dim = X_tr.shape[1]
+        num_classes = len(label_names)
 
-        val_probs = {}
-        for label in label_names:
-            print(f"    Training fusion head: {label}")
-            y_tr = y_train[label].values
-            pos_weight = max(1, (y_tr == 0).sum() / max(y_tr.sum(), 1))
-            clf = MLPClassifier(
-                hidden_layer_sizes=self.hidden_dims,
-                activation="relu",
-                alpha=self.alpha,
-                max_iter=self.max_iter,
-                random_state=self.random_state,
-                early_stopping=True,
-                validation_fraction=0.1,
-            )
-            # Sample weights to handle class imbalance
-            sample_weights = np.where(y_tr == 1, pos_weight, 1.0)
-            clf.fit(X_train_fusion, y_tr, sample_weight=sample_weights)
-            self.classifiers[label] = clf
-            val_probs[label] = clf.predict_proba(X_val_fusion)[:, 1]
+        train_ds = TensorDataset(torch.tensor(X_tr), torch.tensor(Y_tr))
+        val_ds = TensorDataset(torch.tensor(X_va), torch.tensor(Y_va))
+        train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
+        val_loader = DataLoader(val_ds, batch_size=self.batch_size)
 
-        self.thresholds = tune_thresholds(val_probs, y_val, label_names)
+        self.model = nn.Sequential(
+            nn.Linear(input_dim, self.hidden_dims[0]),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(self.hidden_dims[0], self.hidden_dims[1]),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(self.hidden_dims[1], num_classes)
+        )
+
+        criterion = nn.BCEWithLogitsLoss()
+        optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.lr)
+
+        best_val_loss = float('inf')
+        patience = 3
+        patience_counter = 0
+        best_state = None
+
+        for epoch in range(self.max_epochs):
+            self.model.train()
+            train_loss = 0.0
+            for batch_x, batch_y in train_loader:
+                optimizer.zero_grad()
+                logits = self.model(batch_x)
+                loss = criterion(logits, batch_y)
+                loss.backward()
+                optimizer.step()
+                train_loss += loss.item() * batch_x.size(0)
+            
+            self.model.eval()
+            val_loss = 0.0
+            with torch.no_grad():
+                for batch_x, batch_y in val_loader:
+                    logits = self.model(batch_x)
+                    loss = criterion(logits, batch_y)
+                    val_loss += loss.item() * batch_x.size(0)
+            
+            val_loss /= len(val_ds)
+            print(f"    Epoch {epoch+1}/{self.max_epochs} | Val Loss: {val_loss:.4f}")
+            
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                best_state = self.model.state_dict()
+                patience_counter = 0
+            else:
+                patience_counter += 1
+                if patience_counter >= patience:
+                    print("    Early stopping.")
+                    break
+                    
+        if best_state is not None:
+            self.model.load_state_dict(best_state)
+        
+        # Tune thresholds
+        self.model.eval()
+        with torch.no_grad():
+            val_logits = self.model(torch.tensor(X_va))
+            val_probs = torch.sigmoid(val_logits).numpy()
+            
+        prob_dict = {l: val_probs[:, i] for i, l in enumerate(label_names)}
+        self.thresholds = tune_thresholds(prob_dict, y_val, label_names)
 
     def predict(
         self,
         text_embeddings: np.ndarray,
         tabular_features: np.ndarray,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        X_fusion = self._build_fusion_features(text_embeddings, tabular_features)
-        probs = np.column_stack([
-            self.classifiers[label].predict_proba(X_fusion)[:, 1]
-            for label in self.label_names
-        ])
+        import torch
+        self.model.eval()
+        X_test_raw = np.hstack([text_embeddings, tabular_features]).astype(np.float32)
+        X_test = self.scaler.transform(X_test_raw)
+        with torch.no_grad():
+            logits = self.model(torch.tensor(X_test))
+            probs = torch.sigmoid(logits).numpy()
+            
         thresholds = np.array([self.thresholds[l] for l in self.label_names])
         preds = (probs >= thresholds).astype(int)
         return probs, preds
