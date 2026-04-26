@@ -226,12 +226,14 @@ class FusionMLP:
         lr: float = 5e-4,
         max_epochs: int = 30,
         batch_size: int = 128,
+        patience: int = 3,
         random_state: int = 42,
     ):
         self.hidden_dims = hidden_dims
         self.lr = lr
         self.max_epochs = max_epochs
         self.batch_size = batch_size
+        self.patience = patience
         self.random_state = random_state
         self.model = None
         self.scaler = None
@@ -288,7 +290,6 @@ class FusionMLP:
         optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.lr)
 
         best_val_loss = float('inf')
-        patience = 3
         patience_counter = 0
         best_state = None
 
@@ -320,7 +321,7 @@ class FusionMLP:
                 patience_counter = 0
             else:
                 patience_counter += 1
-                if patience_counter >= patience:
+                if patience_counter >= self.patience:
                     print("    Early stopping.")
                     break
                     

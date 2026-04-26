@@ -51,8 +51,8 @@ class TestMissDistanceParsing:
 # ---- Severity Rubric v2 Tests ----
 
 class TestSeverityRubric:
-    def test_emergency_landing_is_level2(self):
-        """v2.1: 'landed in emergency condition' demoted from L3 to L2."""
+    def test_critical_emergency_landing(self):
+        """'Landed in emergency condition' is Level 2 in rubric v2.1."""
         row = _make_row(**{"Events.5_Result": "Flight Crew Landed in Emergency Condition"})
         assert calculate_severity(row) == 2
 
@@ -72,13 +72,13 @@ class TestSeverityRubric:
         row = _make_row(**{"Events.5_Result": "Aircraft Aircraft Damaged"})
         assert calculate_severity(row) == 2
 
-    def test_diverted_is_level1(self):
-        """v2.1: 'diverted' demoted from L2 to L1."""
+    def test_substantial_diverted(self):
+        """'Diverted' is Level 1 (moderate) in rubric v2.1."""
         row = _make_row(**{"Events.5_Result": "Flight Crew Diverted"})
         assert calculate_severity(row) == 1
 
-    def test_equipment_critical_alone_is_level1(self):
-        """v2.1: 'equipment problem critical' alone is L1, needs failed component for L2."""
+    def test_substantial_equipment_critical(self):
+        """'Equipment problem critical' alone is Level 1 (moderate) in rubric v2.1."""
         row = _make_row(**{"Events_Anomaly": "Aircraft Equipment Problem Critical"})
         assert calculate_severity(row) == 1
 
@@ -86,18 +86,18 @@ class TestSeverityRubric:
         row = _make_row(**{"Events_Anomaly": "Conflict NMAC"})
         assert calculate_severity(row) == 2
 
-    def test_component_failed_alone_is_level1(self):
-        """v2.1: 'failed' component alone is L1; needs 'equipment problem critical' for L2."""
-        row = _make_row(**{"Component.3_Problem": "Failed"})
-        assert calculate_severity(row) == 1
-
-    def test_failed_plus_critical_is_level2(self):
-        """v2.1: failed component + critical equipment problem → L2."""
+    def test_substantial_component_failed_with_critical(self):
+        """'Failed' + 'equipment problem critical' is Level 2 in rubric v2.1."""
         row = _make_row(**{
             "Component.3_Problem": "Failed",
             "Events_Anomaly": "Aircraft Equipment Problem Critical",
         })
         assert calculate_severity(row) == 2
+
+    def test_moderate_component_failed_alone(self):
+        """Bare 'Failed' component without critical anomaly is Level 1."""
+        row = _make_row(**{"Component.3_Problem": "Failed"})
+        assert calculate_severity(row) == 1
 
     def test_substantial_fire(self):
         row = _make_row(**{
@@ -113,8 +113,8 @@ class TestSeverityRubric:
         row = _make_row(**{"Events.5_Result": "Flight Crew Executed Go Around / Missed Approach"})
         assert calculate_severity(row) == 1
 
-    def test_equipment_less_severe_is_level0(self):
-        """v2.1: 'less severe' equipment problems not in rubric → L0."""
+    def test_moderate_equipment_less_severe(self):
+        """'Equipment problem less severe' is not in rubric v2.1 — Level 0."""
         row = _make_row(**{"Events_Anomaly": "Aircraft Equipment Problem Less Severe"})
         assert calculate_severity(row) == 0
 
@@ -126,8 +126,8 @@ class TestSeverityRubric:
         row = _make_row(**{"Events.1_Miss Distance": "Horizontal 100; Vertical 200"})
         assert calculate_severity(row) == 1
 
-    def test_malfunctioning_is_level0(self):
-        """v2.1: 'malfunctioning' removed from rubric (too broad) → L0."""
+    def test_minor_malfunction(self):
+        """'Malfunctioning' (not 'Failed') is not matched by rubric v2.1 — Level 0."""
         row = _make_row(**{"Component.3_Problem": "Malfunctioning"})
         assert calculate_severity(row) == 0
 

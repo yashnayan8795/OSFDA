@@ -5,7 +5,6 @@ Builds a heterogeneous co-occurrence graph, detects communities,
 computes centrality, and extracts high-severity critical paths.
 
 Usage:
-    $env:PYTHONPATH = "E:\OSFDA"
     python scripts/run_phase5.py
 """
 

@@ -8,7 +8,6 @@ Runs three tiers:
 
 Outputs a comparison table and saves all models.
 Usage:
-    $env:PYTHONPATH = "E:\OSFDA"
     python scripts/run_phase3.py [--tier {1,2,3,all}]
 """
 
@@ -248,7 +247,16 @@ def run_tier3(splits, label_names, embeddings):
     test_report = multilabel_report(splits["test"]["y"].values, test_preds, label_names)
     print_report("Test", test_report, label_names)
 
+    # Save fusion model AND the encoder + column metadata for inference
+    fusion_artifact = {
+        "fusion_model": fusion,
+        "ordinal_encoder": encoder if cat_cols_present else None,
+        "cat_cols": cat_cols_present,
+        "num_cols": num_cols_present,
+        "tabular_cols": tabular_cols,
+    }
     save_category_model(fusion, resolve_path("models/category_fusion.joblib"))
+    save_category_model(fusion_artifact, resolve_path("models/category_fusion_full.joblib"))
     elapsed = time.time() - start
     print(f"\n  Done in {elapsed:.1f}s")
     return fusion, test_report
@@ -296,7 +304,7 @@ def main():
     if run_all or args.tier in ("2", "3"):
         # Check for cached embeddings first
         emb_path = resolve_path("data/processed")
-        if (emb_path / "emb_train.npy").exists() and args.tier == "3":
+        if (emb_path / "emb_train.npy").exists() and args.tier in ("3", "all"):
             print("\n  Loading cached embeddings...")
             emb_train = np.load(emb_path / "emb_train.npy")
             emb_val   = np.load(emb_path / "emb_val.npy")

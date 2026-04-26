@@ -18,7 +18,6 @@ dependencies = [
     "datasets>=2.0",
     "pyyaml",
     "ruptures>=1.1",
-    "mlflow",
     "pytest",
     "ipykernel",
     "nbformat",

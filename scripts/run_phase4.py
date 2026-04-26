@@ -7,7 +7,6 @@ Runs unsupervised pattern discovery on ASRS narratives:
   3. Emerging risk scoring
 
 Usage:
-    $env:PYTHONPATH = "E:\OSFDA"
     python scripts/run_phase4.py
 """
 
@@ -59,10 +58,28 @@ def main():
         emb_test  = np.load(emb_path / "emb_test.npy")
         
         # We need a unified array and text series aligned together.
-        # Since df is preserved in original order, we can just assign by index, 
-        # but let's be careful. It's easier to just rebuild a unified set in split order.
+        # Validate that split masks produce the expected counts before stacking.
+        n_train, n_val, n_test = tr_mask.sum(), va_mask.sum(), te_mask.sum()
+        assert emb_train.shape[0] == n_train, (
+            f"Embedding/split mismatch: emb_train has {emb_train.shape[0]} rows, "
+            f"but train split has {n_train} rows"
+        )
+        assert emb_val.shape[0] == n_val, (
+            f"Embedding/split mismatch: emb_val has {emb_val.shape[0]} rows, "
+            f"but val split has {n_val} rows"
+        )
+        assert emb_test.shape[0] == n_test, (
+            f"Embedding/split mismatch: emb_test has {emb_test.shape[0]} rows, "
+            f"but test split has {n_test} rows"
+        )
+        
         df_ordered = pd.concat([df[tr_mask], df[va_mask], df[te_mask]])
         embeddings = np.vstack([emb_train, emb_val, emb_test])
+        
+        assert len(df_ordered) == embeddings.shape[0], (
+            f"Row count mismatch after concat: df={len(df_ordered)}, "
+            f"embeddings={embeddings.shape[0]}"
+        )
         texts = df_ordered["combined_text"]
     else:
         print("Cached embeddings not found. Please run Phase 3 Tier 2 first.")

@@ -36,7 +36,7 @@ def train_lgbm_severity(X_train, y_train, X_val, y_val, categorical_features,
     dtrain, dval = build_lgbm_dataset(X_train, y_train, X_val, y_val, categorical_features)
     callbacks = [lgb.early_stopping(stopping_rounds=early_stopping_rounds), lgb.log_evaluation(period=100)]
     model = lgb.train(params, dtrain, num_boost_round=num_boost_round,
-                      valid_sets=[dtrain, dval], valid_names=["train", "val"], callbacks=callbacks)
+                      valid_sets=[dval], valid_names=["val"], callbacks=callbacks)
     return model, {"best_iteration": model.best_iteration, "best_score": model.best_score}
 
 
