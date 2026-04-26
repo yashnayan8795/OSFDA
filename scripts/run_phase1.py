@@ -5,7 +5,8 @@ from src.data.target_engineering import (
     apply_severity_rubric, validate_severity_distribution,
     apply_category_taxonomy, rubric_hash,
 )
-from src.data.leakage_audit import get_problem_a_features, validate_no_leakage, load_feature_whitelist
+from src.data.leakage_audit import get_problem_a_features, validate_no_leakage
+from src.utils.config import load_feature_whitelist
 from src.features.temporal import create_temporal_split, validate_temporal_split
 import pandas as pd
 

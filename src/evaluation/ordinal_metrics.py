@@ -32,6 +32,9 @@ def asymmetric_cost(y_true, y_pred, cost_matrix: dict) -> float:
 
 def bootstrap_metric(y_true, y_pred, metric_fn, n_boot=1000, ci=95, seed=42):
     """Bootstrap a metric to get confidence interval."""
+    import logging
+    logger = logging.getLogger(__name__)
+
     rng = np.random.RandomState(seed)
     scores = []
     n = len(y_true)
@@ -41,9 +44,20 @@ def bootstrap_metric(y_true, y_pred, metric_fn, n_boot=1000, ci=95, seed=42):
         if len(np.unique(y_true[idx])) < 2:
             continue
         scores.append(metric_fn(y_true[idx], y_pred[idx]))
+
+    n_actual = len(scores)
+    n_skipped = n_boot - n_actual
+    if n_skipped > n_boot * 0.1:
+        logger.warning(
+            "bootstrap_metric: %d/%d samples skipped (%.1f%%) due to "
+            "insufficient class diversity. CI may be unreliable.",
+            n_skipped, n_boot, 100 * n_skipped / n_boot,
+        )
+
     lo = np.percentile(scores, (100 - ci) / 2)
     hi = np.percentile(scores, 100 - (100 - ci) / 2)
-    return {"mean": np.mean(scores), "ci_low": lo, "ci_high": hi, "n_boot": len(scores)}
+    return {"mean": np.mean(scores), "ci_low": lo, "ci_high": hi,
+            "n_boot_requested": n_boot, "n_boot_actual": n_actual}
 
 
 def full_severity_report(y_true, y_pred, cost_matrix: Optional[dict] = None) -> Dict[str, Any]:

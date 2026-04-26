@@ -52,8 +52,9 @@ class TestMissDistanceParsing:
 
 class TestSeverityRubric:
     def test_critical_emergency_landing(self):
+        """'Landed in emergency condition' is Level 2 in rubric v2.1."""
         row = _make_row(**{"Events.5_Result": "Flight Crew Landed in Emergency Condition"})
-        assert calculate_severity(row) == 3
+        assert calculate_severity(row) == 2
 
     def test_critical_physical_injury(self):
         row = _make_row(**{"Events.5_Result": "General Physical Injury / Incapacitation"})
@@ -72,20 +73,31 @@ class TestSeverityRubric:
         assert calculate_severity(row) == 2
 
     def test_substantial_diverted(self):
+        """'Diverted' is Level 1 (moderate) in rubric v2.1."""
         row = _make_row(**{"Events.5_Result": "Flight Crew Diverted"})
-        assert calculate_severity(row) == 2
+        assert calculate_severity(row) == 1
 
     def test_substantial_equipment_critical(self):
+        """'Equipment problem critical' alone is Level 1 (moderate) in rubric v2.1."""
         row = _make_row(**{"Events_Anomaly": "Aircraft Equipment Problem Critical"})
-        assert calculate_severity(row) == 2
+        assert calculate_severity(row) == 1
 
     def test_substantial_nmac(self):
         row = _make_row(**{"Events_Anomaly": "Conflict NMAC"})
         assert calculate_severity(row) == 2
 
-    def test_substantial_component_failed(self):
-        row = _make_row(**{"Component.3_Problem": "Failed"})
+    def test_substantial_component_failed_with_critical(self):
+        """'Failed' + 'equipment problem critical' is Level 2 in rubric v2.1."""
+        row = _make_row(**{
+            "Component.3_Problem": "Failed",
+            "Events_Anomaly": "Aircraft Equipment Problem Critical",
+        })
         assert calculate_severity(row) == 2
+
+    def test_moderate_component_failed_alone(self):
+        """Bare 'Failed' component without critical anomaly is Level 1."""
+        row = _make_row(**{"Component.3_Problem": "Failed"})
+        assert calculate_severity(row) == 1
 
     def test_substantial_fire(self):
         row = _make_row(**{
@@ -102,8 +114,9 @@ class TestSeverityRubric:
         assert calculate_severity(row) == 1
 
     def test_moderate_equipment_less_severe(self):
+        """'Equipment problem less severe' is not in rubric v2.1 — Level 0."""
         row = _make_row(**{"Events_Anomaly": "Aircraft Equipment Problem Less Severe"})
-        assert calculate_severity(row) == 1
+        assert calculate_severity(row) == 0
 
     def test_moderate_airborne_conflict(self):
         row = _make_row(**{"Events_Anomaly": "Conflict Airborne Conflict"})
@@ -113,9 +126,10 @@ class TestSeverityRubric:
         row = _make_row(**{"Events.1_Miss Distance": "Horizontal 100; Vertical 200"})
         assert calculate_severity(row) == 1
 
-    def test_moderate_malfunction(self):
+    def test_minor_malfunction(self):
+        """'Malfunctioning' (not 'Failed') is not matched by rubric v2.1 — Level 0."""
         row = _make_row(**{"Component.3_Problem": "Malfunctioning"})
-        assert calculate_severity(row) == 1
+        assert calculate_severity(row) == 0
 
     def test_minor_none_reported(self):
         row = _make_row(**{"Events.5_Result": "General None Reported / Taken"})

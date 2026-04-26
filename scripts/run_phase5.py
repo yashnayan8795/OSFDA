@@ -5,7 +5,6 @@ Builds a semantic co-occurrence graph of contributing factors
 and extracts high-severity critical paths.
 
 Usage:
-    $env:PYTHONPATH = "E:\OSFDA"
     python scripts/run_phase5.py
 """
 

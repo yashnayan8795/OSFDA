@@ -101,7 +101,15 @@ def objective(trial):
     return qwk  # Maximize
 
 
-study = optuna.create_study(direction="maximize", study_name="severity_lgbm")
+storage_path = resolve_path("data/processed/optuna.db")
+storage_path.parent.mkdir(parents=True, exist_ok=True)
+storage_url = f"sqlite:///{storage_path}"
+study = optuna.create_study(
+    direction="maximize",
+    study_name="severity_lgbm",
+    storage=storage_url,
+    load_if_exists=True,
+)
 study.optimize(objective, n_trials=50, show_progress_bar=True)
 
 print(f"\nBest QWK (val): {study.best_value:.4f}")
