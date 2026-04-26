@@ -98,7 +98,7 @@ def main():
     monthly_counts = calculate_temporal_trends(df_ordered, topics, time_col="Time_Date")
     print(f"  Computed monthly counts. Shape: {monthly_counts.shape}")
     
-    changepoints = detect_changepoints(monthly_counts, penalty=10.0)
+    changepoints = detect_changepoints(monthly_counts, penalty=3.0)
     num_cps = sum(len(cps) > 0 for cps in changepoints.values())
     print(f"  Detected changepoints in {num_cps} topics.")
 
