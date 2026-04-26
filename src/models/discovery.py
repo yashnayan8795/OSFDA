@@ -22,22 +22,24 @@ def fit_bertopic(
     """
     from bertopic import BERTopic
     from sklearn.decomposition import PCA
-    from sklearn.cluster import HDBSCAN
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.feature_extraction.text import CountVectorizer
 
-    # PCA for dimensionality reduction (bypassing UMAP/Numba issues)
+    # PCA for dimensionality reduction (bypassing UMAP/Numba DLL policy block)
     umap_model = PCA(n_components=15, random_state=42)
 
-    # Use sklearn's built-in HDBSCAN to restore density-based clustering
-    hdbscan_model = HDBSCAN(
-        min_cluster_size=min_topic_size,
-        metric='euclidean',
-        cluster_selection_method='eom'
+    # MiniBatchKMeans creates initial fine-grained clusters;
+    # BERTopic's nr_topics=30 then merges them hierarchically via c-TF-IDF.
+    # This is superior to PCA+HDBSCAN which only finds 3 blobs.
+    n_clusters = max(30, len(texts) // min_topic_size)
+    hdbscan_model = MiniBatchKMeans(
+        n_clusters=n_clusters, random_state=42, batch_size=1024
     )
 
     # CountVectorizer for topic representation
-    vectorizer_model = CountVectorizer(stop_words="english", ngram_range=(1, 2))
+    vectorizer_model = CountVectorizer(
+        stop_words="english", ngram_range=(1, 2), min_df=5
+    )
 
     topic_model = BERTopic(
         umap_model=umap_model,
@@ -45,6 +47,7 @@ def fit_bertopic(
         vectorizer_model=vectorizer_model,
         language="english",
         calculate_probabilities=False,
+        nr_topics=30,
         verbose=True
     )
 

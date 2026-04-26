@@ -4,920 +4,5617 @@
   "graph": {},
   "nodes": [
     {
-      "count": 23423,
-      "severity_sum": 27865,
-      "avg_severity": 1.1896426589249882,
-      "id": "Human Factors"
+      "count": 23418,
+      "severity_sum": 23336.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.996498420018789,
+      "community": 1,
+      "id": "FACTOR:Human Factors"
     },
     {
-      "count": 15664,
-      "severity_sum": 30560,
-      "avg_severity": 1.95097037793667,
-      "id": "Aircraft"
+      "count": 6831,
+      "severity_sum": 9332.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.3661250182989313,
+      "community": 1,
+      "id": "PHASE:Approach"
     },
     {
-      "count": 14711,
-      "severity_sum": 16266,
-      "avg_severity": 1.1057032152810822,
-      "id": "Procedure"
+      "count": 5136,
+      "severity_sum": 5009.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 0.9752725856697819,
+      "community": 0,
+      "id": "AIRCRAFT:B737"
     },
     {
-      "count": 4112,
-      "severity_sum": 6290,
-      "avg_severity": 1.529669260700389,
-      "id": "Weather"
+      "count": 23528,
+      "severity_sum": 23577.0,
+      "node_type": "FAR",
+      "avg_severity": 1.0020826249574974,
+      "community": 0,
+      "id": "FAR:Part 121"
+    },
+    {
+      "count": 2312,
+      "severity_sum": 2680.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.1591695501730104,
+      "community": 0,
+      "id": "AIRCRAFT:ERJ"
+    },
+    {
+      "count": 15662,
+      "severity_sum": 20942.0,
+      "node_type": "FACTOR",
+      "avg_severity": 1.3371216958242882,
+      "community": 0,
+      "id": "FACTOR:Aircraft"
+    },
+    {
+      "count": 14706,
+      "severity_sum": 13247.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.9007887936896505,
+      "community": 1,
+      "id": "FACTOR:Procedure"
+    },
+    {
+      "count": 4110,
+      "severity_sum": 5300.0,
+      "node_type": "FACTOR",
+      "avg_severity": 1.289537712895377,
+      "community": 1,
+      "id": "FACTOR:Weather"
+    },
+    {
+      "count": 269,
+      "severity_sum": 397.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.4758364312267658,
+      "community": 1,
+      "id": "AIRCRAFT:Cirrus"
+    },
+    {
+      "count": 10483,
+      "severity_sum": 14381.0,
+      "node_type": "FAR",
+      "avg_severity": 1.3718401221024517,
+      "community": 1,
+      "id": "FAR:Part 91"
+    },
+    {
+      "count": 3625,
+      "severity_sum": 3786.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.0444137931034483,
+      "community": 1,
+      "id": "PHASE:Descent"
+    },
+    {
+      "count": 19934,
+      "severity_sum": 21535.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.0803150396307817,
+      "community": 1,
+      "id": "AIRCRAFT:Other"
     },
     {
       "count": 2808,
-      "severity_sum": 3534,
-      "avg_severity": 1.2585470085470085,
-      "id": "Airspace Structure"
+      "severity_sum": 3375.0,
+      "node_type": "FACTOR",
+      "avg_severity": 1.2019230769230769,
+      "community": 1,
+      "id": "FACTOR:Airspace Structure"
     },
     {
-      "count": 3082,
-      "severity_sum": 2849,
-      "avg_severity": 0.9243997404282933,
-      "id": "Airport"
+      "count": 6487,
+      "severity_sum": 7870.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.2131956220132574,
+      "community": 0,
+      "id": "PHASE:Cruise"
+    },
+    {
+      "count": 323,
+      "severity_sum": 437.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.3529411764705883,
+      "community": 0,
+      "id": "AIRCRAFT:DHC"
+    },
+    {
+      "count": 3079,
+      "severity_sum": 2648.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.8600194868463787,
+      "community": 1,
+      "id": "FACTOR:Airport"
+    },
+    {
+      "count": 2788,
+      "severity_sum": 3893.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.396341463414634,
+      "community": 1,
+      "id": "PHASE:Landing"
+    },
+    {
+      "count": 1009,
+      "severity_sum": 1228.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.2170465807730426,
+      "community": 0,
+      "id": "AIRCRAFT:MD"
     },
     {
       "count": 4690,
-      "severity_sum": 5598,
-      "avg_severity": 1.1936034115138592,
-      "id": "Environment - Non Weather Related"
+      "severity_sum": 4964.0,
+      "node_type": "FACTOR",
+      "avg_severity": 1.0584221748400853,
+      "community": 1,
+      "id": "FACTOR:Environment - Non Weather Related"
     },
     {
-      "count": 2282,
-      "severity_sum": 1888,
-      "avg_severity": 0.8273444347063978,
-      "id": "Chart Or Publication"
+      "count": 1850,
+      "severity_sum": 2134.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.1535135135135135,
+      "community": 0,
+      "id": "AIRCRAFT:CRJ"
     },
     {
-      "count": 3873,
-      "severity_sum": 3448,
-      "avg_severity": 0.890265943712884,
-      "id": "Company Policy"
+      "count": 2281,
+      "severity_sum": 1355.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.5940377027619466,
+      "community": 1,
+      "id": "FACTOR:Chart Or Publication"
+    },
+    {
+      "count": 3719,
+      "severity_sum": 2612.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.7023393385318634,
+      "community": 1,
+      "id": "PHASE:Taxi"
+    },
+    {
+      "count": 3872,
+      "severity_sum": 2368.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.6115702479338843,
+      "community": 0,
+      "id": "FACTOR:Company Policy"
+    },
+    {
+      "count": 3001,
+      "severity_sum": 3952.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.3168943685438188,
+      "community": 0,
+      "id": "PHASE:Takeoff"
+    },
+    {
+      "count": 2660,
+      "severity_sum": 3032.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.1398496240601503,
+      "community": 0,
+      "id": "AIRCRAFT:A320_Family"
     },
     {
       "count": 332,
-      "severity_sum": 500,
-      "avg_severity": 1.5060240963855422,
-      "id": "Incorrect / Not Installed / Unavailable Part"
+      "severity_sum": 234.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.7048192771084337,
+      "community": 0,
+      "id": "FACTOR:Incorrect / Not Installed / Unavailable Part"
     },
     {
-      "count": 1245,
-      "severity_sum": 896,
-      "avg_severity": 0.7196787148594378,
-      "id": "ATC Equipment / Nav Facility / Buildings"
+      "count": 5974,
+      "severity_sum": 7127.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.1930030130565785,
+      "community": 0,
+      "id": "PHASE:Climb"
+    },
+    {
+      "count": 1244,
+      "severity_sum": 714.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.5739549839228296,
+      "community": 1,
+      "id": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "count": 134,
+      "severity_sum": 157.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.171641791044776,
+      "community": 0,
+      "id": "AIRCRAFT:A330"
+    },
+    {
+      "count": 4500,
+      "severity_sum": 2761.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.6135555555555555,
+      "community": 0,
+      "id": "PHASE:Ground"
+    },
+    {
+      "count": 191,
+      "severity_sum": 155.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 0.8115183246073299,
+      "community": 0,
+      "id": "AIRCRAFT:B787"
     },
     {
       "count": 1092,
-      "severity_sum": 1323,
-      "avg_severity": 1.2115384615384615,
-      "id": "Manuals"
+      "severity_sum": 721.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.6602564102564102,
+      "community": 0,
+      "id": "FACTOR:Manuals"
+    },
+    {
+      "count": 169,
+      "severity_sum": 91.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 0.5384615384615384,
+      "community": 1,
+      "id": "AIRCRAFT:UAS"
+    },
+    {
+      "count": 956,
+      "severity_sum": 1004.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.0502092050209204,
+      "community": 0,
+      "id": "AIRCRAFT:B767"
+    },
+    {
+      "count": 381,
+      "severity_sum": 367.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 0.963254593175853,
+      "community": 0,
+      "id": "AIRCRAFT:B747"
+    },
+    {
+      "count": 13,
+      "severity_sum": 4.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.3076923076923077,
+      "community": 0,
+      "id": "PHASE:Other Push-Back"
+    },
+    {
+      "count": 21,
+      "severity_sum": 27.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.2857142857142858,
+      "community": 1,
+      "id": "PHASE:Other Holding Pattern"
+    },
+    {
+      "count": 1128,
+      "severity_sum": 1274.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.1294326241134751,
+      "community": 0,
+      "id": "AIRCRAFT:B757"
     },
     {
       "count": 230,
-      "severity_sum": 340,
-      "avg_severity": 1.4782608695652173,
-      "id": "Logbook Entry"
+      "severity_sum": 153.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.6652173913043479,
+      "community": 0,
+      "id": "FACTOR:Logbook Entry"
+    },
+    {
+      "count": 1737,
+      "severity_sum": 2143.0,
+      "node_type": "FAR",
+      "avg_severity": 1.2337363270005757,
+      "community": 1,
+      "id": "FAR:Part 135"
+    },
+    {
+      "count": 728,
+      "severity_sum": 626.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 0.8598901098901099,
+      "community": 0,
+      "id": "AIRCRAFT:B777"
     },
     {
       "count": 647,
-      "severity_sum": 525,
-      "avg_severity": 0.8114374034003091,
-      "id": "Staffing"
+      "severity_sum": 409.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.6321483771251932,
+      "community": 1,
+      "id": "FACTOR:Staffing"
     },
     {
       "count": 513,
-      "severity_sum": 794,
-      "avg_severity": 1.5477582846003899,
-      "id": "MEL"
+      "severity_sum": 363.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.7076023391812866,
+      "community": 0,
+      "id": "FACTOR:MEL"
     },
     {
-      "count": 748,
-      "severity_sum": 876,
-      "avg_severity": 1.1711229946524064,
-      "id": "Equipment / Tooling"
+      "count": 747,
+      "severity_sum": 612.0,
+      "node_type": "FACTOR",
+      "avg_severity": 0.8192771084337349,
+      "community": 0,
+      "id": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "count": 1169,
+      "severity_sum": 1814.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.551753635585971,
+      "community": 1,
+      "id": "AIRCRAFT:Piper"
+    },
+    {
+      "count": 25,
+      "severity_sum": 9.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.36,
+      "community": 0,
+      "id": "PHASE:Other Preflight Planning"
+    },
+    {
+      "count": 80,
+      "severity_sum": 103.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.2875,
+      "community": 0,
+      "id": "AIRCRAFT:ATR"
+    },
+    {
+      "count": 16,
+      "severity_sum": 7.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.4375,
+      "community": 1,
+      "id": "PHASE:Other General Ramp"
+    },
+    {
+      "count": 100,
+      "severity_sum": 138.0,
+      "node_type": "AIRCRAFT",
+      "avg_severity": 1.38,
+      "community": 1,
+      "id": "AIRCRAFT:Helicopter"
     },
     {
       "count": 174,
-      "severity_sum": 265,
-      "avg_severity": 1.5229885057471264,
-      "id": "Software and Automation"
+      "severity_sum": 192.0,
+      "node_type": "FACTOR",
+      "avg_severity": 1.103448275862069,
+      "community": 1,
+      "id": "FACTOR:Software and Automation"
+    },
+    {
+      "count": 14,
+      "severity_sum": 14.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.0,
+      "community": 0,
+      "id": "PHASE:Other Go Around"
+    },
+    {
+      "count": 14,
+      "severity_sum": 15.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.0714285714285714,
+      "community": 1,
+      "id": "PHASE:Other Vfr Traffic Pattern"
+    },
+    {
+      "count": 21,
+      "severity_sum": 9.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.42857142857142855,
+      "community": 1,
+      "id": "PHASE:Other All Phases"
+    },
+    {
+      "count": 65,
+      "severity_sum": 41.0,
+      "node_type": "FAR",
+      "avg_severity": 0.6307692307692307,
+      "community": 1,
+      "id": "FAR:Part 129"
+    },
+    {
+      "count": 26,
+      "severity_sum": 6.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.23076923076923078,
+      "community": 0,
+      "id": "PHASE:Other Non-Flight"
+    },
+    {
+      "count": 21,
+      "severity_sum": 8.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.38095238095238093,
+      "community": 0,
+      "id": "PHASE:Other N/A"
+    },
+    {
+      "count": 40,
+      "severity_sum": 21.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.525,
+      "community": 0,
+      "id": "PHASE:Other All"
+    },
+    {
+      "count": 33,
+      "severity_sum": 17.0,
+      "node_type": "FAR",
+      "avg_severity": 0.5151515151515151,
+      "community": 1,
+      "id": "FAR:Part 107"
+    },
+    {
+      "count": 10,
+      "severity_sum": 4.0,
+      "node_type": "PHASE",
+      "avg_severity": 0.4,
+      "community": 1,
+      "id": "PHASE:Hovering (Uas)"
+    },
+    {
+      "count": 10,
+      "severity_sum": 19.0,
+      "node_type": "PHASE",
+      "avg_severity": 1.9,
+      "community": 1,
+      "id": "PHASE:Other Traffic Pattern"
     }
   ],
   "links": [
     {
+      "weight": 4648,
+      "severity_sum": 6543.0,
+      "avg_severity": 1.4077022375215147,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Approach"
+    },
+    {
+      "weight": 2875,
+      "severity_sum": 2343.0,
+      "avg_severity": 0.8149565217391305,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:B737"
+    },
+    {
+      "weight": 13268,
+      "severity_sum": 11085.0,
+      "avg_severity": 0.8354687971058186,
+      "source": "FACTOR:Human Factors",
+      "target": "FAR:Part 121"
+    },
+    {
+      "weight": 1191,
+      "severity_sum": 1073.0,
+      "avg_severity": 0.9009235936188077,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:ERJ"
+    },
+    {
       "weight": 5920,
-      "severity_sum": 10065,
-      "avg_severity": 1.7001689189189189,
-      "source": "Human Factors",
-      "target": "Aircraft"
+      "severity_sum": 6841.0,
+      "avg_severity": 1.1555743243243244,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Aircraft"
     },
     {
       "weight": 10149,
-      "severity_sum": 10715,
-      "avg_severity": 1.0557690412848557,
-      "source": "Human Factors",
-      "target": "Procedure"
+      "severity_sum": 8933.0,
+      "avg_severity": 0.8801852399251158,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Procedure"
     },
     {
       "weight": 2546,
-      "severity_sum": 3651,
-      "avg_severity": 1.43401413982718,
-      "source": "Human Factors",
-      "target": "Weather"
+      "severity_sum": 3185.0,
+      "avg_severity": 1.250981932443048,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Weather"
+    },
+    {
+      "weight": 179,
+      "severity_sum": 264.0,
+      "avg_severity": 1.4748603351955307,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:Cirrus"
+    },
+    {
+      "weight": 7170,
+      "severity_sum": 9658.0,
+      "avg_severity": 1.3470013947001396,
+      "source": "FACTOR:Human Factors",
+      "target": "FAR:Part 91"
     },
     {
       "weight": 1973,
-      "severity_sum": 1932,
-      "avg_severity": 0.9792194627470857,
-      "source": "Human Factors",
-      "target": "Airport"
+      "severity_sum": 1836.0,
+      "avg_severity": 0.9305625950329448,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 1897,
+      "severity_sum": 2596.0,
+      "avg_severity": 1.3684765419082763,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 414,
+      "severity_sum": 374.0,
+      "avg_severity": 0.9033816425120773,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 13319,
+      "severity_sum": 13965.0,
+      "avg_severity": 1.0485021398002854,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:Other"
     },
     {
       "weight": 1418,
-      "severity_sum": 1307,
-      "avg_severity": 0.9217207334273625,
-      "source": "Human Factors",
-      "target": "Chart Or Publication"
+      "severity_sum": 959.0,
+      "avg_severity": 0.6763046544428772,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 2607,
+      "severity_sum": 1727.0,
+      "avg_severity": 0.6624472573839663,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 1619,
+      "severity_sum": 1844.0,
+      "avg_severity": 1.1389746757257566,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Takeoff"
     },
     {
       "weight": 1929,
-      "severity_sum": 2548,
-      "avg_severity": 1.3208916537065838,
-      "source": "Human Factors",
-      "target": "Airspace Structure"
+      "severity_sum": 2474.0,
+      "avg_severity": 1.2825298081907723,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 2258,
+      "severity_sum": 2043.0,
+      "avg_severity": 0.9047829937998229,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Descent"
     },
     {
       "weight": 239,
-      "severity_sum": 373,
-      "avg_severity": 1.5606694560669456,
-      "source": "Human Factors",
-      "target": "Incorrect / Not Installed / Unavailable Part"
+      "severity_sum": 170.0,
+      "avg_severity": 0.7112970711297071,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 3137,
+      "severity_sum": 1799.0,
+      "avg_severity": 0.5734778450749123,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 107,
+      "severity_sum": 72.0,
+      "avg_severity": 0.6728971962616822,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:B787"
     },
     {
       "weight": 640,
-      "severity_sum": 772,
-      "avg_severity": 1.20625,
-      "source": "Human Factors",
-      "target": "Manuals"
+      "severity_sum": 429.0,
+      "avg_severity": 0.6703125,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 3159,
+      "severity_sum": 3348.0,
+      "avg_severity": 1.0598290598290598,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 124,
+      "severity_sum": 53.0,
+      "avg_severity": 0.4274193548387097,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 472,
+      "severity_sum": 363.0,
+      "avg_severity": 0.7690677966101694,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 212,
+      "severity_sum": 173.0,
+      "avg_severity": 0.8160377358490566,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 4.0,
+      "avg_severity": 0.3333333333333333,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other Push-Back"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 20.0,
+      "avg_severity": 1.1764705882352942,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other Holding Pattern"
+    },
+    {
+      "weight": 2967,
+      "severity_sum": 2887.0,
+      "avg_severity": 0.9730367374452309,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 1060,
+      "severity_sum": 1068.0,
+      "avg_severity": 1.0075471698113208,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:CRJ"
     },
     {
       "weight": 164,
-      "severity_sum": 247,
-      "avg_severity": 1.5060975609756098,
-      "source": "Human Factors",
-      "target": "Logbook Entry"
+      "severity_sum": 111.0,
+      "avg_severity": 0.676829268292683,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Logbook Entry"
     },
     {
       "weight": 2606,
-      "severity_sum": 2209,
-      "avg_severity": 0.8476592478894858,
-      "source": "Human Factors",
-      "target": "Company Policy"
+      "severity_sum": 1591.0,
+      "avg_severity": 0.6105141980046047,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 139,
+      "severity_sum": 165.0,
+      "avg_severity": 1.1870503597122302,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 1348,
+      "severity_sum": 1223.0,
+      "avg_severity": 0.9072700296735905,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:A320_Family"
     },
     {
       "weight": 529,
-      "severity_sum": 457,
-      "avg_severity": 0.8638941398865785,
-      "source": "Human Factors",
-      "target": "Staffing"
+      "severity_sum": 357.0,
+      "avg_severity": 0.6748582230623819,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Staffing"
     },
     {
       "weight": 2880,
-      "severity_sum": 2915,
-      "avg_severity": 1.0121527777777777,
-      "source": "Human Factors",
-      "target": "Environment - Non Weather Related"
+      "severity_sum": 2604.0,
+      "avg_severity": 0.9041666666666667,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 772,
+      "severity_sum": 1203.0,
+      "avg_severity": 1.5582901554404145,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:Piper"
     },
     {
       "weight": 407,
-      "severity_sum": 498,
-      "avg_severity": 1.2235872235872236,
-      "source": "Human Factors",
-      "target": "Equipment / Tooling"
+      "severity_sum": 353.0,
+      "avg_severity": 0.8673218673218673,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 1044,
+      "severity_sum": 1172.0,
+      "avg_severity": 1.1226053639846743,
+      "source": "FACTOR:Human Factors",
+      "target": "FAR:Part 135"
     },
     {
       "weight": 318,
-      "severity_sum": 494,
-      "avg_severity": 1.5534591194968554,
-      "source": "Human Factors",
-      "target": "MEL"
+      "severity_sum": 225.0,
+      "avg_severity": 0.7075471698113207,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:MEL"
     },
     {
       "weight": 599,
-      "severity_sum": 476,
-      "avg_severity": 0.7946577629382304,
-      "source": "Human Factors",
-      "target": "ATC Equipment / Nav Facility / Buildings"
-    },
-    {
-      "weight": 91,
-      "severity_sum": 139,
-      "avg_severity": 1.5274725274725274,
-      "source": "Human Factors",
-      "target": "Software and Automation"
-    },
-    {
-      "weight": 3797,
-      "severity_sum": 6242,
-      "avg_severity": 1.6439294179615487,
-      "source": "Aircraft",
-      "target": "Procedure"
-    },
-    {
-      "weight": 1159,
-      "severity_sum": 2196,
-      "avg_severity": 1.894736842105263,
-      "source": "Aircraft",
-      "target": "Weather"
-    },
-    {
-      "weight": 282,
-      "severity_sum": 441,
-      "avg_severity": 1.5638297872340425,
-      "source": "Aircraft",
-      "target": "Airport"
-    },
-    {
-      "weight": 1129,
-      "severity_sum": 1755,
-      "avg_severity": 1.554472984942427,
-      "source": "Aircraft",
-      "target": "Company Policy"
-    },
-    {
-      "weight": 813,
-      "severity_sum": 1366,
-      "avg_severity": 1.6801968019680196,
-      "source": "Aircraft",
-      "target": "Environment - Non Weather Related"
-    },
-    {
-      "weight": 219,
-      "severity_sum": 360,
-      "avg_severity": 1.643835616438356,
-      "source": "Aircraft",
-      "target": "Incorrect / Not Installed / Unavailable Part"
-    },
-    {
-      "weight": 320,
-      "severity_sum": 476,
-      "avg_severity": 1.4875,
-      "source": "Aircraft",
-      "target": "Airspace Structure"
-    },
-    {
-      "weight": 576,
-      "severity_sum": 956,
-      "avg_severity": 1.6597222222222223,
-      "source": "Aircraft",
-      "target": "Manuals"
-    },
-    {
-      "weight": 585,
-      "severity_sum": 809,
-      "avg_severity": 1.3829059829059829,
-      "source": "Aircraft",
-      "target": "Chart Or Publication"
-    },
-    {
-      "weight": 193,
-      "severity_sum": 300,
-      "avg_severity": 1.5544041450777202,
-      "source": "Aircraft",
-      "target": "Logbook Entry"
-    },
-    {
-      "weight": 447,
-      "severity_sum": 730,
-      "avg_severity": 1.633109619686801,
-      "source": "Aircraft",
-      "target": "MEL"
-    },
-    {
-      "weight": 243,
-      "severity_sum": 403,
-      "avg_severity": 1.6584362139917694,
-      "source": "Aircraft",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 202,
-      "severity_sum": 272,
-      "avg_severity": 1.3465346534653466,
-      "source": "Aircraft",
-      "target": "ATC Equipment / Nav Facility / Buildings"
-    },
-    {
-      "weight": 115,
-      "severity_sum": 174,
-      "avg_severity": 1.5130434782608695,
-      "source": "Aircraft",
-      "target": "Staffing"
-    },
-    {
-      "weight": 91,
-      "severity_sum": 162,
-      "avg_severity": 1.7802197802197801,
-      "source": "Aircraft",
-      "target": "Software and Automation"
-    },
-    {
-      "weight": 1222,
-      "severity_sum": 1498,
-      "avg_severity": 1.225859247135843,
-      "source": "Procedure",
-      "target": "Weather"
-    },
-    {
-      "weight": 1377,
-      "severity_sum": 1314,
-      "avg_severity": 0.954248366013072,
-      "source": "Procedure",
-      "target": "Airport"
-    },
-    {
-      "weight": 2085,
-      "severity_sum": 1964,
-      "avg_severity": 0.9419664268585132,
-      "source": "Procedure",
-      "target": "Company Policy"
-    },
-    {
-      "weight": 191,
-      "severity_sum": 302,
-      "avg_severity": 1.581151832460733,
-      "source": "Procedure",
-      "target": "Incorrect / Not Installed / Unavailable Part"
-    },
-    {
-      "weight": 1436,
-      "severity_sum": 1255,
-      "avg_severity": 0.8739554317548747,
-      "source": "Procedure",
-      "target": "Chart Or Publication"
-    },
-    {
-      "weight": 566,
-      "severity_sum": 363,
-      "avg_severity": 0.6413427561837456,
-      "source": "Procedure",
-      "target": "ATC Equipment / Nav Facility / Buildings"
-    },
-    {
-      "weight": 689,
-      "severity_sum": 821,
-      "avg_severity": 1.1915820029027575,
-      "source": "Procedure",
-      "target": "Manuals"
-    },
-    {
-      "weight": 1895,
-      "severity_sum": 2263,
-      "avg_severity": 1.1941952506596305,
-      "source": "Procedure",
-      "target": "Airspace Structure"
-    },
-    {
-      "weight": 1988,
-      "severity_sum": 2571,
-      "avg_severity": 1.2932595573440644,
-      "source": "Procedure",
-      "target": "Environment - Non Weather Related"
-    },
-    {
-      "weight": 169,
-      "severity_sum": 252,
-      "avg_severity": 1.4911242603550297,
-      "source": "Procedure",
-      "target": "Logbook Entry"
-    },
-    {
-      "weight": 327,
-      "severity_sum": 288,
-      "avg_severity": 0.8807339449541285,
-      "source": "Procedure",
-      "target": "Staffing"
-    },
-    {
-      "weight": 328,
-      "severity_sum": 513,
-      "avg_severity": 1.5640243902439024,
-      "source": "Procedure",
-      "target": "MEL"
-    },
-    {
-      "weight": 320,
-      "severity_sum": 357,
-      "avg_severity": 1.115625,
-      "source": "Procedure",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 74,
-      "severity_sum": 114,
-      "avg_severity": 1.5405405405405406,
-      "source": "Procedure",
-      "target": "Software and Automation"
-    },
-    {
-      "weight": 245,
-      "severity_sum": 286,
-      "avg_severity": 1.1673469387755102,
-      "source": "Weather",
-      "target": "Airspace Structure"
-    },
-    {
-      "weight": 347,
-      "severity_sum": 414,
-      "avg_severity": 1.1930835734870318,
-      "source": "Weather",
-      "target": "Company Policy"
-    },
-    {
-      "weight": 292,
-      "severity_sum": 387,
-      "avg_severity": 1.3253424657534247,
-      "source": "Weather",
-      "target": "Environment - Non Weather Related"
-    },
-    {
-      "weight": 51,
-      "severity_sum": 55,
-      "avg_severity": 1.0784313725490196,
-      "source": "Weather",
-      "target": "Manuals"
-    },
-    {
-      "weight": 103,
-      "severity_sum": 106,
-      "avg_severity": 1.029126213592233,
-      "source": "Weather",
-      "target": "ATC Equipment / Nav Facility / Buildings"
-    },
-    {
-      "weight": 416,
-      "severity_sum": 507,
-      "avg_severity": 1.21875,
-      "source": "Weather",
-      "target": "Airport"
-    },
-    {
-      "weight": 127,
-      "severity_sum": 114,
-      "avg_severity": 0.8976377952755905,
-      "source": "Weather",
-      "target": "Chart Or Publication"
-    },
-    {
-      "weight": 53,
-      "severity_sum": 67,
-      "avg_severity": 1.2641509433962264,
-      "source": "Weather",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 95,
-      "severity_sum": 63,
-      "avg_severity": 0.6631578947368421,
-      "source": "Weather",
-      "target": "Staffing"
-    },
-    {
-      "weight": 16,
-      "severity_sum": 29,
-      "avg_severity": 1.8125,
-      "source": "Weather",
-      "target": "MEL"
-    },
-    {
-      "weight": 103,
-      "severity_sum": 78,
-      "avg_severity": 0.7572815533980582,
-      "source": "Airspace Structure",
-      "target": "Manuals"
-    },
-    {
-      "weight": 238,
-      "severity_sum": 272,
-      "avg_severity": 1.1428571428571428,
-      "source": "Airspace Structure",
-      "target": "Airport"
-    },
-    {
-      "weight": 397,
-      "severity_sum": 458,
-      "avg_severity": 1.1536523929471032,
-      "source": "Airspace Structure",
-      "target": "Chart Or Publication"
-    },
-    {
-      "weight": 283,
-      "severity_sum": 285,
-      "avg_severity": 1.0070671378091873,
-      "source": "Airspace Structure",
-      "target": "Company Policy"
-    },
-    {
-      "weight": 91,
-      "severity_sum": 104,
-      "avg_severity": 1.1428571428571428,
-      "source": "Airspace Structure",
-      "target": "Staffing"
-    },
-    {
-      "weight": 337,
-      "severity_sum": 479,
-      "avg_severity": 1.4213649851632046,
-      "source": "Airspace Structure",
-      "target": "Environment - Non Weather Related"
-    },
-    {
-      "weight": 157,
-      "severity_sum": 166,
-      "avg_severity": 1.0573248407643312,
-      "source": "Airspace Structure",
-      "target": "ATC Equipment / Nav Facility / Buildings"
-    },
-    {
-      "weight": 33,
-      "severity_sum": 61,
-      "avg_severity": 1.8484848484848484,
-      "source": "Airspace Structure",
-      "target": "Software and Automation"
-    },
-    {
-      "weight": 17,
-      "severity_sum": 21,
-      "avg_severity": 1.2352941176470589,
-      "source": "Airspace Structure",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 608,
-      "severity_sum": 603,
-      "avg_severity": 0.9917763157894737,
-      "source": "Airport",
-      "target": "Environment - Non Weather Related"
-    },
-    {
-      "weight": 372,
-      "severity_sum": 197,
-      "avg_severity": 0.5295698924731183,
-      "source": "Airport",
-      "target": "Chart Or Publication"
-    },
-    {
-      "weight": 44,
-      "severity_sum": 40,
-      "avg_severity": 0.9090909090909091,
-      "source": "Airport",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 225,
-      "severity_sum": 151,
-      "avg_severity": 0.6711111111111111,
-      "source": "Airport",
-      "target": "Company Policy"
-    },
-    {
-      "weight": 163,
-      "severity_sum": 117,
-      "avg_severity": 0.7177914110429447,
-      "source": "Airport",
-      "target": "ATC Equipment / Nav Facility / Buildings"
-    },
-    {
-      "weight": 41,
-      "severity_sum": 28,
-      "avg_severity": 0.6829268292682927,
-      "source": "Airport",
-      "target": "Manuals"
-    },
-    {
-      "weight": 40,
-      "severity_sum": 30,
-      "avg_severity": 0.75,
-      "source": "Airport",
-      "target": "Staffing"
-    },
-    {
-      "weight": 747,
-      "severity_sum": 529,
-      "avg_severity": 0.7081659973226239,
-      "source": "Environment - Non Weather Related",
-      "target": "Company Policy"
-    },
-    {
-      "weight": 57,
-      "severity_sum": 59,
-      "avg_severity": 1.0350877192982457,
-      "source": "Environment - Non Weather Related",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 184,
-      "severity_sum": 174,
-      "avg_severity": 0.9456521739130435,
-      "source": "Environment - Non Weather Related",
-      "target": "Chart Or Publication"
-    },
-    {
-      "weight": 133,
-      "severity_sum": 114,
-      "avg_severity": 0.8571428571428571,
-      "source": "Environment - Non Weather Related",
-      "target": "ATC Equipment / Nav Facility / Buildings"
-    },
-    {
-      "weight": 156,
-      "severity_sum": 118,
-      "avg_severity": 0.7564102564102564,
-      "source": "Environment - Non Weather Related",
-      "target": "Staffing"
-    },
-    {
-      "weight": 52,
-      "severity_sum": 68,
-      "avg_severity": 1.3076923076923077,
-      "source": "Environment - Non Weather Related",
-      "target": "Manuals"
-    },
-    {
-      "weight": 21,
-      "severity_sum": 32,
-      "avg_severity": 1.5238095238095237,
-      "source": "Environment - Non Weather Related",
-      "target": "Logbook Entry"
-    },
-    {
-      "weight": 32,
-      "severity_sum": 51,
-      "avg_severity": 1.59375,
-      "source": "Environment - Non Weather Related",
-      "target": "Software and Automation"
+      "severity_sum": 413.0,
+      "avg_severity": 0.6894824707846411,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 543,
+      "severity_sum": 472.0,
+      "avg_severity": 0.8692449355432781,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 388,
+      "severity_sum": 272.0,
+      "avg_severity": 0.7010309278350515,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:B777"
     },
     {
       "weight": 13,
-      "severity_sum": 21,
-      "avg_severity": 1.6153846153846154,
-      "source": "Environment - Non Weather Related",
-      "target": "MEL"
+      "severity_sum": 1.0,
+      "avg_severity": 0.07692307692307693,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other General Ramp"
     },
     {
-      "weight": 21,
-      "severity_sum": 26,
-      "avg_severity": 1.2380952380952381,
-      "source": "Environment - Non Weather Related",
-      "target": "Incorrect / Not Installed / Unavailable Part"
+      "weight": 76,
+      "severity_sum": 97.0,
+      "avg_severity": 1.2763157894736843,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:Helicopter"
     },
     {
-      "weight": 271,
-      "severity_sum": 364,
-      "avg_severity": 1.3431734317343174,
-      "source": "Chart Or Publication",
-      "target": "Manuals"
+      "weight": 91,
+      "severity_sum": 114.0,
+      "avg_severity": 1.2527472527472527,
+      "source": "FACTOR:Human Factors",
+      "target": "FACTOR:Software and Automation"
     },
     {
-      "weight": 319,
-      "severity_sum": 314,
-      "avg_severity": 0.9843260188087775,
-      "source": "Chart Or Publication",
-      "target": "Company Policy"
+      "weight": 68,
+      "severity_sum": 60.0,
+      "avg_severity": 0.8823529411764706,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:A330"
     },
     {
-      "weight": 67,
-      "severity_sum": 105,
-      "avg_severity": 1.5671641791044777,
-      "source": "Chart Or Publication",
-      "target": "Incorrect / Not Installed / Unavailable Part"
+      "weight": 12,
+      "severity_sum": 15.0,
+      "avg_severity": 1.25,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other Vfr Traffic Pattern"
     },
     {
-      "weight": 46,
-      "severity_sum": 53,
-      "avg_severity": 1.1521739130434783,
-      "source": "Chart Or Publication",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 19,
-      "severity_sum": 21,
-      "avg_severity": 1.105263157894737,
-      "source": "Chart Or Publication",
-      "target": "Staffing"
-    },
-    {
-      "weight": 54,
-      "severity_sum": 31,
-      "avg_severity": 0.5740740740740741,
-      "source": "Chart Or Publication",
-      "target": "ATC Equipment / Nav Facility / Buildings"
+      "weight": 18,
+      "severity_sum": 8.0,
+      "avg_severity": 0.4444444444444444,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other All Phases"
     },
     {
       "weight": 45,
-      "severity_sum": 54,
-      "avg_severity": 1.2,
-      "source": "Chart Or Publication",
-      "target": "Software and Automation"
+      "severity_sum": 27.0,
+      "avg_severity": 0.6,
+      "source": "FACTOR:Human Factors",
+      "target": "FAR:Part 129"
     },
     {
-      "weight": 29,
-      "severity_sum": 54,
-      "avg_severity": 1.8620689655172413,
-      "source": "Chart Or Publication",
-      "target": "Logbook Entry"
+      "weight": 56,
+      "severity_sum": 61.0,
+      "avg_severity": 1.0892857142857142,
+      "source": "FACTOR:Human Factors",
+      "target": "AIRCRAFT:ATR"
     },
     {
-      "weight": 49,
-      "severity_sum": 77,
-      "avg_severity": 1.5714285714285714,
-      "source": "Chart Or Publication",
-      "target": "MEL"
+      "weight": 20,
+      "severity_sum": 6.0,
+      "avg_severity": 0.3,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other Non-Flight"
     },
     {
-      "weight": 356,
-      "severity_sum": 361,
-      "avg_severity": 1.0140449438202248,
-      "source": "Company Policy",
-      "target": "Manuals"
+      "weight": 13,
+      "severity_sum": 5.0,
+      "avg_severity": 0.38461538461538464,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other Preflight Planning"
     },
     {
-      "weight": 85,
-      "severity_sum": 134,
-      "avg_severity": 1.576470588235294,
-      "source": "Company Policy",
-      "target": "Logbook Entry"
-    },
-    {
-      "weight": 247,
-      "severity_sum": 184,
-      "avg_severity": 0.7449392712550608,
-      "source": "Company Policy",
-      "target": "Staffing"
-    },
-    {
-      "weight": 84,
-      "severity_sum": 126,
-      "avg_severity": 1.5,
-      "source": "Company Policy",
-      "target": "Incorrect / Not Installed / Unavailable Part"
-    },
-    {
-      "weight": 152,
-      "severity_sum": 149,
-      "avg_severity": 0.9802631578947368,
-      "source": "Company Policy",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 66,
-      "severity_sum": 49,
-      "avg_severity": 0.7424242424242424,
-      "source": "Company Policy",
-      "target": "ATC Equipment / Nav Facility / Buildings"
-    },
-    {
-      "weight": 105,
-      "severity_sum": 160,
-      "avg_severity": 1.5238095238095237,
-      "source": "Company Policy",
-      "target": "MEL"
-    },
-    {
-      "weight": 17,
-      "severity_sum": 17,
-      "avg_severity": 1.0,
-      "source": "Company Policy",
-      "target": "Software and Automation"
-    },
-    {
-      "weight": 65,
-      "severity_sum": 105,
-      "avg_severity": 1.6153846153846154,
-      "source": "Incorrect / Not Installed / Unavailable Part",
-      "target": "Manuals"
-    },
-    {
-      "weight": 17,
-      "severity_sum": 28,
-      "avg_severity": 1.6470588235294117,
-      "source": "Incorrect / Not Installed / Unavailable Part",
-      "target": "Staffing"
+      "weight": 28,
+      "severity_sum": 13.0,
+      "avg_severity": 0.4642857142857143,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other All"
     },
     {
       "weight": 27,
-      "severity_sum": 40,
-      "avg_severity": 1.4814814814814814,
-      "source": "Incorrect / Not Installed / Unavailable Part",
-      "target": "Equipment / Tooling"
+      "severity_sum": 9.0,
+      "avg_severity": 0.3333333333333333,
+      "source": "FACTOR:Human Factors",
+      "target": "FAR:Part 107"
     },
     {
-      "weight": 27,
-      "severity_sum": 46,
-      "avg_severity": 1.7037037037037037,
-      "source": "Incorrect / Not Installed / Unavailable Part",
-      "target": "MEL"
+      "weight": 10,
+      "severity_sum": 4.0,
+      "avg_severity": 0.4,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Hovering (Uas)"
     },
     {
-      "weight": 32,
-      "severity_sum": 53,
-      "avg_severity": 1.65625,
-      "source": "Incorrect / Not Installed / Unavailable Part",
-      "target": "Logbook Entry"
-    },
-    {
-      "weight": 45,
-      "severity_sum": 30,
-      "avg_severity": 0.6666666666666666,
-      "source": "ATC Equipment / Nav Facility / Buildings",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 25,
-      "severity_sum": 25,
+      "weight": 12,
+      "severity_sum": 12.0,
       "avg_severity": 1.0,
-      "source": "ATC Equipment / Nav Facility / Buildings",
-      "target": "Staffing"
-    },
-    {
-      "weight": 25,
-      "severity_sum": 40,
-      "avg_severity": 1.6,
-      "source": "ATC Equipment / Nav Facility / Buildings",
-      "target": "Software and Automation"
-    },
-    {
-      "weight": 29,
-      "severity_sum": 15,
-      "avg_severity": 0.5172413793103449,
-      "source": "ATC Equipment / Nav Facility / Buildings",
-      "target": "Manuals"
-    },
-    {
-      "weight": 62,
-      "severity_sum": 87,
-      "avg_severity": 1.403225806451613,
-      "source": "Manuals",
-      "target": "Logbook Entry"
-    },
-    {
-      "weight": 41,
-      "severity_sum": 64,
-      "avg_severity": 1.5609756097560976,
-      "source": "Manuals",
-      "target": "Equipment / Tooling"
-    },
-    {
-      "weight": 19,
-      "severity_sum": 22,
-      "avg_severity": 1.1578947368421053,
-      "source": "Manuals",
-      "target": "Staffing"
-    },
-    {
-      "weight": 108,
-      "severity_sum": 154,
-      "avg_severity": 1.4259259259259258,
-      "source": "Manuals",
-      "target": "MEL"
-    },
-    {
-      "weight": 72,
-      "severity_sum": 107,
-      "avg_severity": 1.4861111111111112,
-      "source": "Logbook Entry",
-      "target": "MEL"
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other Go Around"
     },
     {
       "weight": 11,
-      "severity_sum": 15,
-      "avg_severity": 1.3636363636363635,
-      "source": "Logbook Entry",
-      "target": "Staffing"
+      "severity_sum": 7.0,
+      "avg_severity": 0.6363636363636364,
+      "source": "FACTOR:Human Factors",
+      "target": "PHASE:Other N/A"
     },
     {
-      "weight": 22,
-      "severity_sum": 21,
-      "avg_severity": 0.9545454545454546,
-      "source": "Staffing",
-      "target": "Equipment / Tooling"
+      "weight": 904,
+      "severity_sum": 1068.0,
+      "avg_severity": 1.1814159292035398,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:B737"
+    },
+    {
+      "weight": 4186,
+      "severity_sum": 5378.0,
+      "avg_severity": 1.2847587195413281,
+      "source": "PHASE:Approach",
+      "target": "FAR:Part 121"
+    },
+    {
+      "weight": 425,
+      "severity_sum": 548.0,
+      "avg_severity": 1.2894117647058823,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:ERJ"
+    },
+    {
+      "weight": 1853,
+      "severity_sum": 2546.0,
+      "avg_severity": 1.3739881273610361,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Aircraft"
+    },
+    {
+      "weight": 2915,
+      "severity_sum": 3615.0,
+      "avg_severity": 1.2401372212692967,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Procedure"
+    },
+    {
+      "weight": 910,
+      "severity_sum": 1322.0,
+      "avg_severity": 1.4527472527472527,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Weather"
+    },
+    {
+      "weight": 47,
+      "severity_sum": 77.0,
+      "avg_severity": 1.6382978723404256,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:Cirrus"
+    },
+    {
+      "weight": 1991,
+      "severity_sum": 3088.0,
+      "avg_severity": 1.5509794073329985,
+      "source": "PHASE:Approach",
+      "target": "FAR:Part 91"
+    },
+    {
+      "weight": 757,
+      "severity_sum": 1029.0,
+      "avg_severity": 1.3593130779392337,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 3821,
+      "severity_sum": 5456.0,
+      "avg_severity": 1.4278984559015964,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:Other"
+    },
+    {
+      "weight": 312,
+      "severity_sum": 291.0,
+      "avg_severity": 0.9326923076923077,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 834,
+      "severity_sum": 1182.0,
+      "avg_severity": 1.4172661870503598,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 428,
+      "severity_sum": 580.0,
+      "avg_severity": 1.355140186915888,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 54,
+      "severity_sum": 66.0,
+      "avg_severity": 1.2222222222222223,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 56,
+      "severity_sum": 55.0,
+      "avg_severity": 0.9821428571428571,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 1104,
+      "severity_sum": 1610.0,
+      "avg_severity": 1.4583333333333333,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 64,
+      "severity_sum": 61.0,
+      "avg_severity": 0.953125,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 415,
+      "severity_sum": 433.0,
+      "avg_severity": 1.0433734939759036,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 308,
+      "severity_sum": 309.0,
+      "avg_severity": 1.0032467532467533,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 388,
+      "severity_sum": 546.0,
+      "avg_severity": 1.407216494845361,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 181,
+      "severity_sum": 283.0,
+      "avg_severity": 1.5635359116022098,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 115,
+      "severity_sum": 132.0,
+      "avg_severity": 1.1478260869565218,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 322,
+      "severity_sum": 492.0,
+      "avg_severity": 1.5279503105590062,
+      "source": "PHASE:Approach",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 104,
+      "severity_sum": 101.0,
+      "avg_severity": 0.9711538461538461,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 63,
+      "severity_sum": 70.0,
+      "avg_severity": 1.1111111111111112,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 17.0,
+      "avg_severity": 1.4166666666666667,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 174,
+      "severity_sum": 226.0,
+      "avg_severity": 1.2988505747126438,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 126,
+      "severity_sum": 153.0,
+      "avg_severity": 1.2142857142857142,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 46,
+      "severity_sum": 87.0,
+      "avg_severity": 1.891304347826087,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:Software and Automation"
     },
     {
       "weight": 14,
-      "severity_sum": 20,
-      "avg_severity": 1.4285714285714286,
-      "source": "Staffing",
-      "target": "MEL"
+      "severity_sum": 19.0,
+      "avg_severity": 1.3571428571428572,
+      "source": "PHASE:Approach",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 24.0,
+      "avg_severity": 1.5,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 44,
+      "severity_sum": 65.0,
+      "avg_severity": 1.4772727272727273,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 14.0,
+      "avg_severity": 1.1666666666666667,
+      "source": "PHASE:Approach",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 4974,
+      "severity_sum": 4881.0,
+      "avg_severity": 0.9813027744270205,
+      "source": "AIRCRAFT:B737",
+      "target": "FAR:Part 121"
+    },
+    {
+      "weight": 224,
+      "severity_sum": 228.0,
+      "avg_severity": 1.0178571428571428,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 539,
+      "severity_sum": 604.0,
+      "avg_severity": 1.1205936920222634,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Weather"
+    },
+    {
+      "weight": 703,
+      "severity_sum": 879.0,
+      "avg_severity": 1.2503556187766713,
+      "source": "AIRCRAFT:B737",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 2006,
+      "severity_sum": 1610.0,
+      "avg_severity": 0.80259222333001,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Procedure"
+    },
+    {
+      "weight": 557,
+      "severity_sum": 455.0,
+      "avg_severity": 0.8168761220825853,
+      "source": "AIRCRAFT:B737",
+      "target": "PHASE:Descent"
+    },
+    {
+      "weight": 168,
+      "severity_sum": 91.0,
+      "avg_severity": 0.5416666666666666,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 2333,
+      "severity_sum": 2749.0,
+      "avg_severity": 1.1783111873124732,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Aircraft"
+    },
+    {
+      "weight": 292,
+      "severity_sum": 137.0,
+      "avg_severity": 0.4691780821917808,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 816,
+      "severity_sum": 482.0,
+      "avg_severity": 0.5906862745098039,
+      "source": "AIRCRAFT:B737",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 324,
+      "severity_sum": 266.0,
+      "avg_severity": 0.8209876543209876,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 627,
+      "severity_sum": 435.0,
+      "avg_severity": 0.69377990430622,
+      "source": "AIRCRAFT:B737",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 97,
+      "severity_sum": 72.0,
+      "avg_severity": 0.7422680412371134,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 112,
+      "severity_sum": 91.0,
+      "avg_severity": 0.8125,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 770,
+      "severity_sum": 850.0,
+      "avg_severity": 1.103896103896104,
+      "source": "AIRCRAFT:B737",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 98,
+      "severity_sum": 55.0,
+      "avg_severity": 0.5612244897959183,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 471,
+      "severity_sum": 633.0,
+      "avg_severity": 1.3439490445859872,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 178,
+      "severity_sum": 173.0,
+      "avg_severity": 0.9719101123595506,
+      "source": "AIRCRAFT:B737",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 490,
+      "severity_sum": 605.0,
+      "avg_severity": 1.2346938775510203,
+      "source": "AIRCRAFT:B737",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 43,
+      "severity_sum": 32.0,
+      "avg_severity": 0.7441860465116279,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 543,
+      "severity_sum": 313.0,
+      "avg_severity": 0.576427255985267,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 63,
+      "severity_sum": 29.0,
+      "avg_severity": 0.4603174603174603,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 19.0,
+      "avg_severity": 1.5833333333333333,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 18,
+      "severity_sum": 18.0,
+      "avg_severity": 1.0,
+      "source": "AIRCRAFT:B737",
+      "target": "FAR:Part 91"
+    },
+    {
+      "weight": 29,
+      "severity_sum": 17.0,
+      "avg_severity": 0.5862068965517241,
+      "source": "AIRCRAFT:B737",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 2090,
+      "severity_sum": 2448.0,
+      "avg_severity": 1.1712918660287082,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:ERJ"
+    },
+    {
+      "weight": 1189,
+      "severity_sum": 1309.0,
+      "avg_severity": 1.1009251471825063,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 2329,
+      "severity_sum": 2718.0,
+      "avg_severity": 1.1670244740231859,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Weather"
+    },
+    {
+      "weight": 3509,
+      "severity_sum": 4030.0,
+      "avg_severity": 1.1484753491023083,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 10321,
+      "severity_sum": 13017.0,
+      "avg_severity": 1.2612149985466525,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Aircraft"
+    },
+    {
+      "weight": 294,
+      "severity_sum": 401.0,
+      "avg_severity": 1.3639455782312926,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 9291,
+      "severity_sum": 7661.0,
+      "avg_severity": 0.8245614035087719,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Procedure"
+    },
+    {
+      "weight": 1645,
+      "severity_sum": 1330.0,
+      "avg_severity": 0.8085106382978723,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 755,
+      "severity_sum": 772.0,
+      "avg_severity": 1.0225165562913907,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 980,
+      "severity_sum": 1199.0,
+      "avg_severity": 1.223469387755102,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 3056,
+      "severity_sum": 3197.0,
+      "avg_severity": 1.0461387434554974,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 1791,
+      "severity_sum": 2091.0,
+      "avg_severity": 1.16750418760469,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 1513,
+      "severity_sum": 789.0,
+      "avg_severity": 0.5214805023132849,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 2705,
+      "severity_sum": 1842.0,
+      "avg_severity": 0.6809611829944547,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 7371,
+      "severity_sum": 6087.0,
+      "avg_severity": 0.8258038258038258,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:Other"
+    },
+    {
+      "weight": 3009,
+      "severity_sum": 1841.0,
+      "avg_severity": 0.611831173147225,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 2386,
+      "severity_sum": 2268.0,
+      "avg_severity": 0.950544844928751,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Descent"
+    },
+    {
+      "weight": 2599,
+      "severity_sum": 2977.0,
+      "avg_severity": 1.1454405540592536,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 3518,
+      "severity_sum": 4086.0,
+      "avg_severity": 1.161455372370665,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 129,
+      "severity_sum": 153.0,
+      "avg_severity": 1.186046511627907,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 3841,
+      "severity_sum": 2320.0,
+      "avg_severity": 0.6040093725592294,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 184,
+      "severity_sum": 152.0,
+      "avg_severity": 0.8260869565217391,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 809,
+      "severity_sum": 506.0,
+      "avg_severity": 0.6254635352286774,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 918,
+      "severity_sum": 961.0,
+      "avg_severity": 1.0468409586056644,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 361,
+      "severity_sum": 346.0,
+      "avg_severity": 0.9584487534626038,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 4.0,
+      "avg_severity": 0.36363636363636365,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Other Push-Back"
+    },
+    {
+      "weight": 1089,
+      "severity_sum": 1235.0,
+      "avg_severity": 1.1340679522497705,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 194,
+      "severity_sum": 129.0,
+      "avg_severity": 0.6649484536082474,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 697,
+      "severity_sum": 610.0,
+      "avg_severity": 0.8751793400286944,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 370,
+      "severity_sum": 228.0,
+      "avg_severity": 0.6162162162162163,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 463,
+      "severity_sum": 337.0,
+      "avg_severity": 0.7278617710583153,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 593,
+      "severity_sum": 354.0,
+      "avg_severity": 0.596964586846543,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 514,
+      "severity_sum": 417.0,
+      "avg_severity": 0.811284046692607,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 1878,
+      "severity_sum": 2431.0,
+      "avg_severity": 1.2944621938232161,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 244,
+      "severity_sum": 159.0,
+      "avg_severity": 0.6516393442622951,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 27,
+      "severity_sum": 25.0,
+      "avg_severity": 0.9259259259259259,
+      "source": "FAR:Part 121",
+      "target": "AIRCRAFT:ATR"
+    },
+    {
+      "weight": 112,
+      "severity_sum": 124.0,
+      "avg_severity": 1.1071428571428572,
+      "source": "FAR:Part 121",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 9.0,
+      "avg_severity": 0.5294117647058824,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Other All Phases"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 6.0,
+      "avg_severity": 0.3157894736842105,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Other Non-Flight"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 9.0,
+      "avg_severity": 0.47368421052631576,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Other Preflight Planning"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 4.0,
+      "avg_severity": 0.2857142857142857,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Other N/A"
+    },
+    {
+      "weight": 28,
+      "severity_sum": 20.0,
+      "avg_severity": 0.7142857142857143,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Other All"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 11.0,
+      "avg_severity": 1.0,
+      "source": "FAR:Part 121",
+      "target": "PHASE:Other Go Around"
+    },
+    {
+      "weight": 231,
+      "severity_sum": 169.0,
+      "avg_severity": 0.7316017316017316,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 834,
+      "severity_sum": 784.0,
+      "avg_severity": 0.9400479616306955,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Procedure"
+    },
+    {
+      "weight": 70,
+      "severity_sum": 92.0,
+      "avg_severity": 1.3142857142857143,
+      "source": "AIRCRAFT:ERJ",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 1200,
+      "severity_sum": 1612.0,
+      "avg_severity": 1.3433333333333333,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Aircraft"
+    },
+    {
+      "weight": 461,
+      "severity_sum": 598.0,
+      "avg_severity": 1.297180043383948,
+      "source": "AIRCRAFT:ERJ",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 298,
+      "severity_sum": 183.0,
+      "avg_severity": 0.6140939597315436,
+      "source": "AIRCRAFT:ERJ",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 269,
+      "severity_sum": 313.0,
+      "avg_severity": 1.1635687732342008,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Weather"
+    },
+    {
+      "weight": 284,
+      "severity_sum": 298.0,
+      "avg_severity": 1.0492957746478873,
+      "source": "AIRCRAFT:ERJ",
+      "target": "PHASE:Descent"
+    },
+    {
+      "weight": 38,
+      "severity_sum": 14.0,
+      "avg_severity": 0.3684210526315789,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 225,
+      "severity_sum": 328.0,
+      "avg_severity": 1.4577777777777778,
+      "source": "AIRCRAFT:ERJ",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 319,
+      "severity_sum": 425.0,
+      "avg_severity": 1.3322884012539185,
+      "source": "AIRCRAFT:ERJ",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 193,
+      "severity_sum": 174.0,
+      "avg_severity": 0.9015544041450777,
+      "source": "AIRCRAFT:ERJ",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 68,
+      "severity_sum": 59.0,
+      "avg_severity": 0.8676470588235294,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 209,
+      "severity_sum": 301.0,
+      "avg_severity": 1.4401913875598087,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 105,
+      "severity_sum": 103.0,
+      "avg_severity": 0.9809523809523809,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 12.0,
+      "avg_severity": 0.631578947368421,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 24,
+      "severity_sum": 13.0,
+      "avg_severity": 0.5416666666666666,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 38,
+      "severity_sum": 32.0,
+      "avg_severity": 0.8421052631578947,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 100,
+      "severity_sum": 115.0,
+      "avg_severity": 1.15,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FAR:Part 91"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 19.0,
+      "avg_severity": 0.9047619047619048,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 102,
+      "severity_sum": 71.0,
+      "avg_severity": 0.696078431372549,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 63,
+      "severity_sum": 64.0,
+      "avg_severity": 1.0158730158730158,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 93,
+      "severity_sum": 122.0,
+      "avg_severity": 1.3118279569892473,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 15.0,
+      "avg_severity": 1.5,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 45,
+      "severity_sum": 38.0,
+      "avg_severity": 0.8444444444444444,
+      "source": "AIRCRAFT:ERJ",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 3797,
+      "severity_sum": 4043.0,
+      "avg_severity": 1.0647879905188307,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Procedure"
+    },
+    {
+      "weight": 1159,
+      "severity_sum": 1603.0,
+      "avg_severity": 1.383088869715272,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Weather"
+    },
+    {
+      "weight": 109,
+      "severity_sum": 175.0,
+      "avg_severity": 1.6055045871559632,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:Cirrus"
+    },
+    {
+      "weight": 3963,
+      "severity_sum": 6107.0,
+      "avg_severity": 1.5410042896795357,
+      "source": "FACTOR:Aircraft",
+      "target": "FAR:Part 91"
+    },
+    {
+      "weight": 1333,
+      "severity_sum": 1544.0,
+      "avg_severity": 1.1582895723930984,
+      "source": "FACTOR:Aircraft",
+      "target": "PHASE:Descent"
+    },
+    {
+      "weight": 5971,
+      "severity_sum": 8330.0,
+      "avg_severity": 1.3950762016412661,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:Other"
+    },
+    {
+      "weight": 3409,
+      "severity_sum": 4857.0,
+      "avg_severity": 1.4247579935464947,
+      "source": "FACTOR:Aircraft",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 222,
+      "severity_sum": 324.0,
+      "avg_severity": 1.4594594594594594,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 720,
+      "severity_sum": 981.0,
+      "avg_severity": 1.3625,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 282,
+      "severity_sum": 361.0,
+      "avg_severity": 1.2801418439716312,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 1129,
+      "severity_sum": 1034.0,
+      "avg_severity": 0.9158547387068202,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 813,
+      "severity_sum": 948.0,
+      "avg_severity": 1.1660516605166051,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 1509,
+      "severity_sum": 2044.0,
+      "avg_severity": 1.3545394300861497,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 219,
+      "severity_sum": 168.0,
+      "avg_severity": 0.7671232876712328,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 3195,
+      "severity_sum": 4512.0,
+      "avg_severity": 1.412206572769953,
+      "source": "FACTOR:Aircraft",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 75,
+      "severity_sum": 125.0,
+      "avg_severity": 1.6666666666666667,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 320,
+      "severity_sum": 386.0,
+      "avg_severity": 1.20625,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 576,
+      "severity_sum": 482.0,
+      "avg_severity": 0.8368055555555556,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 585,
+      "severity_sum": 433.0,
+      "avg_severity": 0.7401709401709402,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 1961,
+      "severity_sum": 1683.0,
+      "avg_severity": 0.8582355940846507,
+      "source": "FACTOR:Aircraft",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 597,
+      "severity_sum": 756.0,
+      "avg_severity": 1.2663316582914572,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 1055,
+      "severity_sum": 1752.0,
+      "avg_severity": 1.6606635071090048,
+      "source": "FACTOR:Aircraft",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 685,
+      "severity_sum": 918.0,
+      "avg_severity": 1.34014598540146,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 193,
+      "severity_sum": 135.0,
+      "avg_severity": 0.6994818652849741,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 905,
+      "severity_sum": 1135.0,
+      "avg_severity": 1.2541436464088398,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 874,
+      "severity_sum": 1113.0,
+      "avg_severity": 1.2734553775743707,
+      "source": "FACTOR:Aircraft",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 793,
+      "severity_sum": 1160.0,
+      "avg_severity": 1.4627994955863808,
+      "source": "FACTOR:Aircraft",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 353,
+      "severity_sum": 391.0,
+      "avg_severity": 1.1076487252124645,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 447,
+      "severity_sum": 347.0,
+      "avg_severity": 0.7762863534675615,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 1608,
+      "severity_sum": 2528.0,
+      "avg_severity": 1.572139303482587,
+      "source": "FACTOR:Aircraft",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 243,
+      "severity_sum": 255.0,
+      "avg_severity": 1.0493827160493827,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 539,
+      "severity_sum": 890.0,
+      "avg_severity": 1.6512059369202226,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 227,
+      "severity_sum": 248.0,
+      "avg_severity": 1.092511013215859,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 202,
+      "severity_sum": 157.0,
+      "avg_severity": 0.7772277227722773,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 40,
+      "severity_sum": 41.0,
+      "avg_severity": 1.025,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 40,
+      "severity_sum": 62.0,
+      "avg_severity": 1.55,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:ATR"
+    },
+    {
+      "weight": 85,
+      "severity_sum": 91.0,
+      "avg_severity": 1.0705882352941176,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 36,
+      "severity_sum": 57.0,
+      "avg_severity": 1.5833333333333333,
+      "source": "FACTOR:Aircraft",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 115,
+      "severity_sum": 101.0,
+      "avg_severity": 0.8782608695652174,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 91,
+      "severity_sum": 101.0,
+      "avg_severity": 1.10989010989011,
+      "source": "FACTOR:Aircraft",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 13.0,
+      "avg_severity": 1.0,
+      "source": "FACTOR:Aircraft",
+      "target": "PHASE:Other All"
+    },
+    {
+      "weight": 1222,
+      "severity_sum": 1278.0,
+      "avg_severity": 1.0458265139116203,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Weather"
+    },
+    {
+      "weight": 92,
+      "severity_sum": 123.0,
+      "avg_severity": 1.3369565217391304,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:Cirrus"
+    },
+    {
+      "weight": 3408,
+      "severity_sum": 4048.0,
+      "avg_severity": 1.187793427230047,
+      "source": "FACTOR:Procedure",
+      "target": "FAR:Part 91"
+    },
+    {
+      "weight": 1377,
+      "severity_sum": 1251.0,
+      "avg_severity": 0.9084967320261438,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 713,
+      "severity_sum": 825.0,
+      "avg_severity": 1.1570827489481066,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 314,
+      "severity_sum": 312.0,
+      "avg_severity": 0.9936305732484076,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 7946,
+      "severity_sum": 7278.0,
+      "avg_severity": 0.9159325446765668,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:Other"
+    },
+    {
+      "weight": 2085,
+      "severity_sum": 1364.0,
+      "avg_severity": 0.6541966426858513,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 191,
+      "severity_sum": 150.0,
+      "avg_severity": 0.7853403141361257,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 1436,
+      "severity_sum": 919.0,
+      "avg_severity": 0.6399721448467967,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 2143,
+      "severity_sum": 2125.0,
+      "avg_severity": 0.9916005599626692,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 566,
+      "severity_sum": 325.0,
+      "avg_severity": 0.5742049469964664,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 2216,
+      "severity_sum": 1271.0,
+      "avg_severity": 0.5735559566787004,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 70,
+      "severity_sum": 49.0,
+      "avg_severity": 0.7,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 689,
+      "severity_sum": 465.0,
+      "avg_severity": 0.6748911465892597,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 1895,
+      "severity_sum": 2180.0,
+      "avg_severity": 1.150395778364116,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 1907,
+      "severity_sum": 1750.0,
+      "avg_severity": 0.9176717357105402,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 316,
+      "severity_sum": 265.0,
+      "avg_severity": 0.8386075949367089,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 157,
+      "severity_sum": 127.0,
+      "avg_severity": 0.8089171974522293,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:B747"
     },
     {
       "weight": 15,
-      "severity_sum": 23,
+      "severity_sum": 18.0,
+      "avg_severity": 1.2,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Other Holding Pattern"
+    },
+    {
+      "weight": 1988,
+      "severity_sum": 2392.0,
+      "avg_severity": 1.2032193158953723,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 974,
+      "severity_sum": 816.0,
+      "avg_severity": 0.837782340862423,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 169,
+      "severity_sum": 114.0,
+      "avg_severity": 0.6745562130177515,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 733,
+      "severity_sum": 773.0,
+      "avg_severity": 1.0545702592087312,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 1433,
+      "severity_sum": 880.0,
+      "avg_severity": 0.6140963014654571,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 89,
+      "severity_sum": 111.0,
+      "avg_severity": 1.247191011235955,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 1710,
+      "severity_sum": 1462.0,
+      "avg_severity": 0.8549707602339182,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Descent"
+    },
+    {
+      "weight": 327,
+      "severity_sum": 229.0,
+      "avg_severity": 0.7003058103975535,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 328,
+      "severity_sum": 237.0,
+      "avg_severity": 0.7225609756097561,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 302,
+      "severity_sum": 202.0,
+      "avg_severity": 0.6688741721854304,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 320,
+      "severity_sum": 253.0,
+      "avg_severity": 0.790625,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 605,
+      "severity_sum": 640.0,
+      "avg_severity": 1.0578512396694215,
+      "source": "FACTOR:Procedure",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 3.0,
+      "avg_severity": 0.3,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Other Preflight Planning"
+    },
+    {
+      "weight": 944,
+      "severity_sum": 986.0,
+      "avg_severity": 1.0444915254237288,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 365,
+      "severity_sum": 297.0,
+      "avg_severity": 0.8136986301369863,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 30,
+      "severity_sum": 26.0,
+      "avg_severity": 0.8666666666666667,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:ATR"
+    },
+    {
+      "weight": 271,
+      "severity_sum": 369.0,
+      "avg_severity": 1.3616236162361623,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 35,
+      "severity_sum": 38.0,
+      "avg_severity": 1.0857142857142856,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 42,
+      "severity_sum": 29.0,
+      "avg_severity": 0.6904761904761905,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 74,
+      "severity_sum": 90.0,
+      "avg_severity": 1.2162162162162162,
+      "source": "FACTOR:Procedure",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 47,
+      "severity_sum": 27.0,
+      "avg_severity": 0.574468085106383,
+      "source": "FACTOR:Procedure",
+      "target": "FAR:Part 129"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 3.0,
+      "avg_severity": 0.2727272727272727,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Other Non-Flight"
+    },
+    {
+      "weight": 66,
+      "severity_sum": 22.0,
+      "avg_severity": 0.3333333333333333,
+      "source": "FACTOR:Procedure",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 4.0,
+      "avg_severity": 0.2857142857142857,
+      "source": "FACTOR:Procedure",
+      "target": "PHASE:Other All"
+    },
+    {
+      "weight": 28,
+      "severity_sum": 44.0,
+      "avg_severity": 1.5714285714285714,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:Cirrus"
+    },
+    {
+      "weight": 1279,
+      "severity_sum": 2042.0,
+      "avg_severity": 1.596559812353401,
+      "source": "FACTOR:Weather",
+      "target": "FAR:Part 91"
+    },
+    {
+      "weight": 245,
+      "severity_sum": 261.0,
+      "avg_severity": 1.0653061224489795,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 890,
+      "severity_sum": 1176.0,
+      "avg_severity": 1.3213483146067415,
+      "source": "FACTOR:Weather",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 436,
+      "severity_sum": 522.0,
+      "avg_severity": 1.1972477064220184,
+      "source": "FACTOR:Weather",
+      "target": "PHASE:Descent"
+    },
+    {
+      "weight": 347,
+      "severity_sum": 296.0,
+      "avg_severity": 0.8530259365994236,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 292,
+      "severity_sum": 346.0,
+      "avg_severity": 1.1849315068493151,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 199,
+      "severity_sum": 231.0,
+      "avg_severity": 1.1608040201005025,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 2210,
+      "severity_sum": 2937.0,
+      "avg_severity": 1.3289592760180995,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:Other"
+    },
+    {
+      "weight": 309,
+      "severity_sum": 278.0,
+      "avg_severity": 0.8996763754045307,
+      "source": "FACTOR:Weather",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 51,
+      "severity_sum": 34.0,
+      "avg_severity": 0.6666666666666666,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 196,
+      "severity_sum": 159.0,
+      "avg_severity": 0.8112244897959183,
+      "source": "FACTOR:Weather",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 205,
+      "severity_sum": 262.0,
+      "avg_severity": 1.278048780487805,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 565,
+      "severity_sum": 920.0,
+      "avg_severity": 1.6283185840707965,
+      "source": "FACTOR:Weather",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 472,
+      "severity_sum": 567.0,
+      "avg_severity": 1.201271186440678,
+      "source": "FACTOR:Weather",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 207,
+      "severity_sum": 275.0,
+      "avg_severity": 1.328502415458937,
+      "source": "FACTOR:Weather",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 78,
+      "severity_sum": 101.0,
+      "avg_severity": 1.294871794871795,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 61,
+      "severity_sum": 82.0,
+      "avg_severity": 1.3442622950819672,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 103,
+      "severity_sum": 97.0,
+      "avg_severity": 0.941747572815534,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 416,
+      "severity_sum": 453.0,
+      "avg_severity": 1.0889423076923077,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 110,
+      "severity_sum": 147.0,
+      "avg_severity": 1.3363636363636364,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 10.0,
+      "avg_severity": 0.7142857142857143,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 224,
+      "severity_sum": 299.0,
+      "avg_severity": 1.3348214285714286,
+      "source": "FACTOR:Weather",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 157,
+      "severity_sum": 264.0,
+      "avg_severity": 1.6815286624203822,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 95,
+      "severity_sum": 109.0,
+      "avg_severity": 1.1473684210526316,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 62.0,
+      "avg_severity": 1.5121951219512195,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 127,
+      "severity_sum": 93.0,
+      "avg_severity": 0.7322834645669292,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 53,
+      "severity_sum": 51.0,
+      "avg_severity": 0.9622641509433962,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 37,
+      "severity_sum": 54.0,
+      "avg_severity": 1.4594594594594594,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 95,
+      "severity_sum": 52.0,
+      "avg_severity": 0.5473684210526316,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 22.0,
+      "avg_severity": 1.5714285714285714,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:ATR"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 15.0,
+      "avg_severity": 0.9375,
+      "source": "FACTOR:Weather",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 12.0,
+      "avg_severity": 1.2,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 22,
+      "severity_sum": 29.0,
+      "avg_severity": 1.3181818181818181,
+      "source": "FACTOR:Weather",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 250,
+      "severity_sum": 368.0,
+      "avg_severity": 1.472,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "FAR:Part 91"
+    },
+    {
+      "weight": 62,
+      "severity_sum": 86.0,
+      "avg_severity": 1.3870967741935485,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 26,
+      "severity_sum": 30.0,
+      "avg_severity": 1.1538461538461537,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 33,
+      "severity_sum": 55.0,
+      "avg_severity": 1.6666666666666667,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 56,
+      "severity_sum": 86.0,
+      "avg_severity": 1.5357142857142858,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 64.0,
+      "avg_severity": 1.5609756097560976,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 22,
+      "severity_sum": 30.0,
+      "avg_severity": 1.3636363636363635,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 22,
+      "severity_sum": 34.0,
+      "avg_severity": 1.5454545454545454,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "PHASE:Descent"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 11.0,
+      "avg_severity": 0.9166666666666666,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 27.0,
+      "avg_severity": 1.6875,
+      "source": "AIRCRAFT:Cirrus",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 808,
+      "severity_sum": 1026.0,
+      "avg_severity": 1.2698019801980198,
+      "source": "FAR:Part 91",
+      "target": "PHASE:Descent"
+    },
+    {
+      "weight": 8801,
+      "severity_sum": 11887.0,
+      "avg_severity": 1.3506419725031247,
+      "source": "FAR:Part 91",
+      "target": "AIRCRAFT:Other"
+    },
+    {
+      "weight": 1056,
+      "severity_sum": 1061.0,
+      "avg_severity": 1.0047348484848484,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 704,
+      "severity_sum": 577.0,
+      "avg_severity": 0.8196022727272727,
+      "source": "FAR:Part 91",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 39,
+      "severity_sum": 43.0,
+      "avg_severity": 1.1025641025641026,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 492,
+      "severity_sum": 414.0,
+      "avg_severity": 0.8414634146341463,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 1738,
+      "severity_sum": 2241.0,
+      "avg_severity": 1.2894131185270425,
+      "source": "FAR:Part 91",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 147,
+      "severity_sum": 142.0,
+      "avg_severity": 0.9659863945578231,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 1157,
+      "severity_sum": 1506.0,
+      "avg_severity": 1.3016421780466725,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 2197,
+      "severity_sum": 2980.0,
+      "avg_severity": 1.356395084205735,
+      "source": "FAR:Part 91",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 1797,
+      "severity_sum": 2859.0,
+      "avg_severity": 1.5909849749582639,
+      "source": "FAR:Part 91",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 337,
+      "severity_sum": 237.0,
+      "avg_severity": 0.7032640949554896,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 1075,
+      "severity_sum": 1697.0,
+      "avg_severity": 1.5786046511627907,
+      "source": "FAR:Part 91",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 112,
+      "severity_sum": 123.0,
+      "avg_severity": 1.0982142857142858,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 1028,
+      "severity_sum": 1256.0,
+      "avg_severity": 1.2217898832684826,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 833,
+      "severity_sum": 1199.0,
+      "avg_severity": 1.43937575030012,
+      "source": "FAR:Part 91",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 120,
+      "severity_sum": 106.0,
+      "avg_severity": 0.8833333333333333,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 252,
+      "severity_sum": 218.0,
+      "avg_severity": 0.8650793650793651,
+      "source": "FAR:Part 91",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 254,
+      "severity_sum": 230.0,
+      "avg_severity": 0.905511811023622,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 19.0,
+      "avg_severity": 1.4615384615384615,
+      "source": "FAR:Part 91",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 71,
+      "severity_sum": 110.0,
+      "avg_severity": 1.5492957746478873,
+      "source": "FAR:Part 91",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 25,
+      "severity_sum": 39.0,
+      "avg_severity": 1.56,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 23,
+      "severity_sum": 28.0,
+      "avg_severity": 1.2173913043478262,
+      "source": "FAR:Part 91",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 7.0,
+      "avg_severity": 0.5,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 45,
+      "severity_sum": 69.0,
       "avg_severity": 1.5333333333333334,
-      "source": "MEL",
-      "target": "Equipment / Tooling"
+      "source": "FAR:Part 91",
+      "target": "AIRCRAFT:ATR"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 15.0,
+      "avg_severity": 1.5,
+      "source": "FAR:Part 91",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 48,
+      "severity_sum": 25.0,
+      "avg_severity": 0.5208333333333334,
+      "source": "FAR:Part 91",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 23,
+      "severity_sum": 15.0,
+      "avg_severity": 0.6521739130434783,
+      "source": "FAR:Part 91",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 19.0,
+      "avg_severity": 1.9,
+      "source": "FAR:Part 91",
+      "target": "PHASE:Other Traffic Pattern"
+    },
+    {
+      "weight": 1817,
+      "severity_sum": 1996.0,
+      "avg_severity": 1.0985140341221795,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:Other"
+    },
+    {
+      "weight": 502,
+      "severity_sum": 614.0,
+      "avg_severity": 1.2231075697211156,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 204,
+      "severity_sum": 217.0,
+      "avg_severity": 1.0637254901960784,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 388,
+      "severity_sum": 179.0,
+      "avg_severity": 0.46134020618556704,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 94,
+      "severity_sum": 85.0,
+      "avg_severity": 0.9042553191489362,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 67,
+      "severity_sum": 92.0,
+      "avg_severity": 1.373134328358209,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 321,
+      "severity_sum": 346.0,
+      "avg_severity": 1.0778816199376946,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 176,
+      "severity_sum": 131.0,
+      "avg_severity": 0.7443181818181818,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 160,
+      "severity_sum": 199.0,
+      "avg_severity": 1.24375,
+      "source": "PHASE:Descent",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 83,
+      "severity_sum": 73.0,
+      "avg_severity": 0.8795180722891566,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 36,
+      "severity_sum": 35.0,
+      "avg_severity": 0.9722222222222222,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 129,
+      "severity_sum": 70.0,
+      "avg_severity": 0.5426356589147286,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 54,
+      "severity_sum": 54.0,
+      "avg_severity": 1.0,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 424,
+      "severity_sum": 595.0,
+      "avg_severity": 1.403301886792453,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 95,
+      "severity_sum": 86.0,
+      "avg_severity": 0.9052631578947369,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 12.0,
+      "avg_severity": 0.8,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 29,
+      "severity_sum": 17.0,
+      "avg_severity": 0.5862068965517241,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 14.0,
+      "avg_severity": 0.6666666666666666,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 8.0,
+      "avg_severity": 0.8,
+      "source": "PHASE:Descent",
+      "target": "FAR:Part 129"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 19.0,
+      "avg_severity": 1.2666666666666666,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 48,
+      "severity_sum": 53.0,
+      "avg_severity": 1.1041666666666667,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 52,
+      "severity_sum": 43.0,
+      "avg_severity": 0.8269230769230769,
+      "source": "PHASE:Descent",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 26,
+      "severity_sum": 46.0,
+      "avg_severity": 1.7692307692307692,
+      "source": "PHASE:Descent",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 2158,
+      "severity_sum": 1781.0,
+      "avg_severity": 0.8253012048192772,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 1340,
+      "severity_sum": 804.0,
+      "avg_severity": 0.6,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 1955,
+      "severity_sum": 1174.0,
+      "avg_severity": 0.6005115089514067,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 1292,
+      "severity_sum": 1588.0,
+      "avg_severity": 1.2291021671826625,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 96,
+      "severity_sum": 79.0,
+      "avg_severity": 0.8229166666666666,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 2923,
+      "severity_sum": 3297.0,
+      "avg_severity": 1.1279507355456722,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 881,
+      "severity_sum": 505.0,
+      "avg_severity": 0.5732122587968218,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 441,
+      "severity_sum": 263.0,
+      "avg_severity": 0.5963718820861678,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 2045,
+      "severity_sum": 2504.0,
+      "avg_severity": 1.2244498777506112,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Airspace Structure"
+    },
+    {
+      "weight": 3323,
+      "severity_sum": 3881.0,
+      "avg_severity": 1.1679205537165211,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 18,
+      "severity_sum": 25.0,
+      "avg_severity": 1.3888888888888888,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Other Holding Pattern"
+    },
+    {
+      "weight": 3187,
+      "severity_sum": 2883.0,
+      "avg_severity": 0.9046124882334484,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 1894,
+      "severity_sum": 2714.0,
+      "avg_severity": 1.4329461457233368,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 1607,
+      "severity_sum": 1993.0,
+      "avg_severity": 1.24019912881145,
+      "source": "AIRCRAFT:Other",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 445,
+      "severity_sum": 275.0,
+      "avg_severity": 0.6179775280898876,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 2023,
+      "severity_sum": 1118.0,
+      "avg_severity": 0.5526445872466633,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 1753,
+      "severity_sum": 923.0,
+      "avg_severity": 0.5265259555048488,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 360,
+      "severity_sum": 271.0,
+      "avg_severity": 0.7527777777777778,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 101,
+      "severity_sum": 58.0,
+      "avg_severity": 0.5742574257425742,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 7.0,
+      "avg_severity": 0.4375,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Other General Ramp"
+    },
+    {
+      "weight": 67,
+      "severity_sum": 35.0,
+      "avg_severity": 0.5223880597014925,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 118,
+      "severity_sum": 123.0,
+      "avg_severity": 1.0423728813559323,
+      "source": "AIRCRAFT:Other",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 11.0,
+      "avg_severity": 1.0,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Other Vfr Traffic Pattern"
+    },
+    {
+      "weight": 38,
+      "severity_sum": 24.0,
+      "avg_severity": 0.631578947368421,
+      "source": "AIRCRAFT:Other",
+      "target": "FAR:Part 129"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 3.0,
+      "avg_severity": 0.2,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Other Non-Flight"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 9.0,
+      "avg_severity": 0.5294117647058824,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Other All Phases"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 6.0,
+      "avg_severity": 0.35294117647058826,
+      "source": "AIRCRAFT:Other",
+      "target": "PHASE:Other All"
+    },
+    {
+      "weight": 20,
+      "severity_sum": 14.0,
+      "avg_severity": 0.7,
+      "source": "AIRCRAFT:Other",
+      "target": "FAR:Part 107"
+    },
+    {
+      "weight": 643,
+      "severity_sum": 696.0,
+      "avg_severity": 1.0824261275272162,
+      "source": "FACTOR:Airspace Structure",
+      "target": "PHASE:Cruise"
+    },
+    {
+      "weight": 103,
+      "severity_sum": 72.0,
+      "avg_severity": 0.6990291262135923,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 238,
+      "severity_sum": 268.0,
+      "avg_severity": 1.1260504201680672,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 397,
+      "severity_sum": 439.0,
+      "avg_severity": 1.105793450881612,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 79,
+      "severity_sum": 120.0,
+      "avg_severity": 1.518987341772152,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 617,
+      "severity_sum": 698.0,
+      "avg_severity": 1.1312803889789302,
+      "source": "FACTOR:Airspace Structure",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 157,
+      "severity_sum": 245.0,
+      "avg_severity": 1.5605095541401275,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 283,
+      "severity_sum": 264.0,
+      "avg_severity": 0.9328621908127208,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 91,
+      "severity_sum": 95.0,
+      "avg_severity": 1.043956043956044,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 69,
+      "severity_sum": 89.0,
+      "avg_severity": 1.289855072463768,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 337,
+      "severity_sum": 449.0,
+      "avg_severity": 1.3323442136498516,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 102,
+      "severity_sum": 107.0,
+      "avg_severity": 1.0490196078431373,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 20.0,
+      "avg_severity": 1.25,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 58,
+      "severity_sum": 77.0,
+      "avg_severity": 1.3275862068965518,
+      "source": "FACTOR:Airspace Structure",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 157,
+      "severity_sum": 148.0,
+      "avg_severity": 0.9426751592356688,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 33,
+      "severity_sum": 56.0,
+      "avg_severity": 1.696969696969697,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 13.0,
+      "avg_severity": 1.0833333333333333,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 21.0,
+      "avg_severity": 1.4,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 18.0,
+      "avg_severity": 0.9473684210526315,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FAR:Part 129"
+    },
+    {
+      "weight": 22,
+      "severity_sum": 11.0,
+      "avg_severity": 0.5,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 17.0,
+      "avg_severity": 1.3076923076923077,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 54,
+      "severity_sum": 55.0,
+      "avg_severity": 1.0185185185185186,
+      "source": "FACTOR:Airspace Structure",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 29,
+      "severity_sum": 32.0,
+      "avg_severity": 1.103448275862069,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 9.0,
+      "avg_severity": 0.9,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 19.0,
+      "avg_severity": 1.1176470588235294,
+      "source": "FACTOR:Airspace Structure",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 11.0,
+      "avg_severity": 0.6470588235294118,
+      "source": "FACTOR:Airspace Structure",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 10.0,
+      "avg_severity": 0.8333333333333334,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 2.0,
+      "avg_severity": 0.13333333333333333,
+      "source": "FACTOR:Airspace Structure",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 1.0,
+      "avg_severity": 0.08333333333333333,
+      "source": "FACTOR:Airspace Structure",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 45,
+      "severity_sum": 57.0,
+      "avg_severity": 1.2666666666666666,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:DHC"
+    },
+    {
+      "weight": 214,
+      "severity_sum": 287.0,
+      "avg_severity": 1.341121495327103,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 530,
+      "severity_sum": 425.0,
+      "avg_severity": 0.8018867924528302,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 600,
+      "severity_sum": 660.0,
+      "avg_severity": 1.1,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 399,
+      "severity_sum": 527.0,
+      "avg_severity": 1.3208020050125313,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 142,
+      "severity_sum": 108.0,
+      "avg_severity": 0.7605633802816901,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 237,
+      "severity_sum": 281.0,
+      "avg_severity": 1.1856540084388185,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 193,
+      "severity_sum": 206.0,
+      "avg_severity": 1.067357512953368,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 332,
+      "severity_sum": 444.0,
+      "avg_severity": 1.3373493975903614,
+      "source": "PHASE:Cruise",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 55,
+      "severity_sum": 68.0,
+      "avg_severity": 1.2363636363636363,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 84,
+      "severity_sum": 46.0,
+      "avg_severity": 0.5476190476190477,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 334,
+      "severity_sum": 163.0,
+      "avg_severity": 0.4880239520958084,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 130,
+      "severity_sum": 135.0,
+      "avg_severity": 1.0384615384615385,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 243,
+      "severity_sum": 169.0,
+      "avg_severity": 0.6954732510288066,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 49,
+      "severity_sum": 45.0,
+      "avg_severity": 0.9183673469387755,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 94,
+      "severity_sum": 89.0,
+      "avg_severity": 0.9468085106382979,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 104,
+      "severity_sum": 86.0,
+      "avg_severity": 0.8269230769230769,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 215,
+      "severity_sum": 293.0,
+      "avg_severity": 1.3627906976744186,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 33,
+      "severity_sum": 47.0,
+      "avg_severity": 1.4242424242424243,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 257,
+      "severity_sum": 398.0,
+      "avg_severity": 1.54863813229572,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 212,
+      "severity_sum": 262.0,
+      "avg_severity": 1.2358490566037736,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 43,
+      "severity_sum": 34.0,
+      "avg_severity": 0.7906976744186046,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 29,
+      "severity_sum": 38.0,
+      "avg_severity": 1.3103448275862069,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 22,
+      "severity_sum": 13.0,
+      "avg_severity": 0.5909090909090909,
+      "source": "PHASE:Cruise",
+      "target": "FAR:Part 129"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 8.0,
+      "avg_severity": 0.7272727272727273,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 13.0,
+      "avg_severity": 1.1818181818181819,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:ATR"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 15.0,
+      "avg_severity": 0.9375,
+      "source": "PHASE:Cruise",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 53,
+      "severity_sum": 52.0,
+      "avg_severity": 0.9811320754716981,
+      "source": "PHASE:Cruise",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 6.0,
+      "avg_severity": 0.6,
+      "source": "PHASE:Cruise",
+      "target": "FAR:Part 107"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 6.0,
+      "avg_severity": 0.6,
+      "source": "AIRCRAFT:DHC",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 43,
+      "severity_sum": 39.0,
+      "avg_severity": 0.9069767441860465,
+      "source": "AIRCRAFT:DHC",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 70,
+      "severity_sum": 102.0,
+      "avg_severity": 1.457142857142857,
+      "source": "AIRCRAFT:DHC",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 66.0,
+      "avg_severity": 1.6097560975609757,
+      "source": "AIRCRAFT:DHC",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 15.0,
+      "avg_severity": 1.5,
+      "source": "AIRCRAFT:DHC",
+      "target": "FACTOR:Airport"
+    },
+    {
+      "weight": 40,
+      "severity_sum": 42.0,
+      "avg_severity": 1.05,
+      "source": "AIRCRAFT:DHC",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 20,
+      "severity_sum": 17.0,
+      "avg_severity": 0.85,
+      "source": "AIRCRAFT:DHC",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 24.0,
+      "avg_severity": 1.5,
+      "source": "AIRCRAFT:DHC",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 16.0,
+      "avg_severity": 1.6,
+      "source": "AIRCRAFT:DHC",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 413,
+      "severity_sum": 386.0,
+      "avg_severity": 0.9346246973365617,
+      "source": "FACTOR:Airport",
+      "target": "PHASE:Landing"
+    },
+    {
+      "weight": 33,
+      "severity_sum": 36.0,
+      "avg_severity": 1.0909090909090908,
+      "source": "FACTOR:Airport",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 284,
+      "severity_sum": 302.0,
+      "avg_severity": 1.0633802816901408,
+      "source": "FACTOR:Airport",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 1135,
+      "severity_sum": 508.0,
+      "avg_severity": 0.44757709251101324,
+      "source": "FACTOR:Airport",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 608,
+      "severity_sum": 564.0,
+      "avg_severity": 0.9276315789473685,
+      "source": "FACTOR:Airport",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 104,
+      "severity_sum": 105.0,
+      "avg_severity": 1.0096153846153846,
+      "source": "FACTOR:Airport",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 372,
+      "severity_sum": 175.0,
+      "avg_severity": 0.47043010752688175,
+      "source": "FACTOR:Airport",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 82,
+      "severity_sum": 100.0,
+      "avg_severity": 1.2195121951219512,
+      "source": "FACTOR:Airport",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 44,
+      "severity_sum": 35.0,
+      "avg_severity": 0.7954545454545454,
+      "source": "FACTOR:Airport",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 160,
+      "severity_sum": 139.0,
+      "avg_severity": 0.86875,
+      "source": "FACTOR:Airport",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 118,
+      "severity_sum": 73.0,
+      "avg_severity": 0.6186440677966102,
+      "source": "FACTOR:Airport",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 225,
+      "severity_sum": 130.0,
+      "avg_severity": 0.5777777777777777,
+      "source": "FACTOR:Airport",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 13.0,
+      "avg_severity": 0.8666666666666667,
+      "source": "FACTOR:Airport",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 22.0,
+      "avg_severity": 0.5365853658536586,
+      "source": "FACTOR:Airport",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 45,
+      "severity_sum": 36.0,
+      "avg_severity": 0.8,
+      "source": "FACTOR:Airport",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 121,
+      "severity_sum": 143.0,
+      "avg_severity": 1.1818181818181819,
+      "source": "FACTOR:Airport",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 163,
+      "severity_sum": 103.0,
+      "avg_severity": 0.6319018404907976,
+      "source": "FACTOR:Airport",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 87,
+      "severity_sum": 100.0,
+      "avg_severity": 1.1494252873563218,
+      "source": "FACTOR:Airport",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 23.0,
+      "avg_severity": 0.5609756097560976,
+      "source": "FACTOR:Airport",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 40,
+      "severity_sum": 27.0,
+      "avg_severity": 0.675,
+      "source": "FACTOR:Airport",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 18.0,
+      "avg_severity": 1.0588235294117647,
+      "source": "FACTOR:Airport",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 39,
+      "severity_sum": 40.0,
+      "avg_severity": 1.0256410256410255,
+      "source": "PHASE:Landing",
+      "target": "AIRCRAFT:MD"
+    },
+    {
+      "weight": 309,
+      "severity_sum": 332.0,
+      "avg_severity": 1.0744336569579287,
+      "source": "PHASE:Landing",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 94,
+      "severity_sum": 101.0,
+      "avg_severity": 1.074468085106383,
+      "source": "PHASE:Landing",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 64,
+      "severity_sum": 45.0,
+      "avg_severity": 0.703125,
+      "source": "PHASE:Landing",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 113,
+      "severity_sum": 146.0,
+      "avg_severity": 1.2920353982300885,
+      "source": "PHASE:Landing",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 278,
+      "severity_sum": 481.0,
+      "avg_severity": 1.7302158273381294,
+      "source": "PHASE:Landing",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 18,
+      "severity_sum": 20.0,
+      "avg_severity": 1.1111111111111112,
+      "source": "PHASE:Landing",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 62,
+      "severity_sum": 42.0,
+      "avg_severity": 0.6774193548387096,
+      "source": "PHASE:Landing",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 30,
+      "severity_sum": 29.0,
+      "avg_severity": 0.9666666666666667,
+      "source": "PHASE:Landing",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 64,
+      "severity_sum": 64.0,
+      "avg_severity": 1.0,
+      "source": "PHASE:Landing",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 60,
+      "severity_sum": 50.0,
+      "avg_severity": 0.8333333333333334,
+      "source": "PHASE:Landing",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 35,
+      "severity_sum": 31.0,
+      "avg_severity": 0.8857142857142857,
+      "source": "PHASE:Landing",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 25,
+      "severity_sum": 8.0,
+      "avg_severity": 0.32,
+      "source": "PHASE:Landing",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 28,
+      "severity_sum": 41.0,
+      "avg_severity": 1.4642857142857142,
+      "source": "PHASE:Landing",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 24.0,
+      "avg_severity": 2.4,
+      "source": "PHASE:Landing",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 8.0,
+      "avg_severity": 0.8,
+      "source": "PHASE:Landing",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 16.0,
+      "avg_severity": 1.1428571428571428,
+      "source": "PHASE:Landing",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 71,
+      "severity_sum": 43.0,
+      "avg_severity": 0.6056338028169014,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 135,
+      "severity_sum": 93.0,
+      "avg_severity": 0.6888888888888889,
+      "source": "AIRCRAFT:MD",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 210,
+      "severity_sum": 313.0,
+      "avg_severity": 1.4904761904761905,
+      "source": "AIRCRAFT:MD",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 78,
+      "severity_sum": 71.0,
+      "avg_severity": 0.9102564102564102,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 15.0,
+      "avg_severity": 1.25,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 19.0,
+      "avg_severity": 0.9047619047619048,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 37.0,
+      "avg_severity": 0.9024390243902439,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 122,
+      "severity_sum": 192.0,
+      "avg_severity": 1.5737704918032787,
+      "source": "AIRCRAFT:MD",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 9.0,
+      "avg_severity": 0.75,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 34,
+      "severity_sum": 33.0,
+      "avg_severity": 0.9705882352941176,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 57,
+      "severity_sum": 61.0,
+      "avg_severity": 1.0701754385964912,
+      "source": "AIRCRAFT:MD",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 10.0,
+      "avg_severity": 0.8333333333333334,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 6.0,
+      "avg_severity": 0.42857142857142855,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 61,
+      "severity_sum": 87.0,
+      "avg_severity": 1.4262295081967213,
+      "source": "AIRCRAFT:MD",
+      "target": "FACTOR:Environment - Non Weather Related"
+    },
+    {
+      "weight": 211,
+      "severity_sum": 320.0,
+      "avg_severity": 1.5165876777251184,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:CRJ"
+    },
+    {
+      "weight": 747,
+      "severity_sum": 417.0,
+      "avg_severity": 0.5582329317269076,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 172,
+      "severity_sum": 246.0,
+      "avg_severity": 1.430232558139535,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 608,
+      "severity_sum": 737.0,
+      "avg_severity": 1.212171052631579,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 16.0,
+      "avg_severity": 1.6,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 492,
+      "severity_sum": 276.0,
+      "avg_severity": 0.5609756097560976,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 182,
+      "severity_sum": 229.0,
+      "avg_severity": 1.2582417582417582,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 57,
+      "severity_sum": 44.0,
+      "avg_severity": 0.7719298245614035,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 307,
+      "severity_sum": 351.0,
+      "avg_severity": 1.1433224755700326,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 184,
+      "severity_sum": 156.0,
+      "avg_severity": 0.8478260869565217,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 83,
+      "severity_sum": 114.0,
+      "avg_severity": 1.3734939759036144,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 133,
+      "severity_sum": 76.0,
+      "avg_severity": 0.5714285714285714,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 503,
+      "severity_sum": 284.0,
+      "avg_severity": 0.5646123260437376,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 156,
+      "severity_sum": 97.0,
+      "avg_severity": 0.6217948717948718,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 52,
+      "severity_sum": 46.0,
+      "avg_severity": 0.8846153846153846,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 61,
+      "severity_sum": 72.0,
+      "avg_severity": 1.180327868852459,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 64,
+      "severity_sum": 79.0,
+      "avg_severity": 1.234375,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 56,
+      "severity_sum": 86.0,
+      "avg_severity": 1.5357142857142858,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 17.0,
+      "avg_severity": 0.8095238095238095,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 32,
+      "severity_sum": 35.0,
+      "avg_severity": 1.09375,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 11.0,
+      "avg_severity": 0.7333333333333333,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 9.0,
+      "avg_severity": 0.5294117647058824,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "PHASE:Other All Phases"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 9.0,
+      "avg_severity": 0.6923076923076923,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 10.0,
+      "avg_severity": 0.47619047619047616,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 15.0,
+      "avg_severity": 1.1538461538461537,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 24,
+      "severity_sum": 26.0,
+      "avg_severity": 1.0833333333333333,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 2.0,
+      "avg_severity": 0.2,
+      "source": "FACTOR:Environment - Non Weather Related",
+      "target": "PHASE:Other All"
+    },
+    {
+      "weight": 152,
+      "severity_sum": 132.0,
+      "avg_severity": 0.868421052631579,
+      "source": "AIRCRAFT:CRJ",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 61,
+      "severity_sum": 56.0,
+      "avg_severity": 0.9180327868852459,
+      "source": "AIRCRAFT:CRJ",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 23,
+      "severity_sum": 20.0,
+      "avg_severity": 0.8695652173913043,
+      "source": "AIRCRAFT:CRJ",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 171,
+      "severity_sum": 157.0,
+      "avg_severity": 0.9181286549707602,
+      "source": "AIRCRAFT:CRJ",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 221,
+      "severity_sum": 154.0,
+      "avg_severity": 0.6968325791855203,
+      "source": "AIRCRAFT:CRJ",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 42,
+      "severity_sum": 35.0,
+      "avg_severity": 0.8333333333333334,
+      "source": "AIRCRAFT:CRJ",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 37,
+      "severity_sum": 16.0,
+      "avg_severity": 0.43243243243243246,
+      "source": "AIRCRAFT:CRJ",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 372,
+      "severity_sum": 448.0,
+      "avg_severity": 1.2043010752688172,
+      "source": "AIRCRAFT:CRJ",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 14.0,
+      "avg_severity": 0.6666666666666666,
+      "source": "AIRCRAFT:CRJ",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 89,
+      "severity_sum": 73.0,
+      "avg_severity": 0.8202247191011236,
+      "source": "AIRCRAFT:CRJ",
+      "target": "FACTOR:Chart Or Publication"
+    },
+    {
+      "weight": 184,
+      "severity_sum": 259.0,
+      "avg_severity": 1.4076086956521738,
+      "source": "AIRCRAFT:CRJ",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 8.0,
+      "avg_severity": 0.6666666666666666,
+      "source": "AIRCRAFT:CRJ",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 30,
+      "severity_sum": 33.0,
+      "avg_severity": 1.1,
+      "source": "AIRCRAFT:CRJ",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 325,
+      "severity_sum": 61.0,
+      "avg_severity": 0.18769230769230769,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "PHASE:Taxi"
+    },
+    {
+      "weight": 343,
+      "severity_sum": 200.0,
+      "avg_severity": 0.5830903790087464,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 271,
+      "severity_sum": 203.0,
+      "avg_severity": 0.7490774907749077,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 324,
+      "severity_sum": 193.0,
+      "avg_severity": 0.595679012345679,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 23,
+      "severity_sum": 36.0,
+      "avg_severity": 1.565217391304348,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 108,
+      "severity_sum": 82.0,
+      "avg_severity": 0.7592592592592593,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 319,
+      "severity_sum": 200.0,
+      "avg_severity": 0.6269592476489029,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 62,
+      "severity_sum": 42.0,
+      "avg_severity": 0.6774193548387096,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 67,
+      "severity_sum": 45.0,
+      "avg_severity": 0.6716417910447762,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 81,
+      "severity_sum": 40.0,
+      "avg_severity": 0.49382716049382713,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 139,
+      "severity_sum": 63.0,
+      "avg_severity": 0.45323741007194246,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 55,
+      "severity_sum": 20.0,
+      "avg_severity": 0.36363636363636365,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 46,
+      "severity_sum": 30.0,
+      "avg_severity": 0.6521739130434783,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 20,
+      "severity_sum": 10.0,
+      "avg_severity": 0.5,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 10.0,
+      "avg_severity": 0.5263157894736842,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 54,
+      "severity_sum": 25.0,
+      "avg_severity": 0.46296296296296297,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 45,
+      "severity_sum": 44.0,
+      "avg_severity": 0.9777777777777777,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 29,
+      "severity_sum": 31.0,
+      "avg_severity": 1.0689655172413792,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 49,
+      "severity_sum": 36.0,
+      "avg_severity": 0.7346938775510204,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 38,
+      "severity_sum": 29.0,
+      "avg_severity": 0.7631578947368421,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 8.0,
+      "avg_severity": 0.5714285714285714,
+      "source": "FACTOR:Chart Or Publication",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 436,
+      "severity_sum": 229.0,
+      "avg_severity": 0.5252293577981652,
+      "source": "PHASE:Taxi",
+      "target": "FACTOR:Company Policy"
+    },
+    {
+      "weight": 297,
+      "severity_sum": 308.0,
+      "avg_severity": 1.037037037037037,
+      "source": "PHASE:Taxi",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 122,
+      "severity_sum": 109.0,
+      "avg_severity": 0.8934426229508197,
+      "source": "PHASE:Taxi",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 91,
+      "severity_sum": 82.0,
+      "avg_severity": 0.9010989010989011,
+      "source": "PHASE:Taxi",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 74,
+      "severity_sum": 51.0,
+      "avg_severity": 0.6891891891891891,
+      "source": "PHASE:Taxi",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 43,
+      "severity_sum": 30.0,
+      "avg_severity": 0.6976744186046512,
+      "source": "PHASE:Taxi",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 92,
+      "severity_sum": 49.0,
+      "avg_severity": 0.532608695652174,
+      "source": "PHASE:Taxi",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 23,
+      "severity_sum": 7.0,
+      "avg_severity": 0.30434782608695654,
+      "source": "PHASE:Taxi",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 58,
+      "severity_sum": 55.0,
+      "avg_severity": 0.9482758620689655,
+      "source": "PHASE:Taxi",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 93,
+      "severity_sum": 90.0,
+      "avg_severity": 0.967741935483871,
+      "source": "PHASE:Taxi",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 15.0,
+      "avg_severity": 0.7894736842105263,
+      "source": "PHASE:Taxi",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 65,
+      "severity_sum": 5.0,
+      "avg_severity": 0.07692307692307693,
+      "source": "PHASE:Taxi",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 24,
+      "severity_sum": 17.0,
+      "avg_severity": 0.7083333333333334,
+      "source": "PHASE:Taxi",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 63,
+      "severity_sum": 24.0,
+      "avg_severity": 0.38095238095238093,
+      "source": "PHASE:Taxi",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 66,
+      "severity_sum": 33.0,
+      "avg_severity": 0.5,
+      "source": "PHASE:Taxi",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 7.0,
+      "avg_severity": 0.5384615384615384,
+      "source": "PHASE:Taxi",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 12.0,
+      "avg_severity": 0.8,
+      "source": "PHASE:Taxi",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 285,
+      "severity_sum": 185.0,
+      "avg_severity": 0.6491228070175439,
+      "source": "FACTOR:Company Policy",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 1402,
+      "severity_sum": 717.0,
+      "avg_severity": 0.5114122681883024,
+      "source": "FACTOR:Company Policy",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 356,
+      "severity_sum": 196.0,
+      "avg_severity": 0.550561797752809,
+      "source": "FACTOR:Company Policy",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 85,
+      "severity_sum": 67.0,
+      "avg_severity": 0.788235294117647,
+      "source": "FACTOR:Company Policy",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 247,
+      "severity_sum": 133.0,
+      "avg_severity": 0.5384615384615384,
+      "source": "FACTOR:Company Policy",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 133,
+      "severity_sum": 100.0,
+      "avg_severity": 0.7518796992481203,
+      "source": "FACTOR:Company Policy",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 166,
+      "severity_sum": 128.0,
+      "avg_severity": 0.7710843373493976,
+      "source": "FACTOR:Company Policy",
+      "target": "PHASE:Takeoff"
+    },
+    {
+      "weight": 139,
+      "severity_sum": 134.0,
+      "avg_severity": 0.9640287769784173,
+      "source": "FACTOR:Company Policy",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 123,
+      "severity_sum": 90.0,
+      "avg_severity": 0.7317073170731707,
+      "source": "FACTOR:Company Policy",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 263,
+      "severity_sum": 228.0,
+      "avg_severity": 0.8669201520912547,
+      "source": "FACTOR:Company Policy",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 84,
+      "severity_sum": 58.0,
+      "avg_severity": 0.6904761904761905,
+      "source": "FACTOR:Company Policy",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 123,
+      "severity_sum": 61.0,
+      "avg_severity": 0.4959349593495935,
+      "source": "FACTOR:Company Policy",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 152,
+      "severity_sum": 99.0,
+      "avg_severity": 0.6513157894736842,
+      "source": "FACTOR:Company Policy",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 49,
+      "severity_sum": 31.0,
+      "avg_severity": 0.6326530612244898,
+      "source": "FACTOR:Company Policy",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 26,
+      "severity_sum": 11.0,
+      "avg_severity": 0.4230769230769231,
+      "source": "FACTOR:Company Policy",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 66,
+      "severity_sum": 41.0,
+      "avg_severity": 0.6212121212121212,
+      "source": "FACTOR:Company Policy",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 105,
+      "severity_sum": 71.0,
+      "avg_severity": 0.6761904761904762,
+      "source": "FACTOR:Company Policy",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 5.0,
+      "avg_severity": 0.45454545454545453,
+      "source": "FACTOR:Company Policy",
+      "target": "PHASE:Other N/A"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 4.0,
+      "avg_severity": 0.36363636363636365,
+      "source": "FACTOR:Company Policy",
+      "target": "PHASE:Other Preflight Planning"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 8.0,
+      "avg_severity": 0.5714285714285714,
+      "source": "FACTOR:Company Policy",
+      "target": "PHASE:Other All"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 7.0,
+      "avg_severity": 0.4117647058823529,
+      "source": "FACTOR:Company Policy",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 9.0,
+      "avg_severity": 0.6923076923076923,
+      "source": "FACTOR:Company Policy",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 12.0,
+      "avg_severity": 1.2,
+      "source": "FACTOR:Company Policy",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 4.0,
+      "avg_severity": 0.25,
+      "source": "FACTOR:Company Policy",
+      "target": "PHASE:Other Non-Flight"
+    },
+    {
+      "weight": 185,
+      "severity_sum": 260.0,
+      "avg_severity": 1.4054054054054055,
+      "source": "PHASE:Takeoff",
+      "target": "AIRCRAFT:A320_Family"
+    },
+    {
+      "weight": 117,
+      "severity_sum": 173.0,
+      "avg_severity": 1.4786324786324787,
+      "source": "PHASE:Takeoff",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 48,
+      "severity_sum": 56.0,
+      "avg_severity": 1.1666666666666667,
+      "source": "PHASE:Takeoff",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 11.0,
+      "avg_severity": 0.7333333333333333,
+      "source": "PHASE:Takeoff",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 143,
+      "severity_sum": 189.0,
+      "avg_severity": 1.3216783216783217,
+      "source": "PHASE:Takeoff",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 75,
+      "severity_sum": 101.0,
+      "avg_severity": 1.3466666666666667,
+      "source": "PHASE:Takeoff",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 111,
+      "severity_sum": 174.0,
+      "avg_severity": 1.5675675675675675,
+      "source": "PHASE:Takeoff",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 25,
+      "severity_sum": 28.0,
+      "avg_severity": 1.12,
+      "source": "PHASE:Takeoff",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 10.0,
+      "avg_severity": 1.0,
+      "source": "PHASE:Takeoff",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 44,
+      "severity_sum": 26.0,
+      "avg_severity": 0.5909090909090909,
+      "source": "PHASE:Takeoff",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 17.0,
+      "avg_severity": 1.7,
+      "source": "PHASE:Takeoff",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 31,
+      "severity_sum": 28.0,
+      "avg_severity": 0.9032258064516129,
+      "source": "PHASE:Takeoff",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 13.0,
+      "avg_severity": 0.9285714285714286,
+      "source": "PHASE:Takeoff",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 47,
+      "severity_sum": 34.0,
+      "avg_severity": 0.723404255319149,
+      "source": "PHASE:Takeoff",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 13.0,
+      "avg_severity": 0.6190476190476191,
+      "source": "PHASE:Takeoff",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 34,
+      "severity_sum": 49.0,
+      "avg_severity": 1.4411764705882353,
+      "source": "PHASE:Takeoff",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 5.0,
+      "avg_severity": 0.5,
+      "source": "PHASE:Takeoff",
+      "target": "FAR:Part 107"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 13.0,
+      "avg_severity": 1.1818181818181819,
+      "source": "PHASE:Takeoff",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 10.0,
+      "avg_severity": 0.9090909090909091,
+      "source": "PHASE:Takeoff",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 513,
+      "severity_sum": 426.0,
+      "avg_severity": 0.8304093567251462,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 359,
+      "severity_sum": 437.0,
+      "avg_severity": 1.2172701949860725,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "PHASE:Climb"
+    },
+    {
+      "weight": 124,
+      "severity_sum": 85.0,
+      "avg_severity": 0.6854838709677419,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 61,
+      "severity_sum": 63.0,
+      "avg_severity": 1.0327868852459017,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 44,
+      "severity_sum": 31.0,
+      "avg_severity": 0.7045454545454546,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 79,
+      "severity_sum": 60.0,
+      "avg_severity": 0.759493670886076,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 22.0,
+      "avg_severity": 0.5365853658536586,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 38,
+      "severity_sum": 23.0,
+      "avg_severity": 0.6052631578947368,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "FACTOR:Incorrect / Not Installed / Unavailable Part"
+    },
+    {
+      "weight": 34,
+      "severity_sum": 21.0,
+      "avg_severity": 0.6176470588235294,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 18.0,
+      "avg_severity": 1.6363636363636365,
+      "source": "AIRCRAFT:A320_Family",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 242,
+      "severity_sum": 146.0,
+      "avg_severity": 0.6033057851239669,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 24,
+      "severity_sum": 22.0,
+      "avg_severity": 0.9166666666666666,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 65,
+      "severity_sum": 46.0,
+      "avg_severity": 0.7076923076923077,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 11.0,
+      "avg_severity": 0.6470588235294118,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 27,
+      "severity_sum": 21.0,
+      "avg_severity": 0.7777777777777778,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 15.0,
+      "avg_severity": 0.8823529411764706,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 27,
+      "severity_sum": 21.0,
+      "avg_severity": 0.7777777777777778,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 8.0,
+      "avg_severity": 0.6153846153846154,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 32,
+      "severity_sum": 25.0,
+      "avg_severity": 0.78125,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 16.0,
+      "avg_severity": 0.8421052631578947,
+      "source": "FACTOR:Incorrect / Not Installed / Unavailable Part",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 24,
+      "severity_sum": 45.0,
+      "avg_severity": 1.875,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:A330"
+    },
+    {
+      "weight": 178,
+      "severity_sum": 245.0,
+      "avg_severity": 1.3764044943820224,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 170,
+      "severity_sum": 77.0,
+      "avg_severity": 0.45294117647058824,
+      "source": "PHASE:Climb",
+      "target": "FACTOR:ATC Equipment / Nav Facility / Buildings"
+    },
+    {
+      "weight": 62,
+      "severity_sum": 46.0,
+      "avg_severity": 0.7419354838709677,
+      "source": "PHASE:Climb",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 39,
+      "severity_sum": 43.0,
+      "avg_severity": 1.1025641025641026,
+      "source": "PHASE:Climb",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 26.0,
+      "avg_severity": 1.368421052631579,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:ATR"
+    },
+    {
+      "weight": 344,
+      "severity_sum": 424.0,
+      "avg_severity": 1.2325581395348837,
+      "source": "PHASE:Climb",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 20,
+      "severity_sum": 23.0,
+      "avg_severity": 1.15,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 78,
+      "severity_sum": 87.0,
+      "avg_severity": 1.1153846153846154,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 96,
+      "severity_sum": 107.0,
+      "avg_severity": 1.1145833333333333,
+      "source": "PHASE:Climb",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 63,
+      "severity_sum": 66.0,
+      "avg_severity": 1.0476190476190477,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 155,
+      "severity_sum": 187.0,
+      "avg_severity": 1.206451612903226,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 180,
+      "severity_sum": 284.0,
+      "avg_severity": 1.5777777777777777,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 67,
+      "severity_sum": 51.0,
+      "avg_severity": 0.7611940298507462,
+      "source": "PHASE:Climb",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 21.0,
+      "avg_severity": 1.4,
+      "source": "PHASE:Climb",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 20.0,
+      "avg_severity": 1.4285714285714286,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 12.0,
+      "avg_severity": 0.7058823529411765,
+      "source": "PHASE:Climb",
+      "target": "AIRCRAFT:UAS"
+    },
+    {
+      "weight": 13,
+      "severity_sum": 9.0,
+      "avg_severity": 0.6923076923076923,
+      "source": "PHASE:Climb",
+      "target": "FAR:Part 129"
+    },
+    {
+      "weight": 45,
+      "severity_sum": 21.0,
+      "avg_severity": 0.4666666666666667,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 25,
+      "severity_sum": 23.0,
+      "avg_severity": 0.92,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 49,
+      "severity_sum": 21.0,
+      "avg_severity": 0.42857142857142855,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 25,
+      "severity_sum": 22.0,
+      "avg_severity": 0.88,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 23,
+      "severity_sum": 9.0,
+      "avg_severity": 0.391304347826087,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 29,
+      "severity_sum": 12.0,
+      "avg_severity": 0.41379310344827586,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 2.0,
+      "avg_severity": 0.16666666666666666,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 23,
+      "severity_sum": 8.0,
+      "avg_severity": 0.34782608695652173,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 3.0,
+      "avg_severity": 0.2727272727272727,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "FAR:Part 129"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 15.0,
+      "avg_severity": 1.0714285714285714,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 38,
+      "severity_sum": 22.0,
+      "avg_severity": 0.5789473684210527,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 11.0,
+      "avg_severity": 0.7857142857142857,
+      "source": "FACTOR:ATC Equipment / Nav Facility / Buildings",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 29,
+      "severity_sum": 18.0,
+      "avg_severity": 0.6206896551724138,
+      "source": "AIRCRAFT:A330",
+      "target": "PHASE:Ground"
+    },
+    {
+      "weight": 36,
+      "severity_sum": 19.0,
+      "avg_severity": 0.5277777777777778,
+      "source": "PHASE:Ground",
+      "target": "AIRCRAFT:B787"
+    },
+    {
+      "weight": 480,
+      "severity_sum": 252.0,
+      "avg_severity": 0.525,
+      "source": "PHASE:Ground",
+      "target": "FACTOR:Manuals"
+    },
+    {
+      "weight": 171,
+      "severity_sum": 108.0,
+      "avg_severity": 0.631578947368421,
+      "source": "PHASE:Ground",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 132,
+      "severity_sum": 67.0,
+      "avg_severity": 0.5075757575757576,
+      "source": "PHASE:Ground",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 307,
+      "severity_sum": 172.0,
+      "avg_severity": 0.5602605863192183,
+      "source": "PHASE:Ground",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 181,
+      "severity_sum": 105.0,
+      "avg_severity": 0.580110497237569,
+      "source": "PHASE:Ground",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 62,
+      "severity_sum": 39.0,
+      "avg_severity": 0.6290322580645161,
+      "source": "PHASE:Ground",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 183,
+      "severity_sum": 109.0,
+      "avg_severity": 0.5956284153005464,
+      "source": "PHASE:Ground",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 171,
+      "severity_sum": 114.0,
+      "avg_severity": 0.6666666666666666,
+      "source": "PHASE:Ground",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 227,
+      "severity_sum": 169.0,
+      "avg_severity": 0.7444933920704846,
+      "source": "PHASE:Ground",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 176,
+      "severity_sum": 121.0,
+      "avg_severity": 0.6875,
+      "source": "PHASE:Ground",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 23,
+      "severity_sum": 8.0,
+      "avg_severity": 0.34782608695652173,
+      "source": "PHASE:Ground",
+      "target": "FACTOR:Software and Automation"
+    },
+    {
+      "weight": 21,
+      "severity_sum": 28.0,
+      "avg_severity": 1.3333333333333333,
+      "source": "PHASE:Ground",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 7.0,
+      "avg_severity": 0.6363636363636364,
+      "source": "PHASE:Ground",
+      "target": "AIRCRAFT:ATR"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 11.0,
+      "avg_severity": 0.9166666666666666,
+      "source": "PHASE:Ground",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 62,
+      "severity_sum": 34.0,
+      "avg_severity": 0.5483870967741935,
+      "source": "FACTOR:Manuals",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 41,
+      "severity_sum": 35.0,
+      "avg_severity": 0.8536585365853658,
+      "source": "FACTOR:Manuals",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 35,
+      "severity_sum": 17.0,
+      "avg_severity": 0.4857142857142857,
+      "source": "FACTOR:Manuals",
+      "target": "AIRCRAFT:B777"
+    },
+    {
+      "weight": 44,
+      "severity_sum": 34.0,
+      "avg_severity": 0.7727272727272727,
+      "source": "FACTOR:Manuals",
+      "target": "AIRCRAFT:B767"
+    },
+    {
+      "weight": 19,
+      "severity_sum": 10.0,
+      "avg_severity": 0.5263157894736842,
+      "source": "FACTOR:Manuals",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 54,
+      "severity_sum": 44.0,
+      "avg_severity": 0.8148148148148148,
+      "source": "FACTOR:Manuals",
+      "target": "AIRCRAFT:B757"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 9.0,
+      "avg_severity": 0.6428571428571429,
+      "source": "FACTOR:Manuals",
+      "target": "AIRCRAFT:B747"
+    },
+    {
+      "weight": 43,
+      "severity_sum": 38.0,
+      "avg_severity": 0.8837209302325582,
+      "source": "FACTOR:Manuals",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 108,
+      "severity_sum": 61.0,
+      "avg_severity": 0.5648148148148148,
+      "source": "FACTOR:Manuals",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 3.0,
+      "avg_severity": 0.2727272727272727,
+      "source": "AIRCRAFT:UAS",
+      "target": "FAR:Part 107"
+    },
+    {
+      "weight": 22,
+      "severity_sum": 16.0,
+      "avg_severity": 0.7272727272727273,
+      "source": "AIRCRAFT:B767",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 16,
+      "severity_sum": 9.0,
+      "avg_severity": 0.5625,
+      "source": "AIRCRAFT:B767",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 25,
+      "severity_sum": 19.0,
+      "avg_severity": 0.76,
+      "source": "AIRCRAFT:B767",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 28,
+      "severity_sum": 17.0,
+      "avg_severity": 0.6071428571428571,
+      "source": "AIRCRAFT:B767",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 11.0,
+      "avg_severity": 0.9166666666666666,
+      "source": "AIRCRAFT:B747",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 12.0,
+      "avg_severity": 0.8,
+      "source": "AIRCRAFT:B747",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 28,
+      "severity_sum": 20.0,
+      "avg_severity": 0.7142857142857143,
+      "source": "AIRCRAFT:B757",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 32,
+      "severity_sum": 24.0,
+      "avg_severity": 0.75,
+      "source": "AIRCRAFT:B757",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 12.0,
+      "avg_severity": 1.0,
+      "source": "AIRCRAFT:B757",
+      "target": "FACTOR:Logbook Entry"
+    },
+    {
+      "weight": 12,
+      "severity_sum": 6.0,
+      "avg_severity": 0.5,
+      "source": "AIRCRAFT:B757",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 72,
+      "severity_sum": 47.0,
+      "avg_severity": 0.6527777777777778,
+      "source": "FACTOR:Logbook Entry",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 11,
+      "severity_sum": 6.0,
+      "avg_severity": 0.5454545454545454,
+      "source": "FACTOR:Logbook Entry",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 17,
+      "severity_sum": 15.0,
+      "avg_severity": 0.8823529411764706,
+      "source": "FACTOR:Logbook Entry",
+      "target": "FAR:Part 135"
+    },
+    {
+      "weight": 20,
+      "severity_sum": 20.0,
+      "avg_severity": 1.0,
+      "source": "FAR:Part 135",
+      "target": "FACTOR:Staffing"
+    },
+    {
+      "weight": 18,
+      "severity_sum": 16.0,
+      "avg_severity": 0.8888888888888888,
+      "source": "FAR:Part 135",
+      "target": "AIRCRAFT:Helicopter"
+    },
+    {
+      "weight": 36,
+      "severity_sum": 54.0,
+      "avg_severity": 1.5,
+      "source": "FAR:Part 135",
+      "target": "AIRCRAFT:Piper"
+    },
+    {
+      "weight": 25,
+      "severity_sum": 20.0,
+      "avg_severity": 0.8,
+      "source": "FAR:Part 135",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 10,
+      "severity_sum": 6.0,
+      "avg_severity": 0.6,
+      "source": "FAR:Part 135",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 18,
+      "severity_sum": 14.0,
+      "avg_severity": 0.7777777777777778,
+      "source": "AIRCRAFT:B777",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 32,
+      "severity_sum": 27.0,
+      "avg_severity": 0.84375,
+      "source": "AIRCRAFT:B777",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 22,
+      "severity_sum": 10.0,
+      "avg_severity": 0.45454545454545453,
+      "source": "FACTOR:Staffing",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 8.0,
+      "avg_severity": 0.5714285714285714,
+      "source": "FACTOR:Staffing",
+      "target": "FACTOR:MEL"
+    },
+    {
+      "weight": 15,
+      "severity_sum": 10.0,
+      "avg_severity": 0.6666666666666666,
+      "source": "FACTOR:MEL",
+      "target": "FACTOR:Equipment / Tooling"
+    },
+    {
+      "weight": 14,
+      "severity_sum": 6.0,
+      "avg_severity": 0.42857142857142855,
+      "source": "FACTOR:Software and Automation",
+      "target": "FAR:Part 107"
     }
   ]
 }

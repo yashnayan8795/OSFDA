@@ -1,31 +1,31 @@
 Topic,Growth_Ratio,Recent_Changepoint,Avg_Severity,Risk_Score,Name,Representation,Count
-18,2.6548672566371683,False,0.4088888888888889,3.1976401179941005,18_gps_jamming_navigation_signal,"['gps', 'jamming', 'navigation', 'signal', 'fms', 'approach', 'atc', 'nav', 'heading', 'course']",450
-4,1.6245883644346872,False,1.9136799596163554,3.1790594622569737,4_smoke_smell_odor_flight,"['smoke', 'smell', 'odor', 'flight', 'cabin', 'fumes', 'attendant', 'flight attendant', 'crew', 'passengers']",1981
-12,1.5234375,False,0.8002832861189801,2.133028284348442,12_frequency_radio_tower_aircraft,"['frequency', 'radio', 'tower', 'aircraft', 'flight', 'pilot', 'electrical', 'airport', 'contact', 'time']",706
-15,1.3135593220338984,False,0.21730382293762576,1.4562800532005593,15_taxiway_taxi_ramp_runway,"['taxiway', 'taxi', 'ramp', 'runway', 'signage', 'ground', 'airport', 'diagram', 'hold', 'line']",497
-1,0.864397622906537,False,1.3562540929927964,1.4505690299266543,1_engine_takeoff_flight_landing,"['engine', 'takeoff', 'flight', 'landing', 'qrh', 'maintenance', 'checklist', 'captain', 'crew', 'normal']",4581
-22,1.0344827586206897,False,0.7991967871485943,1.4478604071458248,22_lights_laser_bright_night,"['lights', 'laser', 'bright', 'night', 'light', 'runway', 'approach', 'lighting', 'airport', 'pilot']",249
-14,0.913978494623656,False,1.1660516605166051,1.4468515652898466,14_cabin_cabin altitude_oxygen_pressurization,"['cabin', 'cabin altitude', 'oxygen', 'pressurization', 'descent', 'masks', '10000', 'altitude', 'pressure', 'mask']",542
-9,0.7874015748031497,False,1.1703499079189688,1.2481692550862082,9_flaps_approach_flap_landing,"['flaps', 'approach', 'flap', 'landing', 'speed', 'runway', 'trim', 'captain', 'final', 'aircraft']",1086
-5,0.6488156539649845,False,1.837528604118993,1.2449243154453993,5_runway_landing_engine_power,"['runway', 'landing', 'engine', 'power', 'left', 'right', 'student', 'aircraft', 'pilot', 'gear']",1748
-24,0.6976744186046512,False,1.5281385281385282,1.2307459981878588,24_tire_damage_landing_flight,"['tire', 'damage', 'landing', 'flight', 'aircraft', 'strike', 'gear', 'maintenance', 'wing', 'bird']",231
-11,0.7692307692307693,False,1.1590656284760845,1.215025241721571,11_fuel_tank_engine_lbs,"['fuel', 'tank', 'engine', 'lbs', 'flight', 'tanks', 'imbalance', 'landing', 'left', 'right']",899
-6,0.7703281027104136,False,1.059721300597213,1.1784946521558453,6_ramp_gate_aircraft_tug,"['ramp', 'gate', 'aircraft', 'tug', 'ground', 'parking', 'taxi', 'brakes', 'brake', 'crew']",1507
-13,0.5893536121673004,False,1.4047619047619047,1.0033043635705232,13_drone_feet_reported_uav,"['drone', 'feet', 'reported', 'uav', 'object', 'aircraft', 'uas', 'ft', 'pilot', 'helicopter']",630
-0,0.658623417721519,False,1.0402257007644704,1.0011819208411479,0_approach_aircraft_altitude_controller,"['approach', 'aircraft', 'altitude', 'controller', 'feet', 'atc', 'traffic', 'ft', 'pilot', 'clearance']",10988
-3,0.5823293172690762,False,1.3015165031222122,0.9612849256078729,3_turbulence_weather_wake_wake turbulence,"['turbulence', 'weather', 'wake', 'wake turbulence', 'aircraft', 'flight', 'approach', 'severe', 'atc', 'reported']",2242
-17,0.4975124378109453,False,1.5314533622559654,0.8784709856358124,17_gear_landing_landing gear_nose,"['gear', 'landing', 'landing gear', 'nose', 'nose gear', 'main', 'light', 'green', 'checklist', 'locked']",461
-16,0.7558139534883721,False,0.22061855670103092,0.8391872452649245,16_hazmat_cargo_goods_dangerous goods,"['hazmat', 'cargo', 'goods', 'dangerous goods', 'dangerous', 'bags', 'load', 'ramp', 'loaded', 'dg']",485
-19,0.5913978494623655,False,0.8262108262108262,0.8357075023741689,19_maintenance_fuel_engine_mel,"['maintenance', 'fuel', 'engine', 'mel', 'oil', 'pump', 'valve', 'hydraulic', 'pressure', 'tank']",351
-2,0.5679236710586096,False,0.9260324098274961,0.8308815339128509,2_runway_aircraft_tower_traffic,"['runway', 'aircraft', 'tower', 'traffic', 'taxiway', 'short', 'taxi', 'final', 'controller', 'takeoff']",3826
-23,0.6106870229007633,False,0.7,0.8244274809160305,23_ice_deice_icing_snow,"['ice', 'deice', 'icing', 'snow', 'deicing', 'conditions', 'dry', 'flight', 'fluid', 'aircraft']",240
-27,0.6521739130434783,False,0.5,0.8152173913043479,27_day_hours_sleep_fatigue,"['day', 'hours', 'sleep', 'fatigue', 'duty', 'rest', 'flight', 'time', 'trip', 'fatigued']",148
-25,0.6164383561643835,False,0.38495575221238937,0.735089101709298,25_batteries_lithium_battery_bag,"['batteries', 'lithium', 'battery', 'bag', 'cargo', 'passenger', 'lithium batteries', 'wheelchair', 'ramp', 'flight']",226
-8,0.4918032786885246,False,0.5637636080870918,0.6304336741197766,8_maintenance_mel_aircraft_mechanic,"['maintenance', 'mel', 'aircraft', 'mechanic', 'flight', 'inspection', 'maintenance control', 'control', 'work', 'technician']",1286
-21,0.4301075268817204,False,0.8056426332288401,0.603364007145987,21_maintenance_door_aircraft_flight,"['maintenance', 'door', 'aircraft', 'flight', 'safety', 'cable', 'slide', 'installed', 'mount', 'reported']",319
-7,0.37735849056603776,False,0.9386828160484482,0.5544684558581978,7_flight_door_passenger_attendant,"['flight', 'door', 'passenger', 'attendant', 'flight attendant', 'passengers', 'seat', 'crew', 'captain', 'attendants']",1321
-10,0.3869969040247679,False,0.3275862068965517,0.45038432795985917,10_flight_time_crew_aircraft,"['flight', 'time', 'crew', 'aircraft', 'company', 'captain', 'redacted', 'dispatch', 'maintenance', 'dispatcher']",986
-26,0.24844720496894407,False,0.42021276595744683,0.30064754856614245,26_installed_safety_cargo_aircraft,"['installed', 'safety', 'cargo', 'aircraft', 'maintenance', 'reported', 'life', 'flight', 'air', 'water']",188
-29,0.2127659574468085,False,0.07575757575757576,0.22082527401676338,29_social_distancing_social distancing_covid19,"['social', 'distancing', 'social distancing', 'covid19', 'employee', 'safety', 'employee reported', 'agents', 'people', 'lights']",66
-20,0.0,False,0.6525679758308157,0.0,20_mask_face_passenger_wearing,"['mask', 'face', 'passenger', 'wearing', 'wear', 'policy', 'face mask', 'masks', 'flight', 'attendant']",331
-28,0.0,False,0.16666666666666666,0.0,28_faa_information_certificate_reported,"['faa', 'information', 'certificate', 'reported', 'charts', 'ipad', 'company', 'use', 'installed', 'jeppesen']",84
+21,3.125,False,1.064102564102564,4.787660256410256,21_tire_tires_gear_wheel,"['tire', 'tires', 'gear', 'wheel', 'assembly', 'maintenance', 'landing', 'main', 'landing gear', 'aircraft']",78
+3,1.5221987315010572,True,1.9221590909090909,4.477729194695368,3_smoke_smell_odor_flight,"['smoke', 'smell', 'odor', 'flight', 'cabin', 'fumes', 'attendant', 'flight attendant', 'crew', 'passengers']",1760
+12,2.2222222222222223,False,1.240909090909091,3.6010101010101017,12_flaps_flap_edge_landing,"['flaps', 'flap', 'edge', 'landing', 'trailing edge', 'qrh', 'trailing', 'checklist', 'approach', 'position']",220
+15,1.5517241379310345,False,1.3317535545023698,2.5849812060794246,15_electrical_alternator_power_failure,"['electrical', 'alternator', 'power', 'failure', 'battery', 'radio', 'gear', 'landing', 'flight', 'redacted']",211
+6,1.9458128078817734,False,0.26218097447795824,2.200890356942841,6_gps_flight_jamming_reported,"['gps', 'flight', 'jamming', 'reported', 'aircraft', 'atc', 'frequency', 'navigation', 'data', 'pilot']",862
+1,0.9049079754601227,False,1.4330072309655466,1.5532778115564974,1_engine_fuel_flight_landing,"['engine', 'fuel', 'flight', 'landing', 'qrh', 'power', 'cabin', 'maintenance', 'emergency', 'airport']",4702
+18,0.9836065573770493,False,0.7698412698412699,1.362217017954723,18_oxygen_o2_mask_crew oxygen,"['oxygen', 'o2', 'mask', 'crew oxygen', 'bottle', 'crew', 'psi', 'maintenance', 'valve', 'oxygen mask']",126
+2,0.6624055781522371,False,1.376502732240437,1.1183071222411676,2_gear_landing_aircraft_nose,"['gear', 'landing', 'aircraft', 'nose', 'gate', 'ramp', 'left', 'runway', 'brake', 'right']",3660
+0,0.6485812285625195,False,1.0606470958069352,0.9925391267973848,0_aircraft_runway_approach_traffic,"['aircraft', 'runway', 'approach', 'traffic', 'controller', 'altitude', 'flight', 'pilot', 'atc', 'feet']",20677
+8,0.8923884514435696,False,0.20765027322404372,0.9850408043256887,8_taxiway_runway_taxi_lights,"['taxiway', 'runway', 'taxi', 'lights', 'airport', 'markings', 'signage', 'ramp', 'diagram', 'hold']",549
+7,0.5461393596986818,False,1.4541139240506329,0.9432137834036569,7_drone_feet_reported_object,"['drone', 'feet', 'reported', 'object', 'uav', 'uas', 'ft', 'balloon', 'aircraft', 'flying']",632
+9,0.7838479809976248,False,0.20052770448548812,0.8624395991451439,9_hazmat_cargo_goods_dangerous goods,"['hazmat', 'cargo', 'goods', 'dangerous goods', 'dangerous', 'load', 'bags', 'dg', 'loaded', 'ramp']",379
+4,0.5077262693156733,False,0.6448215330602691,0.6714226849932251,4_maintenance_mel_aircraft_mechanic,"['maintenance', 'mel', 'aircraft', 'mechanic', 'flight', 'engine', 'maintenance control', 'inspection', 'control', 'technician']",1709
+19,0.49180327868852464,False,0.49206349206349204,0.6128024980483997,19_cargo_aircraft_ramp_mount,"['cargo', 'aircraft', 'ramp', 'mount', 'safety', 'carts', 'ipad', 'belt', 'cart', 'nose']",126
+11,0.4411764705882353,False,0.6827309236947792,0.5917788802267895,11_lights_laser_light_bright,"['lights', 'laser', 'light', 'bright', 'runway', 'lighting', 'night', 'airport', 'tower', 'landing']",249
+13,0.4635761589403974,False,0.3055555555555556,0.5344002943340692,13_battery_lithium_batteries_lithium ion,"['battery', 'lithium', 'batteries', 'lithium ion', 'ion', 'cargo', 'bag', 'passenger', 'lithium batteries', 'ion batteries']",216
+17,0.4132231404958678,False,0.2706766917293233,0.46914807680357923,17_safety_flight_covid19_life,"['safety', 'flight', 'covid19', 'life', 'company', 'work', 'maintenance', 'attendant', 'equipment', 'flight attendant']",133
+16,0.3448275862068965,False,0.47297297297297297,0.4263746505125815,16_ice_dry ice_dry_deice,"['ice', 'dry ice', 'dry', 'deice', 'deicing', 'fluid', 'icing', 'crew', 'snow', 'wing']",148
+22,0.24390243902439024,False,1.2876712328767124,0.4009355162044771,22_tks_fluid_mask_tks fluid,"['tks', 'fluid', 'mask', 'tks fluid', 'flight', 'air', 'cockpit', 'oxygen', 'fumes', 'o2']",73
+5,0.28216704288939054,False,0.7974504249291785,0.39467415701596764,5_flight_door_passenger_attendant,"['flight', 'door', 'passenger', 'attendant', 'flight attendant', 'passengers', 'seat', 'crew', 'captain', 'attendants']",1412
+14,0.26315789473684204,False,0.3744075829383886,0.31242205038663,14_day_hours_fatigue_sleep,"['day', 'hours', 'fatigue', 'sleep', 'duty', 'time', 'flight', 'rest', 'trip', 'hour']",211
+20,0.17857142857142855,False,0.18032786885245902,0.19467213114754095,20_speed_restriction_speed restriction_knots,"['speed', 'restriction', 'speed restriction', 'knots', '280', '250', 'star', 'restrictions', 'arrival', 'kts']",122
+10,0.0,True,0.6702127659574468,0.0,10_mask_face_passenger_wearing,"['mask', 'face', 'passenger', 'wearing', 'wear', 'policy', 'face mask', 'masks', 'flight', 'mask policy']",282
+23,0.0,False,0.813953488372093,0.0,23_runway_landing_braking_short,"['runway', 'landing', 'braking', 'short', 'runways', 'flaps', 'dip', 'aircraft', 'braking action', 'rubber']",43
+24,0.0,False,0.05714285714285714,0.0,24_ipad_headsets_app_company,"['ipad', 'headsets', 'app', 'company', 'use', 'paper', 'faa', 'expiration', 'covid', 'new']",35
+25,0.0,False,0.8333333333333334,0.0,25_airport_visual_sectional_chart,"['airport', 'visual', 'sectional', 'chart', 'terrain', 'feet', 'lake', 'towers', 'runway', 'vasi']",12
+26,0.0,False,0.0,0.0,26_frequency_monitor_monitor frequency_prm,"['frequency', 'monitor', 'monitor frequency', 'prm', 'ctaf', 'sfra', 'tower', 'lighting', 'ils prm', 'pcl']",12
+27,0.0,False,0.42857142857142855,0.0,27_seat_pilot_new_fly aircraft,"['seat', 'pilot', 'new', 'fly aircraft', 'displays', 'training', 'captain', 'fly', 'pilots', 'safety']",7
+28,0.0,False,1.2,0.0,28_contractor_tractors_employees_ground,"['contractor', 'tractors', 'employees', 'ground', 'safety', 'hoist', 'life', 'worker', 'power cable', 'employee']",5
+29,0.0,False,0.75,0.0,29_tracking_leak_reinspection_valve,"['tracking', 'leak', 'reinspection', 'valve', 'inspection', 'item', 'repetitive', 'maintenance', 'tank', 'specifications']",4

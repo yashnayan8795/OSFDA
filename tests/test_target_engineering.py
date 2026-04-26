@@ -1,5 +1,5 @@
 """
-Tests for Target Engineering — Severity Rubric v2 & Category Taxonomy
+Tests for Target Engineering — Severity Rubric v2.1 & Category Taxonomy
 """
 import pytest
 import pandas as pd
