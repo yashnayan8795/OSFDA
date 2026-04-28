@@ -1,12 +1,16 @@
 # Data files
 data/raw/*.csv
 data/raw/*.parquet
+data/raw/bts_flights/*.parquet
 data/processed/*.parquet
 data/processed/*.npy
 data/processed/*.npy
 data/processed/*.json
 data/processed/*.csv
 data/raw/column_inventory.csv
+data/raw/*.mdb
+data/raw/*.zip
+data/raw/ntsb_accidents.parquet
 
 # Model files (large binary files)
 models/*.pkl
@@ -123,3 +127,5 @@ evaluation_results/*.csv
 # Keep only configuration files in evaluation_results
 !evaluation_results/*.yaml
 !evaluation_results/*.yml
+
+*.zip
