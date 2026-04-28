@@ -1,9 +1,9 @@
 """
-Feature Encoding
-=================
-Categorical and numeric encoding strategies for LightGBM/CatBoost
-with native categorical support, plus fallback encoding for
-scikit-learn baselines.
+    Feature Encoding
+    =================
+    Categorical and numeric encoding strategies for LightGBM/CatBoost
+    with native categorical support, plus fallback encoding for
+    scikit-learn baselines.
 """
 
 import pandas as pd
