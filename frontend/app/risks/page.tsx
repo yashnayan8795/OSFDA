@@ -1,26 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery, gql } from "@apollo/client";
 import { TabLayout } from "@/components/shared/TabLayout";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 
-const mockRisks = [
-  { id: "1", topic: "Windscreen icing during climb", score: 0.87, growth: 2.3, severity: 0.65, count: 127, changepoint: true },
-  { id: "2", topic: "Hydraulic pressure loss at altitude", score: 0.76, growth: 1.8, severity: 0.72, count: 89, changepoint: true },
-  { id: "3", topic: "Navigation system intermittent failures", score: 0.64, growth: 1.2, severity: 0.45, count: 56, changepoint: false },
-];
+const EMERGING_RISKS_QUERY = gql`
+  query EmergingRisks($limit: Int) {
+    emergingRisks(limit: $limit) {
+      topicId
+      name
+      riskScore
+      growthRatio
+      recentChangepoint
+      avgSeverity
+      count
+    }
+  }
+`;
 
-const mockTrendData = [
-  { date: "Jun", score: 0.35 },
-  { date: "Jul", score: 0.48 },
-  { date: "Aug", score: 0.62 },
-  { date: "Sep", score: 0.78 },
-  { date: "Oct", score: 0.87 },
-];
+const RISK_TREND_QUERY = gql`
+  query RiskTrend($topicId: Int!) {
+    riskTrend(topicId: $topicId) {
+      period
+      count
+      avgSeverity
+    }
+  }
+`;
 
 export default function RisksPage() {
-  const [selectedRisk, setSelectedRisk] = useState(mockRisks[0]);
+  const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
+
+  const { data: risksData, loading: risksLoading, error: risksError } = useQuery(EMERGING_RISKS_QUERY, {
+    variables: { limit: 20 },
+  });
+
+  useEffect(() => {
+    if (risksData?.emergingRisks?.length > 0 && selectedTopicId === null) {
+      setSelectedTopicId(risksData.emergingRisks[0].topicId);
+    }
+  }, [risksData, selectedTopicId]);
+
+  const { data: trendData } = useQuery(RISK_TREND_QUERY, {
+    variables: { topicId: selectedTopicId },
+    skip: selectedTopicId === null,
+  });
+
+  const risks = risksData?.emergingRisks || [];
+  const selectedRisk = risks.find((r: any) => r.topicId === selectedTopicId) || risks[0];
+  const trendPoints = trendData?.riskTrend || [];
 
   return (
     <ErrorBoundary>
@@ -28,6 +58,10 @@ export default function RisksPage() {
         <div className="px-4 sm:px-6 lg:px-8 py-8">
           <div className="max-w-6xl mx-auto">
             <h1 className="text-3xl font-bold text-foreground mb-8">Emerging Risks</h1>
+
+            {risksError && (
+              <p className="text-red-500 mb-4">Failed to load risks. Is the backend running?</p>
+            )}
 
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Risk Table */}
@@ -44,27 +78,35 @@ export default function RisksPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
-                        {mockRisks.map((risk) => (
-                          <tr
-                            key={risk.id}
-                            onClick={() => setSelectedRisk(risk)}
-                            className={`hover:bg-muted/50 cursor-pointer transition-colors ${
-                              selectedRisk.id === risk.id ? "bg-accent/10" : ""
-                            } ${risk.changepoint ? "border-l-2 border-l-amber-500" : ""}`}
-                          >
-                            <td className="px-6 py-4 text-foreground font-medium">{risk.topic}</td>
-                            <td className="px-6 py-4">
-                              <div className="h-2 w-20 bg-muted rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-accent"
-                                  style={{ width: `${risk.score * 100}%` }}
-                                />
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-foreground">{risk.growth.toFixed(1)}x</td>
-                            <td className="px-6 py-4 text-muted-foreground">{risk.count}</td>
-                          </tr>
-                        ))}
+                        {risksLoading
+                          ? Array.from({ length: 5 }).map((_, i) => (
+                              <tr key={i}>
+                                <td colSpan={4} className="px-6 py-4 text-muted-foreground text-center">
+                                  Loading...
+                                </td>
+                              </tr>
+                            ))
+                          : risks.map((risk: any) => (
+                              <tr
+                                key={risk.topicId}
+                                onClick={() => setSelectedTopicId(risk.topicId)}
+                                className={`hover:bg-muted/50 cursor-pointer transition-colors ${
+                                  selectedTopicId === risk.topicId ? "bg-accent/10" : ""
+                                } ${risk.recentChangepoint ? "border-l-2 border-l-amber-500" : ""}`}
+                              >
+                                <td className="px-6 py-4 text-foreground font-medium">{risk.name}</td>
+                                <td className="px-6 py-4">
+                                  <div className="h-2 w-20 bg-muted rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-accent"
+                                      style={{ width: `${risk.riskScore * 100}%` }}
+                                    />
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 text-foreground">{risk.growthRatio.toFixed(1)}x</td>
+                                <td className="px-6 py-4 text-muted-foreground">{risk.count}</td>
+                              </tr>
+                            ))}
                       </tbody>
                     </table>
                   </div>
@@ -72,56 +114,57 @@ export default function RisksPage() {
               </div>
 
               {/* Detail Panel */}
-              <div className="space-y-6">
-                {/* Risk Info */}
-                <div className="p-6 rounded-lg border border-border bg-card">
-                  <h2 className="text-xl font-bold text-foreground mb-4">{selectedRisk.topic}</h2>
-                  <div className="space-y-3 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Risk Score</p>
-                      <p className="text-lg font-semibold text-accent">{(selectedRisk.score * 100).toFixed(0)}%</p>
+              {selectedRisk && (
+                <div className="space-y-6">
+                  <div className="p-6 rounded-lg border border-border bg-card">
+                    <h2 className="text-xl font-bold text-foreground mb-4">{selectedRisk.name}</h2>
+                    <div className="space-y-3 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Risk Score</p>
+                        <p className="text-lg font-semibold text-accent">
+                          {(selectedRisk.riskScore * 100).toFixed(0)}%
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Avg Severity</p>
+                        <p className="text-lg font-semibold text-foreground">
+                          {(selectedRisk.avgSeverity * 100).toFixed(0)}%
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Reports</p>
+                        <p className="text-lg font-semibold text-foreground">{selectedRisk.count}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground">Avg Severity</p>
-                      <p className="text-lg font-semibold text-foreground">{(selectedRisk.severity * 100).toFixed(0)}%</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Reports</p>
-                      <p className="text-lg font-semibold text-foreground">{selectedRisk.count}</p>
-                    </div>
+
+                    {selectedRisk.recentChangepoint && (
+                      <div className="mt-4 p-3 rounded bg-amber-500/10 border border-amber-500/30 text-xs text-amber-400">
+                        ⚠️ Changepoint detected in risk trajectory
+                      </div>
+                    )}
                   </div>
 
-                  {selectedRisk.changepoint && (
-                    <div className="mt-4 p-3 rounded bg-amber-500/10 border border-amber-500/30 text-xs text-amber-400">
-                      ⚠️ Changepoint detected in risk trajectory
+                  {trendPoints.length > 0 && (
+                    <div className="p-6 rounded-lg border border-border bg-card">
+                      <h3 className="text-sm font-semibold text-foreground mb-4">Risk Trend</h3>
+                      <ResponsiveContainer width="100%" height={150}>
+                        <LineChart data={trendPoints}>
+                          <XAxis dataKey="period" stroke="currentColor" style={{ fontSize: "12px" }} />
+                          <YAxis stroke="currentColor" style={{ fontSize: "12px" }} />
+                          <Tooltip contentStyle={{ backgroundColor: "#0f1117", border: "1px solid #1a1d2e" }} />
+                          <Line
+                            type="monotone"
+                            dataKey="count"
+                            stroke="#06b6d4"
+                            dot={false}
+                            strokeWidth={2}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
                     </div>
                   )}
                 </div>
-
-                {/* Trend Chart */}
-                <div className="p-6 rounded-lg border border-border bg-card">
-                  <h3 className="text-sm font-semibold text-foreground mb-4">Risk Trend</h3>
-                  <ResponsiveContainer width="100%" height={150}>
-                    <LineChart data={mockTrendData}>
-                      <XAxis dataKey="date" stroke="currentColor" style={{ fontSize: "12px" }} />
-                      <YAxis stroke="currentColor" style={{ fontSize: "12px" }} />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "#0f1117",
-                          border: "1px solid #1a1d2e",
-                        }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="score"
-                        stroke="#06b6d4"
-                        dot={false}
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

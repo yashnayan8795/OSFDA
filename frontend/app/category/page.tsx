@@ -1,46 +1,59 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation, gql } from "@apollo/client";
 import { TabLayout } from "@/components/shared/TabLayout";
 import { Button } from "@/components/ui/button";
 import { ProbabilityBar } from "@/components/shared/ProbabilityBar";
-import { ResultPanel } from "@/components/shared/ResultPanel";
 import { ModelInfoCard } from "@/components/shared/ModelInfoCard";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+
+const CLASSIFY_CATEGORIES_MUTATION = gql`
+  mutation ClassifyCategories($narrative: String!, $synopsis: String, $accurate: Boolean) {
+    classifyCategories(input: { narrative: $narrative, synopsis: $synopsis, accurate: $accurate }) {
+      predictions {
+        label
+        displayName
+        probability
+        predicted
+        thresholdUsed
+      }
+    }
+  }
+`;
 
 export default function CategoryPage() {
   const [narrative, setNarrative] = useState("");
   const [mode, setMode] = useState<"quick" | "accurate">("accurate");
   const [result, setResult] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [classifyCategories, { loading }] = useMutation(CLASSIFY_CATEGORIES_MUTATION);
 
   const handleSubmit = async () => {
     if (narrative.length < 50) {
       alert("Narrative must be at least 50 characters");
       return;
     }
-    setIsLoading(true);
-    setTimeout(() => {
-      setResult({
-        labels: [
-          { name: "airframe", probability: 0.85, threshold: 0.5 },
-          { name: "engine", probability: 0.42, threshold: 0.5 },
-          { name: "fuel_system", probability: 0.28, threshold: 0.5 },
-          { name: "electrical", probability: 0.15, threshold: 0.5 },
-          { name: "flight_control", probability: 0.08, threshold: 0.5 },
-        ],
-        modelUsed: mode === "quick" ? "TF-IDF Baseline" : "Fusion",
-        modelInfo: {
-          name: "Category Classifier",
-          version: "2.0.1",
-          trainingDate: "2025-08-10",
-          primaryMetric: 0.891,
-          calibrationStatus: "good",
-          status: "TRAINED" as const,
-        },
+    setErrorMsg(null);
+    try {
+      const response = await classifyCategories({
+        variables: { narrative, synopsis: "", accurate: mode === "accurate" },
       });
-      setIsLoading(false);
-    }, 1000);
+      const predictions = response.data.classifyCategories.predictions;
+      setResult({
+        labels: predictions.map((p: any) => ({
+          name: p.displayName || p.label,
+          probability: p.probability,
+          threshold: p.thresholdUsed,
+          predicted: p.predicted,
+        })),
+        modelUsed: mode === "quick" ? "TF-IDF Baseline" : "Fusion",
+      });
+    } catch (e: any) {
+      console.error(e);
+      setErrorMsg(e.message || "Classification failed");
+    }
   };
 
   return (
@@ -103,11 +116,13 @@ export default function CategoryPage() {
 
                   <Button
                     onClick={handleSubmit}
-                    disabled={isLoading || narrative.length < 50}
+                    disabled={loading || narrative.length < 50}
                     className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                   >
-                    {isLoading ? "Processing..." : "Classify"}
+                    {loading ? "Processing..." : "Classify"}
                   </Button>
+
+                  {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
                 </div>
               </div>
 
@@ -122,8 +137,8 @@ export default function CategoryPage() {
                           key={label.name}
                           label={label.name.replace(/_/g, " ").toUpperCase()}
                           probability={label.probability}
-                          color="bg-accent"
-                          predicted={label.probability > label.threshold}
+                          color={label.predicted ? "bg-accent" : "bg-muted-foreground"}
+                          predicted={label.predicted}
                         />
                       ))}
                     </div>
@@ -133,8 +148,6 @@ export default function CategoryPage() {
                         <span className="font-semibold text-foreground">Model:</span> {result.modelUsed}
                       </p>
                     </div>
-
-                    <ModelInfoCard {...result.modelInfo} />
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-full p-8 rounded-lg border border-dashed border-border text-center">

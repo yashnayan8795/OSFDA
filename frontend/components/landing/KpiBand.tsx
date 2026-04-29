@@ -7,11 +7,14 @@ import { gql } from "@apollo/client";
 const MODEL_METRICS_QUERY = gql`
   query ModelMetrics {
     modelMetrics {
-      id
+      severityQwk
+      severityModel
+      categoryMacroF1
+      categoryModel
       totalIncidents
-      severityModelQwk
-      emergingTopicsCount
-      factorGraphNodes
+      graphNodes
+      graphEdges
+      emergingTopics
     }
   }
 `;
@@ -21,9 +24,9 @@ export function KpiBand() {
 
   const metrics = data?.modelMetrics || {
     totalIncidents: 38655,
-    severityModelQwk: 0.742,
-    emergingTopicsCount: 156,
-    factorGraphNodes: 2847,
+    severityQwk: 0.742,
+    emergingTopics: 156,
+    graphNodes: 2847,
   };
 
   return (
@@ -37,17 +40,17 @@ export function KpiBand() {
             isLoading={loading}
           />
           <KpiTile
-            number={`${(metrics.severityModelQwk * 100).toFixed(1)}%`}
+            number={`${(metrics.severityQwk * 100).toFixed(1)}%`}
             label="Severity Model QWK Score"
             isLoading={loading}
           />
           <KpiTile
-            number={metrics.emergingTopicsCount}
+            number={metrics.emergingTopics}
             label="Emerging Risk Topics"
             isLoading={loading}
           />
           <KpiTile
-            number={metrics.factorGraphNodes}
+            number={metrics.graphNodes}
             label="Factor Graph Nodes"
             isLoading={loading}
           />

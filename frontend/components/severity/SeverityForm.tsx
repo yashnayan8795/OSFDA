@@ -1,45 +1,39 @@
 "use client";
 
+import { useQuery, gql } from "@apollo/client";
 import { DynamicForm } from "@/components/shared/DynamicForm";
 import { Feature } from "@/types/osfda";
+
+const SCHEMA_QUERY = gql`
+  query SeverityFeatureSchema {
+    severityFeatureSchema {
+      name
+      type
+      description
+      required
+      options
+    }
+  }
+`;
 
 interface SeverityFormProps {
   onSubmit: (data: Record<string, any>) => void;
   isLoading?: boolean;
 }
 
-// Mock features for now - will be fetched from GraphQL
-const mockFeatures: Feature[] = [
-  {
-    name: "aircraft_type",
-    type: "categorical",
-    description: "Type of aircraft involved",
-    required: true,
-    options: ["B737", "A320", "DHC6", "CRJ200", "E175"],
-  },
-  {
-    name: "phase_of_flight",
-    type: "categorical",
-    description: "Flight phase during incident",
-    required: true,
-    options: ["preflight", "takeoff", "cruise", "descent", "landing", "ground"],
-  },
-  {
-    name: "injuries",
-    type: "numeric",
-    description: "Number of injuries",
-    required: true,
-  },
-  {
-    name: "damage_extent",
-    type: "categorical",
-    description: "Aircraft damage extent",
-    required: true,
-    options: ["none", "minor", "substantial", "destroyed"],
-  },
-];
-
 export function SeverityForm({ onSubmit, isLoading }: SeverityFormProps) {
+  const { data, loading, error } = useQuery(SCHEMA_QUERY);
+
+  if (error) {
+    return (
+      <div className="text-red-500">
+        Failed to load feature schema. Please ensure the backend is running.
+      </div>
+    );
+  }
+
+  const features = data?.severityFeatureSchema || [];
+
   return (
     <div className="space-y-6">
       <div>
@@ -47,9 +41,9 @@ export function SeverityForm({ onSubmit, isLoading }: SeverityFormProps) {
         <p className="text-muted-foreground">Enter incident details for severity assessment</p>
       </div>
       <DynamicForm
-        features={mockFeatures}
+        features={features}
         onSubmit={onSubmit}
-        isLoading={isLoading}
+        isLoading={isLoading || loading}
         submitLabel="Classify Incident"
       />
     </div>

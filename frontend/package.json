@@ -9,7 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@apollo/client": "^4.1.9",
+    "@apollo/client": "^3.13.8",
     "@emotion/is-prop-valid": "latest",
     "@graphql-codegen/cli": "^6.3.1",
     "@graphql-codegen/client-preset": "^5.3.0",
