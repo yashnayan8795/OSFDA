@@ -69,6 +69,10 @@ def load_severity_test_predictions():
     X_test, y_test = splits["test"]
 
     model, calibrators = load_severity_model()
+    
+    X_test.columns = [col.replace(' ', '_') for col in X_test.columns]
+    X_test = X_test[model.feature_name()]
+    
     raw_probs = model.predict(X_test)
     cal_probs = np.column_stack([c.predict(raw_probs[:, i]) for i, c in enumerate(calibrators)])
     row_sums = cal_probs.sum(axis=1, keepdims=True)
@@ -129,6 +133,7 @@ _PREFLIGHT_DEFAULT_FEATURES = [
 @st.cache_resource
 def load_preflight_model():
     import joblib
+    import src.models.preflight
     artifact = joblib.load(MODELS / "preflight_lgbm_calibrated.joblib")
     if isinstance(artifact, dict) and "model" in artifact:
         return artifact["model"]
@@ -139,6 +144,7 @@ def load_preflight_model():
 def load_preflight_features():
     """Return the feature list saved alongside the preflight model."""
     import joblib
+    import src.models.preflight
     artifact = joblib.load(MODELS / "preflight_lgbm_calibrated.joblib")
     if isinstance(artifact, dict) and "features" in artifact:
         return artifact["features"]
@@ -148,6 +154,7 @@ def load_preflight_features():
 @st.cache_data
 def load_preflight_test_data():
     import joblib
+    import src.models.preflight
     df = pd.read_parquet(PROCESSED / "preflight_features_final.parquet")
     artifact = joblib.load(MODELS / "preflight_lgbm_calibrated.joblib")
     if isinstance(artifact, dict) and "features" in artifact:
