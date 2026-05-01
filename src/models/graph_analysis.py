@@ -12,9 +12,8 @@ Community detection (Louvain) identifies systemic risk clusters.
 """
 
 import pandas as pd
-import numpy as np
 import networkx as nx
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 from pathlib import Path
 from collections import Counter
 import json
@@ -106,52 +105,102 @@ def build_multilayer_graph(
     min_edge_weight: int = 5,
 ) -> nx.Graph:
     """
-    Builds a co-occurrence graph of contributing factors.
-    Uses vectorized explode + merge instead of iterrows for ~50x speedup.
+    Builds a heterogeneous co-occurrence graph with four node types:
+      FACTOR, PHASE, AIRCRAFT, FAR.
+    Edges connect any two entities that appear in the same incident report.
+    Uses vectorized explode + merge for performance.
     """
     G = nx.Graph()
 
-    # Prepare a clean factors column
-    work = df[[factor_col, severity_col]].copy()
-    work = work.rename(columns={factor_col: "_factors", severity_col: "_severity"})
-    work["_factors"] = work["_factors"].fillna("")
-    work = work[work["_factors"].str.strip().astype(bool)].copy()
-    work["_row_id"] = range(len(work))
+    # Assign a stable integer row_id across the whole DataFrame
+    df = df.reset_index(drop=True)
+    df["_row_id"] = df.index
 
-    # Explode factors into one row per factor per report
-    work["_factor_list"] = work["_factors"].str.split(";")
-    exploded = work.explode("_factor_list")
-    exploded["_factor_list"] = exploded["_factor_list"].str.strip()
-    exploded = exploded[exploded["_factor_list"].astype(bool)]
+    sev = df[["_row_id", severity_col]].rename(columns={severity_col: "_severity"})
 
-    # --- Node statistics ---
-    node_stats = exploded.groupby("_factor_list").agg(
-        count=("_row_id", "size"),
-        severity_sum=("_severity", "sum"),
+    entity_parts: List[pd.DataFrame] = []
+
+    # ── FACTOR nodes (semicolon-delimited list) ──────────────────
+    if factor_col in df.columns:
+        fwork = df[["_row_id", factor_col]].copy()
+        fwork[factor_col] = fwork[factor_col].fillna("")
+        fwork = fwork[fwork[factor_col].str.strip().astype(bool)]
+        fwork["_factor_list"] = fwork[factor_col].str.split(";")
+        exploded = fwork.explode("_factor_list")
+        exploded["_factor_list"] = exploded["_factor_list"].str.strip()
+        exploded = exploded[exploded["_factor_list"].astype(bool)]
+        exploded["_entity"] = exploded["_factor_list"].apply(
+            lambda v: _parse_factors(v)[0] if _parse_factors(v) else None
+        )
+        exploded = exploded.dropna(subset=["_entity"])
+        exploded["_node_type"] = "FACTOR"
+        entity_parts.append(exploded[["_row_id", "_entity", "_node_type"]])
+
+    # ── PHASE nodes (single value per report) ────────────────────
+    if phase_col in df.columns:
+        pwork = df[["_row_id", phase_col]].copy()
+        pwork["_entity"] = pwork[phase_col].apply(_parse_flight_phase)
+        pwork = pwork.dropna(subset=["_entity"])
+        pwork["_node_type"] = "PHASE"
+        entity_parts.append(pwork[["_row_id", "_entity", "_node_type"]])
+
+    # ── AIRCRAFT nodes (single value per report) ─────────────────
+    if aircraft_col in df.columns:
+        awork = df[["_row_id", aircraft_col]].copy()
+        awork["_entity"] = awork[aircraft_col].apply(_parse_aircraft_type)
+        awork = awork.dropna(subset=["_entity"])
+        awork["_node_type"] = "AIRCRAFT"
+        entity_parts.append(awork[["_row_id", "_entity", "_node_type"]])
+
+    # ── FAR nodes (single value per report) ──────────────────────
+    if far_col in df.columns:
+        rwork = df[["_row_id", far_col]].copy()
+        rwork["_entity"] = rwork[far_col].apply(_parse_far_part)
+        rwork = rwork.dropna(subset=["_entity"])
+        rwork["_node_type"] = "FAR"
+        entity_parts.append(rwork[["_row_id", "_entity", "_node_type"]])
+
+    if not entity_parts:
+        return G
+
+    all_entities = pd.concat(entity_parts, ignore_index=True)
+    all_entities = all_entities.merge(sev, on="_row_id", how="left")
+    all_entities["_severity"] = pd.to_numeric(all_entities["_severity"], errors="coerce").fillna(0)
+
+    # ── Node statistics (count + avg_severity + node_type) ───────
+    node_stats = (
+        all_entities.groupby(["_entity", "_node_type"])
+        .agg(count=("_row_id", "size"), severity_sum=("_severity", "sum"))
+        .reset_index()
     )
-    for factor, row in node_stats.iterrows():
-        G.add_node(factor, count=int(row["count"]),
-                   severity_sum=float(row["severity_sum"]),
-                   avg_severity=float(row["severity_sum"] / row["count"]))
+    for _, nrow in node_stats.iterrows():
+        G.add_node(
+            nrow["_entity"],
+            count=int(nrow["count"]),
+            severity_sum=float(nrow["severity_sum"]),
+            avg_severity=float(nrow["severity_sum"] / nrow["count"]),
+            node_type=nrow["_node_type"],
+        )
 
-    # --- Edge statistics via self-join ---
-    # For each row_id, create all unique (f1, f2) pairs where f1 < f2
-    pair_df = exploded[["_row_id", "_factor_list", "_severity"]].copy()
+    # ── Edge statistics via self-join on _row_id ─────────────────
+    pair_df = all_entities[["_row_id", "_entity", "_severity"]].copy()
     merged = pair_df.merge(pair_df, on="_row_id", suffixes=("_a", "_b"))
-    merged = merged[merged["_factor_list_a"] < merged["_factor_list_b"]]
+    merged = merged[merged["_entity_a"] < merged["_entity_b"]]
 
-    edge_stats = merged.groupby(["_factor_list_a", "_factor_list_b"]).agg(
+    edge_stats = merged.groupby(["_entity_a", "_entity_b"]).agg(
         weight=("_row_id", "size"),
         severity_sum=("_severity_a", "sum"),
     )
     edge_stats = edge_stats[edge_stats["weight"] >= min_edge_weight]
     edge_stats["avg_severity"] = edge_stats["severity_sum"] / edge_stats["weight"]
 
-    for (f1, f2), row in edge_stats.iterrows():
-        G.add_edge(f1, f2,
-                   weight=int(row["weight"]),
-                   severity_sum=float(row["severity_sum"]),
-                   avg_severity=float(row["avg_severity"]))
+    for (f1, f2), erow in edge_stats.iterrows():
+        G.add_edge(
+            f1, f2,
+            weight=int(erow["weight"]),
+            severity_sum=float(erow["severity_sum"]),
+            avg_severity=float(erow["avg_severity"]),
+        )
 
     return G
 

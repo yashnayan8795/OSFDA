@@ -20,6 +20,24 @@ def ordinal_mae(y_true, y_pred) -> float:
     return np.mean(np.abs(np.array(y_true) - np.array(y_pred)))
 
 
+def class_weighted_ordinal_mae(y_true, y_pred) -> float:
+    """
+    Ordinal MAE weighted by inverse class frequency.
+
+    Rare classes (e.g., Level-3 critical incidents) receive higher weight,
+    preventing majority-class dominance of the plain MAE metric.
+    """
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    classes, counts = np.unique(y_true, return_counts=True)
+    inv_freq = 1.0 / counts.astype(float)
+    inv_freq /= inv_freq.sum()
+    weight_map = dict(zip(classes, inv_freq))
+    sample_weights = np.array([weight_map[c] for c in y_true])
+    abs_errors = np.abs(y_true - y_pred).astype(float)
+    return float(np.average(abs_errors, weights=sample_weights))
+
+
 def asymmetric_cost(y_true, y_pred, cost_matrix: dict) -> float:
     """Compute average asymmetric cost from the cost matrix config."""
     total = 0.0
@@ -65,6 +83,7 @@ def full_severity_report(y_true, y_pred, cost_matrix: Optional[dict] = None) -> 
     report = {
         "qwk": quadratic_weighted_kappa(y_true, y_pred),
         "ordinal_mae": ordinal_mae(y_true, y_pred),
+        "class_weighted_mae": class_weighted_ordinal_mae(y_true, y_pred),
         "confusion_matrix": confusion_matrix(y_true, y_pred).tolist(),
         "classification_report": classification_report(y_true, y_pred, output_dict=True),
         "qwk_bootstrap": bootstrap_metric(y_true, y_pred, quadratic_weighted_kappa),

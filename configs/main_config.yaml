@@ -13,3 +13,42 @@ data:
   
 seeds:
   global_seed: 42
+
+model_params:
+  # Problem A — LightGBM severity classifier
+  lgbm_severity:
+    num_leaves: 63
+    learning_rate: 0.05
+    n_estimators: 1000
+    early_stopping_rounds: 50
+    min_child_samples: 30
+    subsample: 0.8
+    colsample_bytree: 0.8
+    class_weight: "balanced"
+
+  # Problem A — CatBoost severity classifier
+  catboost_severity:
+    iterations: 800
+    learning_rate: 0.05
+    depth: 6
+    early_stopping_rounds: 50
+    class_weights_mode: "Balanced"
+
+  # Problem D — BERTopic clustering
+  bertopic:
+    min_topic_size: 50
+    nr_topics: 30
+    pca_components: 15
+    kmeans_batch_size: 1024
+
+  # Problem D — PELT changepoint detection
+  pelt:
+    penalty: 3.0
+    min_signal_length: 10
+
+  # Problem E — Heterogeneous co-occurrence graph
+  graph:
+    min_edge_weight: 5
+    min_severity_threshold: 1.5
+    top_k_centrality: 15
+    top_k_paths: 20

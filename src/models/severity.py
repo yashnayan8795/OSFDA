@@ -114,6 +114,47 @@ def predict_calibrated(model, X, calibrators):
     return cal_probs / row_sums
 
 
+def build_cost_matrix(cost_config: Dict[str, Any], num_classes: int = 4) -> np.ndarray:
+    """
+    Convert the cost_matrix.yaml ``costs`` dict into a numpy array C where
+    C[actual, predicted] = cost.  Used by predict_cost_sensitive().
+    """
+    C = np.zeros((num_classes, num_classes), dtype=float)
+    for i in range(num_classes):
+        row_key = f"actual_{i}"
+        row = cost_config.get(row_key, {})
+        for j in range(num_classes):
+            C[i, j] = row.get(f"pred_{j}", 0.0)
+    return C
+
+
+def predict_cost_sensitive(
+    probs: np.ndarray,
+    cost_config: Dict[str, Any],
+    num_classes: int = 4,
+) -> np.ndarray:
+    """
+    Choose the prediction that minimises expected cost for each sample.
+
+    E[cost | pred=j] = sum_i P(actual=i) * C[i, j]
+
+    Parameters
+    ----------
+    probs : np.ndarray, shape (n_samples, num_classes)
+        Calibrated class probabilities.
+    cost_config : dict
+        The ``costs`` sub-dict from cost_matrix.yaml.
+
+    Returns
+    -------
+    np.ndarray of shape (n_samples,) — integer class predictions.
+    """
+    C = build_cost_matrix(cost_config, num_classes)  # shape (num_classes, num_classes)
+    # expected_cost[sample, j] = probs[sample, :] @ C[:, j]
+    expected_cost = probs @ C           # (n_samples, num_classes)
+    return expected_cost.argmin(axis=1)
+
+
 def compute_shap_values(model, X):
     import shap
     explainer = shap.TreeExplainer(model)

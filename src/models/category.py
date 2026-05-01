@@ -16,11 +16,14 @@ Three-tier approach following the implementation plan:
 All thresholds are tuned per-label on the validation set.
 """
 
+import logging
 import numpy as np
 import pandas as pd
 import joblib
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -382,6 +385,11 @@ def tune_thresholds(
         probs = val_probs[label]
         y_true = y_val[label].values
         if y_true.sum() == 0:
+            logger.warning(
+                "Label '%s' has no positive examples in validation set — "
+                "defaulting threshold to 0.5. Model cannot tune this label.",
+                label,
+            )
             best_thresholds[label] = 0.5
             continue
         best_f1, best_t = -1.0, 0.5
