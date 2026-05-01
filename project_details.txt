@@ -1,0 +1,1242 @@
+# Flight Risk Analysis — Complete Rebuild Implementation Plan
+
+> [!IMPORTANT]
+> This plan rebuilds the project from scratch in a new workspace, fixing every critical flaw identified in the audit: the broken multiclass target, temporal leakage, post-incident feature contamination, and dataset bias misunderstanding.
+
+---
+
+## Architecture Overview
+
+```mermaid
+graph TD
+    subgraph "Shared Infrastructure"
+        DS["ASRS Dataset<br/>38,655 reports · 111 columns"]
+        LM["Aviation Domain<br/>Language Model"]
+    end
+
+    subgraph "Problem A — Severity Triage"
+        A1["Target Engineering<br/>Ordinal 0-3 from outcome fields"]
+        A2["Leakage Audit<br/>Pre-circumstance whitelist"]
+        A3["LightGBM + CatBoost<br/>Temporal split"]
+        A4["Calibration + SHAP"]
+    end
+
+    subgraph "Problem B — Category Classification"
+        B1["Taxonomy Definition<br/>Multi-label from Primary Problem"]
+        B2["Text Tower<br/>Sentence-BERT"]
+        B3["Tabular Tower<br/>LightGBM/MLP"]
+        B4["Fusion + Multi-label heads"]
+    end
+
+    subgraph "Problem D — Emerging Risks"
+        D1["Domain-adapted<br/>Sentence Encoder"]
+        D2["BERTopic<br/>UMAP + HDBSCAN"]
+        D3["Temporal Changepoint<br/>Detection"]
+    end
+
+    subgraph "Problem E — Factor Graph"
+        E1["Factor NER<br/>Weak Supervision"]
+        E2["Relation Extraction"]
+        E3["Knowledge Graph<br/>+ Pattern Mining"]
+    end
+
+    subgraph "Problem C — Pre-Flight Risk"
+        C1["BTS + NOAA + NTSB<br/>Data Integration"]
+        C2["Case-Control Sampling<br/>LightGBM"]
+        C3["Calibrated Risk Score"]
+    end
+
+    DS --> A1
+    DS --> B1
+    DS --> D1
+    DS --> E1
+
+    A4 -->|severity labels| D3
+    A4 -->|severity labels| E3
+    LM --> B2
+    LM --> D1
+    LM --> E1
+    E3 -->|factor features| A3
+    E3 -->|factor features| B4
+    D3 -->|trend features| C2
+    A4 -->|severity patterns| C2
+```
+
+---
+
+## Phase 0 — Project Scaffolding
+
+**Goal:** Clean workspace, dependency management, reproducible environment.
+
+### Directory Structure
+```
+flight-risk-analysis/
+├── pyproject.toml                 # Single dependency spec (uv/poetry)
+├── configs/
+│   ├── problem_a.yaml
+│   ├── problem_b.yaml
+│   ├── problem_c.yaml
+│   ├── problem_d.yaml
+│   └── problem_e.yaml
+├── data/
+│   ├── raw/                       # Immutable raw downloads
+│   ├── interim/                   # Intermediate transforms
+│   └── processed/                 # Final model-ready artifacts
+├── notebooks/
+│   ├── 00_data_acquisition.ipynb
+│   ├── 01a_target_engineering.ipynb
+│   ├── 01b_leakage_audit.ipynb
+│   ├── 02a_severity_model.ipynb
+│   ├── 02b_category_model.ipynb
+│   ├── 03_emerging_risks.ipynb
+│   ├── 04_factor_graph.ipynb
+│   └── 05_preflight_risk.ipynb     # Problem C (future)
+├── src/
+│   ├── __init__.py
+│   ├── data/
+│   │   ├── __init__.py
+│   │   ├── loader.py              # ASRS dataset loading
+│   │   ├── target_engineering.py  # Severity rubric + category taxonomy
+│   │   └── leakage_audit.py       # Feature whitelist validator
+│   ├── features/
+│   │   ├── __init__.py
+│   │   ├── temporal.py            # Time feature extraction
+│   │   ├── encoding.py            # Frequency/target encoding
+│   │   └── text.py                # Narrative preprocessing
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── severity.py            # Problem A model
+│   │   ├── category.py            # Problem B model
+│   │   ├── emerging_risks.py      # Problem D pipeline
+│   │   └── factor_graph.py        # Problem E pipeline
+│   ├── evaluation/
+│   │   ├── __init__.py
+│   │   ├── ordinal_metrics.py     # QWK, ordinal MAE
+│   │   ├── multilabel_metrics.py  # Per-label F1, Hamming loss
+│   │   └── calibration.py         # Reliability diagrams, ECE
+│   └── utils/
+│       ├── __init__.py
+│       └── config.py              # YAML config loader
+├── models/                        # Serialized model artifacts
+├── reports/                       # Generated analysis reports
+└── tests/
+    ├── test_target_engineering.py
+    ├── test_leakage_audit.py
+    └── test_temporal_split.py
+```
+
+### Key Dependencies
+| Package | Purpose | Version |
+|---------|---------|---------|
+| `lightgbm` | Primary model (native categoricals) | ≥4.0 |
+| `catboost` | Secondary model (high-cardinality) | ≥1.2 |
+| `optuna` | Hyperparameter optimization | ≥3.0 |
+| `shap` | Model interpretation | ≥0.44 |
+| `sentence-transformers` | Text embeddings (B, D, E) | ≥2.2 |
+| `bertopic` | Topic modeling (D) | ≥0.16 |
+| `scikit-learn` | Calibration, metrics, baselines | ≥1.3 |
+| `datasets` | Hugging Face ASRS loader | ≥2.0 |
+| `pandas` / `polars` | Data manipulation | latest |
+| `ruptures` | Changepoint detection (D) | ≥1.1 |
+
+---
+
+## Phase 1 — Data Foundation (Problems A & B shared)
+
+### 1.1 Data Acquisition (`00_data_acquisition.ipynb`)
+
+Load the ASRS dataset, perform column inventory, and save raw parquet.
+
+**Key tasks:**
+- Load `elihoole/asrs-aviation-reports` from Hugging Face
+- Full column inventory: name, dtype, missing%, unique count, sample values
+- Parse `Time_Date` into proper datetime (critical for temporal split)
+- Save as `data/raw/asrs_full.parquet`
+
+### 1.2 Target Engineering — Severity Rubric (`01a_target_engineering.ipynb`)
+
+> [!CAUTION]
+> This is the single most important notebook. Every downstream model depends on correct target construction. The old project's `create_severity_flag` was keyword-matching against post-incident text — we replace it with a deterministic rubric from physical outcome fields.
+
+**Ordinal Severity Score (0–3):**
+
+| Level | Label | Source Logic |
+|-------|-------|-------------|
+| 0 | Minor | No damage flag AND no injury AND no emergency AND `Events.5_Result` contains only routine outcomes |
+| 1 | Moderate | Minor damage OR near-miss with `Events.1_Miss Distance > threshold` OR `Events.2_Were Passengers Involved = No` |
+| 2 | Substantial | Substantial damage in `Events.5_Result` OR injuries reported OR emergency declared |
+| 3 | Critical | Aircraft destroyed OR fatalities OR evacuation OR loss of control keywords in `Events.5_Result` |
+
+**Source fields for target (all post-incident, explicitly excluded from features):**
+- `Events.5_Result` — physical outcome
+- `Events.1_Miss Distance` — near-miss severity
+- `Events.2_Were Passengers Involved In Event`
+- `Component.3_Problem` — equipment failure severity indicator
+- Injury/damage indicators across all Person/Aircraft columns
+
+**Validation:**
+- Expected distribution: Level 0 ~40-50%, Level 1 ~25-30%, Level 2 ~15-20%, Level 3 ~5-10%
+- If Level 3 > 15%, rubric is too loose
+- If Level 0 > 70%, rubric is too strict
+- Document as versioned spec (v1.0) with SHA hash of the mapping function
+
+### 1.3 Target Engineering — Category Taxonomy (`01a_target_engineering.ipynb`, continued)
+
+> [!WARNING]
+> The old project checked `if 'primary_problem' in df.columns` but the actual column is `Assessments.1_Primary Problem`. This caused 100% "Other" classification — a fatal bug.
+
+**Taxonomy (multi-label):**
+
+| Category | Source: `Assessments.1_Primary Problem` keywords |
+|----------|--------------------------------------------------|
+| Flight Operations | `Human Factors`, `Ambiguous`, `Procedure` |
+| Equipment/System | `Aircraft`, `Equipment/Tooling`, `MEL` |
+| ATC/Communication | `Communication Breakdown`, `Clearance` |
+| Aircraft/Structure | `Design/Engineering` |
+| Environment | `Weather`, `Turbulence` |
+| Airspace/Navigation | `Airspace` |
+
+**Multi-label handling:**
+- `Assessments_Contributing Factors / Situations` is semicolon-delimited
+- Parse into list, map each factor to zero or more categories
+- One incident → one or more category labels
+- Store as binary indicator matrix (n_samples × n_categories)
+
+### 1.4 Leakage Audit (`01b_leakage_audit.ipynb`)
+
+> [!IMPORTANT]
+> Every feature must have a written justification for inclusion or exclusion. The audit result is a YAML whitelist that the training pipeline reads — no feature enters a model without passing this gate.
+
+**Problem A Feature Whitelist (pre-circumstance only):**
+
+| Feature | Justification | Include? |
+|---------|--------------|----------|
+| `Time_Date` | Known before flight → derive month, year, time-of-day | ✅ Derive features |
+| `Time.1_Local Time Of Day` | Observable pre-flight | ✅ |
+| `Place_Locale Reference` | Airport/location, known pre-flight | ✅ |
+| `Place.1_State Reference` | State, known pre-flight | ✅ |
+| `Environment_Flight Conditions` | VMC/IMC, known from weather brief | ✅ |
+| `Environment.1_Weather Elements / Visibility` | Weather brief | ✅ |
+| `Environment.2_Work Environment Factor` | Operational context | ✅ |
+| `Environment.3_Light` | Time-dependent, known | ✅ |
+| `Environment.4_Ceiling` | Weather data | ✅ |
+| `Environment.5_RVR.Single Value` | Runway visual range | ✅ |
+| `Aircraft 1_Make` | Aircraft registration | ✅ |
+| `Aircraft 1.1_Model` | Aircraft registration | ✅ |
+| `Aircraft 1.2_Operator` | Known pre-flight | ✅ |
+| `Aircraft 1.5_Operating Under FAR Part` | Regulatory context | ✅ |
+| `Aircraft 1.6_Flight Plan` | Filed pre-flight | ✅ |
+| `Aircraft 1.7_Mission` | Planned pre-flight | ✅ |
+| `Aircraft 1.8_Flight Phase` | **Known at filing**, but problematic — see note | ⚠️ |
+| `Aircraft 1.14_Number of Seats` | Aircraft specification | ✅ |
+| `Aircraft 1.15_Crew Size` | Planned pre-flight | ✅ |
+| `Person 1.3_Function` | Crew role, known | ✅ |
+| `Person 1.4_Qualification` | Known pre-flight | ✅ |
+| `Person 1.5_Experience` | Known pre-flight → bucket | ✅ |
+| `Events_Anomaly` | **POST-incident** observation | ❌ LEAK |
+| `Events.3_Detector` | **POST-incident** — who detected | ❌ LEAK |
+| `Events.4_When Detected` | **POST-incident** — when detected | ❌ LEAK |
+| `Events.5_Result` | **TARGET SOURCE** | ❌ TARGET |
+| `Assessments.1_Primary Problem` | **TARGET SOURCE for Problem B** | ❌ TARGET |
+| `Assessments_Contributing Factors` | Analyst assessment, post-hoc | ❌ LEAK |
+| `Report 1_Narrative` | Post-incident narrative | ❌ for A, ✅ for B |
+| `Report 1.2_Synopsis` | Post-incident synopsis | ❌ for A, ✅ for B |
+
+> [!WARNING]
+> The old project included `Events_Anomaly`, `Events.3_Detector`, `Events.4_When Detected`, and `Assessments.1_Primary Problem` as features for the binary model. These are all post-incident observations — the #1 contributor to the inflated AUC of 0.852. Expect performance to drop significantly (realistically to QWK 0.45-0.60) once these are removed.
+
+**Problem B Feature Whitelist (retrospective categorization):**
+Problem B classifies *after* the incident is reported, so it can use:
+- All Problem A features ✅
+- `Events_Anomaly`, `Events.3_Detector`, `Events.4_When Detected` ✅
+- `Report 1_Narrative`, `Report 2_Narrative`, `Report 1.2_Synopsis` ✅ (text tower)
+- `Assessments.1_Primary Problem` ❌ (this IS the target source)
+- `Assessments_Contributing Factors` ❌ (too closely aligned with target)
+
+### 1.5 Temporal Split
+
+> [!NOTE]
+> The old project used random `train_test_split` — classic temporal leakage. We split chronologically using `Time_Date`.
+
+**Split strategy:**
+```
+Train:      Time_Date years 2003–2017
+Validate:   Time_Date year 2018
+Test:       Time_Date years 2019–2020
+```
+
+If `Time_Date` doesn't have year granularity (it may be encoded as a numeric), we'll:
+1. Inspect the actual values and decode
+2. If truly opaque, use ordinal position (first 70% train, next 15% val, last 15% test)
+3. Document the assumption
+
+---
+
+## Phase 2 — Problem A: Incident Severity Classification
+
+### 2.1 Feature Engineering (`02a_severity_model.ipynb`)
+
+**From the audit-approved whitelist:**
+- **Temporal:** Extract `month`, `quarter`, `time_of_day_bucket`, `year` from `Time_Date`
+- **Experience:** Bucket `Person 1.5_Experience` into ordinal bands (0-1000, 1000-5000, 5000-15000, 15000+)
+- **Altitude:** If altitude data available, create bands (ground, low, mid, high, FL)
+- **Missingness indicators:** For columns 50-80% missing, add `_is_missing` binary flag
+- **Drop:** Columns >80% missing
+
+**Encoding strategy:**
+- LightGBM: Use native categorical support (pass as `category` dtype)
+- CatBoost: Use native categorical support
+- For baseline LogReg: Frequency encoding for high-cardinality, one-hot for low-cardinality
+
+### 2.2 Model Training
+
+**Baseline:**
+1. Stratified dummy classifier (majority class)
+2. Logistic regression on top-10 features (ordinal encoded target)
+
+**Primary: LightGBM**
+- Objective: `multiclass` (4 classes) or custom ordinal-aware loss
+- Native categorical feature handling (no one-hot explosion)
+- Optuna tuning: 100 trials, 5-fold stratified time-series CV
+- Key hyperparameters: `num_leaves`, `max_depth`, `learning_rate`, `min_child_samples`, `colsample_bytree`, `subsample`
+
+**Secondary: CatBoost**
+- Robustness check on high-cardinality categoricals
+- Same CV strategy
+- Compare with LightGBM
+
+### 2.3 Calibration & Evaluation
+
+**Calibration:**
+- Isotonic calibration on validation fold
+- Reliability diagram (predicted probability vs. observed frequency per class)
+
+**Metrics:**
+| Metric | Purpose |
+|--------|---------|
+| Quadratic Weighted Kappa (QWK) | Primary — penalizes large ordinal errors |
+| Ordinal MAE | Average absolute ordinal distance |
+| Per-class Precision/Recall with bootstrap 95% CIs | Class-level performance |
+| Confusion matrix | Error pattern analysis |
+| Reliability diagram | Calibration quality |
+
+**Expected performance:**
+- QWK: 0.45–0.60
+- Macro-F1: 0.50–0.65
+- If numbers come in dramatically higher → suspect residual leakage
+
+### 2.4 Interpretation
+- SHAP values on calibrated model
+- Slice analysis: by year, by airport class (hub vs. regional), by flight phase
+- Feature importance ranking with confidence intervals
+
+---
+
+## Phase 3 — Problem B: Incident Category Classification
+
+### 3.1 Text Preprocessing
+
+**ASRS-specific handling:**
+- Replace redaction placeholders (`ZZZ`, `XXX`, `ZZZZ`) with `[REDACTED]` token
+- Remove boilerplate headers/footers in narratives
+- Sentence segmentation for per-sentence encoding
+- Handle missing narratives (some reports have only synopsis)
+
+### 3.2 Model Architecture
+
+**Baseline:** TF-IDF (unigrams + bigrams, max 10k features) + Logistic Regression per label (OVR)
+
+**Mid-complexity:** DistilBERT on narrative only (ablation — how much does text alone give?)
+
+**Full model: Two-tower fusion**
+```
+Tabular Tower                     Text Tower
+(structured features)             (narratives + synopsis)
+      │                                 │
+  LightGBM leaf                   Sentence-BERT
+  embeddings or                   → CLS embedding
+  MLP encoder                     (384-768 dim)
+      │                                 │
+      └─────────── Concatenate ─────────┘
+                        │
+                  Fusion MLP (256 → 128)
+                        │
+                Per-category sigmoid heads
+                        │
+              Multi-label BCE loss
+              (class-weighted)
+```
+
+### 3.3 Training
+- AdamW optimizer with warmup schedule
+- Multi-label BCE loss with inverse-frequency class weighting
+- Per-label threshold tuning on validation set (optimize F1 per label)
+
+### 3.4 Evaluation
+| Metric | Scope |
+|--------|-------|
+| Per-label P/R/F1 | Each category separately |
+| Macro-F1, Micro-F1 | Aggregate |
+| Hamming loss | Fraction of wrong labels |
+| Subset accuracy | Exact match rate |
+
+**Expected performance:**
+- Fusion: Macro-F1 0.60–0.75
+- Text-only: Macro-F1 0.55–0.65
+- Structured-only: Macro-F1 0.45–0.55
+
+---
+
+## Phase 4 — Problem D: Emerging Risk Pattern Discovery
+
+### 4.1 Domain Adaptation
+- Continue-pretrain `all-MiniLM-L6-v2` on 38k ASRS narratives with SimCSE objective
+- Small compute budget (~4-8 GPU-hours or CPU overnight)
+- Result: aviation-domain sentence encoder
+
+### 4.2 Topic Modeling
+- BERTopic pipeline: UMAP (n_neighbors=15, min_dist=0.1) → HDBSCAN (min_cluster_size=15) → c-TF-IDF
+- Expected: 100–300 fine-grained topics, hierarchical rollup to 20–30 themes
+
+### 4.3 Temporal Dynamics
+- Monthly prevalence time series per cluster
+- PELT changepoint detection (from `ruptures` library)
+- Flag clusters with statistically significant recent increases
+
+### 4.4 Emerging Risk Scoring
+Composite score combining:
+- Trend strength (changepoint magnitude)
+- Severity association (join with Problem A labels)
+- Novelty (new terminology not in historical clusters)
+
+---
+
+## Phase 5 — Problem E: Contributing Factor Graph Analysis
+
+### 5.1 Factor Extraction
+- Define aviation factor taxonomy (~50-100 factors)
+- Weak supervision: use `Assessments_Contributing Factors / Situations` to label narrative spans
+- Fine-tune BERT NER on factor spans
+
+### 5.2 Graph Construction
+- Nodes: factors, outcomes, aircraft types, phases
+- Edges: co-occurrence weighted by frequency and confidence
+- Severity stratification from Problem A labels
+
+### 5.3 Pattern Mining
+- Frequent subgraph mining (gSpan or similar)
+- Severity-stratified pattern analysis
+- Temporal evolution of factor chains
+
+---
+
+## Phase 6 — Problem C: Pre-Flight Risk Prediction (Future)
+
+> [!NOTE]
+> Problem C requires entirely different data sources (BTS, NOAA, NTSB) and 6-9 months of dedicated work. It is scoped as a future phase and will be implemented in a separate data pipeline. The infrastructure from Problems A-E (severity rubric, temporal features, factor patterns) feeds into Problem C.
+
+---
+
+## Implementation Priority & Dependencies
+
+```mermaid
+gantt
+    title Implementation Timeline
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %d
+
+    section Phase 0
+    Project Scaffolding           :p0, 2026-04-25, 2d
+
+    section Phase 1
+    Data Acquisition              :p1a, after p0, 1d
+    Target Engineering (A+B)      :p1b, after p1a, 3d
+    Leakage Audit                 :p1c, after p1b, 2d
+    Temporal Split                :p1d, after p1c, 1d
+
+    section Phase 2
+    Feature Engineering (A)       :p2a, after p1d, 2d
+    Model Training (A)            :p2b, after p2a, 3d
+    Calibration + Eval (A)        :p2c, after p2b, 2d
+    SHAP Interpretation (A)       :p2d, after p2c, 1d
+
+    section Phase 3
+    Text Preprocessing (B)        :p3a, after p2d, 2d
+    Baseline + Text-only (B)      :p3b, after p3a, 2d
+    Fusion Model (B)              :p3c, after p3b, 3d
+    Evaluation (B)                :p3d, after p3c, 2d
+
+    section Phase 4
+    Domain Adaptation (D)         :p4a, after p3d, 2d
+    BERTopic Clustering (D)       :p4b, after p4a, 2d
+    Temporal Analysis (D)         :p4c, after p4b, 2d
+
+    section Phase 5
+    Factor NER (E)                :p5a, after p4c, 3d
+    Graph Construction (E)        :p5b, after p5a, 2d
+    Pattern Mining (E)            :p5c, after p5b, 2d
+```
+
+---
+
+## Quality Gates
+
+Each phase must pass before proceeding:
+
+| Gate | Criteria |
+|------|----------|
+| **G0: Scaffolding** | `pytest` passes, data loads successfully, temporal split produces non-overlapping date ranges |
+| **G1: Targets** | Severity distribution matches expected range, multiclass has ≥2 meaningful classes, no target field in feature set |
+| **G2: Leakage** | Human-reviewed YAML whitelist committed, automated leakage test passes |
+| **G3: Severity Model** | QWK 0.45+ on temporal test set, calibration ECE < 0.05, SHAP top features are all pre-circumstance |
+| **G4: Category Model** | Macro-F1 0.55+ on temporal test set, text tower ablation shows meaningful contribution |
+| **G5: Emerging Risks** | ≥20 coherent topics with interpretable labels, ≥3 detectable changepoints in retrospective validation |
+| **G6: Factor Graph** | ≥50 nodes with interpretable labels, ≥10 frequent factor-chain patterns, expert-validated subset |
+
+---
+
+## Integration with Future System
+
+The models produced here become the inference backbone for:
+- **FastAPI backend:** Serves predictions from Problem A (severity), Problem B (category), and exposes Problem D (emerging risks) dashboard data
+- **React + TypeScript frontend:** Operator-facing dashboard with risk scores, category routing, emerging risk alerts, factor graph explorer
+- **Jenkins automation:** Model retraining pipeline, data refresh, A/B testing of model versions
+
+Model artifacts will be serialized in ONNX/joblib format with versioned metadata for seamless integration.
+
+---
+
+## Critical Differences from Old Project
+
+| Aspect | Old Project | New Project |
+|--------|------------|-------------|
+| **Severity target** | Keyword search in post-incident text | Deterministic rubric from physical outcome fields |
+| **Category target** | Checked wrong column name → 100% "Other" | Correct column + multi-label taxonomy |
+| **Feature leakage** | Included `Events_Anomaly`, `Assessments.1_Primary Problem` as features | Strict whitelist per problem type |
+| **Data split** | Random `train_test_split` | Chronological temporal split |
+| **Primary model** | XGBoost with one-hot encoding | LightGBM with native categoricals |
+| **Calibration** | Present but on leaked features | Isotonic calibration on clean features |
+| **Text usage** | Not used | Full multi-modal fusion for Problem B |
+| **Ordinal awareness** | Binary only | 4-level ordinal with QWK metric |
+| **Unsupervised** | None | BERTopic + changepoint detection |
+| **Knowledge graph** | None | Factor extraction + pattern mining |
+
+The Project — Full Write-Up
+Working title
+A Multi-Task Aviation Safety Analytics System Leveraging Incident Narratives and Operational Flight Data
+A patent-level, integrated aviation safety system built primarily on the NASA ASRS (Aviation Safety Reporting System) corpus, with a multi-source extension for true pre-flight risk prediction. The system is structured as five connected sub-problems (A–E) that share infrastructure and feed each other.
+
+Origin and framing
+The project began as a "flight risk prediction" pipeline that conflated three different questions:
+
+Will an incident occur on this flight? (true pre-flight risk)
+Given an incident occurred, how severe is it? (conditional severity)
+What kind of incident is this? (retrospective categorization)
+
+ASRS contains only reported incidents — there is no denominator of safe flights — so it cannot answer question 1 alone (this is a positive-unlabeled / case-only data problem; without negatives or strong distributional assumptions, the classifier is mathematically unidentifiable). The redesigned project decouples these into five well-scoped problems, each with the right data and the right target.
+
+The five problems
+Problem A — Severity classification given incident (ASRS)
+Predict an ordinal severity level (Minor / Moderate / Substantial / Critical) for a reported incident, using only physical-outcome fields (aircraft damage, injuries, emergency declared, evacuation, loss of control, deviation magnitude) — not analyst assessments. Features must exclude Events.*, Assessments.*, Component.*_Problem to avoid leakage. Realistic ROC-AUC: 0.70–0.78. Novelty: a principled, reproducible severity rubric with a documented leakage audit — something the aviation safety community currently lacks.
+Problem B — Incident category classification (ASRS)
+Multi-label classification over an aviation incident taxonomy (Flight Operations, Equipment/System, ATC/Communication, Aircraft Damage, etc.) using a multi-modal fusion of structured features and narrative text. Aviation-domain continued pretraining of a sentence encoder, followed by interpretable cross-modal attention. Realistic macro-F1: 0.60–0.75. Novelty: the fusion architecture and aviation-specific encoder.
+Problem C — Pre-flight risk prediction (multi-source, NOT ASRS-only)
+The only sub-problem that cannot use ASRS as its base. Constructed from:
+
+BTS On-Time Performance (~60M US domestic flights, 2015–2023) as the denominator
+NOAA / METAR weather joined by airport + scheduled time
+NTSB Aviation Accident Database + FAA AIDS for positive labels (joined by tail number + date)
+ASRS as additional weak-labeled positives via fuzzy join on operator + date + route
+FAA Aircraft Registry for tail-to-type mapping
+
+Target: incident_within_24h(flight) ∈ {0, 1}. Realistic positive rate ~0.01–0.05% — extreme imbalance, which is the real aviation safety base rate. Synthesizing negatives from zero is explicitly rejected as unpatentable; the only defensible synthesis path requires a real-negative anchor (e.g., NASA DASHlink FOQA), and even then the work is equivalent in effort to just collecting the multi-source dataset.
+Problem D — Emerging risk pattern discovery (ASRS, unsupervised)
+Cluster ~38k ASRS narratives → track cluster prevalence over time → changepoint detection to surface emerging risk themes before they escalate. Pipeline: domain-adapted sentence embeddings (SimCSE on aviation text) → BERTopic / HDBSCAN → monthly prevalence series → PELT changepoint detection → severity-weighted trend scoring. Retrospective validation target: the system should have flagged 60–80% of known emerging issues (lithium battery fires, 5G C-band altimeter interference, etc.) within six months of their first appearance in narratives. This is the strongest novelty anchor in the project.
+Problem E — Contributing factor graph analysis (ASRS)
+Extract contributing factors and their relationships from narratives using relation extraction → build a temporal aviation knowledge graph (~10k nodes, ~100k edges) → mine frequent factor-chain patterns associated with severe outcomes. Framed as associational pattern discovery, not causal inference — ASRS's selection bias prohibits counterfactual claims. Novelty: weak-supervision pipeline for aviation factor extraction + severity-stratified subgraph mining.
+
+How the five problems form a system
+The integrated architecture is the patent's primary claim; each problem is a supporting claim.
+
+The aviation-domain language model trained for B is reused by D and E.
+The severity rubric and labels from A supply weak labels for D's severity-weighted trend scoring and E's outcome stratification.
+The factor graph from E enriches features for A and B.
+The emerging-cluster trends from D and factor-chain patterns from E feed C as engineered features alongside BTS/NOAA/NTSB data.
+
+A and B classify incoming reports. D and E mine narratives to surface what matters. C predicts on flights. They share the encoder, the severity definition, and the factor ontology.
+
+Patent claim structure
+
+The integrated multi-task architecture (primary independent claim)
+Leakage-rigorous severity classification methodology (Problem A)
+Multi-modal tabular + narrative fusion for aviation incident categorization (Problem B)
+Multi-source pre-flight risk prediction with weak-labeled ASRS positives (Problem C)
+Domain-adapted, severity-weighted emerging-risk surveillance with changepoint alerting (Problem D)
+Weak-supervised factor graph construction with severity-stratified pattern mining (Problem E)
+
+File a provisional on the integration architecture first (strongest novelty), then detailed claims as components mature.
+
+Flight Risk Prediction — Brutal Technical Review
+I've already read the full notebook set. This is a structured, no-sugar-coating review against the questions you asked.
+
+1. Business Problem Analysis
+What is the exact prediction goal, as currently coded?
+The notebooks describe two separate tasks that are then bolted together into a "risk" story:
+
+Binary classification: severe_flag ∈ {True, False} — predict whether an incident is severe.
+Multiclass classification: incident_category ∈ {Flight Operations, Equipment/System, ATC/Communication, Aircraft Damage, Other} — predict which type of incident.
+
+The dashboard then relabels the binary probability as "Flight Risk" with thresholds at 0.3/0.5/0.7 for Low/Medium/High risk. This is the central framing problem: the project oscillates between three different goals without committing to one.
+
+"Will an incident occur on this flight?" (true pre-flight risk)
+"Given an incident has occurred, how severe will it be?" (conditional severity)
+"What kind of incident was this?" (retrospective categorization)
+
+These are not the same problem and require different data, different targets, and different evaluation metrics. The current pipeline trains #2 and #3 but labels the output as if it's #1 in the dashboard.
+What should the target variable ideally be?
+It depends on which of the three problems you're actually solving:
+For #1 (true pre-flight risk): target is a binary indicator of whether an incident occurred on a given flight, and your training data must include both incident and non-incident flights. ASRS cannot support this because it contains only reported incidents — there is no denominator.
+For #2 (severity conditional on incident): the target should be a principled severity ordinal built from physical outcome fields — aircraft damage level (None/Minor/Substantial/Destroyed), injury count, emergency declared, evacuation occurred, controlled-flight issues. This should be a well-defined rubric, ideally ordinal rather than binary so you don't lose information. Your current severe_flag uses substring matches on fields like "Assessments.1_Primary Problem" which is an analyst-assigned tag, not a physical outcome — that's noisy and partly tautological.
+For #3 (incident categorization): the target is a clean taxonomic label derived from the Assessments field, with explicit handling of multi-label cases (an incident can be both ATC/Communication and Flight Operations). Your current single-label assignment collapses these.
+Real-world implications of wrong predictions
+If this model were deployed — which it should not be in its current state — the costs are asymmetric:
+
+False negative (predicted safe, actually severe): flight proceeds without heightened scrutiny; in the worst case, a preventable incident occurs. This is the catastrophic error mode in aviation.
+False positive (predicted risky, actually fine): schedule disruption, unnecessary inspections, crew/maintenance cost, erosion of trust in the system leading to alert fatigue.
+
+The current binary model has recall = 1.00 on the positive class and recall = 0.01 on the negative class — it predicts "severe" for essentially everything. Read in aviation terms: every flight gets flagged as high-risk. This is operationally useless; it's indistinguishable from not having a model at all.
+The multiclass model is better-behaved but has F1 = 0.19 on "Flight Operations," which is arguably the most safety-critical category. Wrong predictions here route incidents to the wrong investigation track.
+Are we solving the right problem with the current dataset?
+No. ASRS is a voluntary, self-reported incident database. Every record in it is already an incident. There are no "normal flights." Using it to predict "flight risk" is a category error — you cannot learn a decision boundary between risky and safe when your training set has no safe examples.
+The only questions ASRS can legitimately answer are descriptive-retrospective ones: given that an incident was reported, what does it look like, how severe is it, what category does it fall into, what contextual factors correlate with severity. That's useful safety-analytics work, but it's not pre-flight risk prediction, and the project's framing needs to be rewritten to reflect that.
+To do real pre-flight risk prediction you'd need operational data from millions of normal flights (FOQA/FDR data, OAG schedule data, weather archives, maintenance logs) matched against a small positive rate of incidents. That dataset doesn't exist in your pipeline.
+
+2. Dataset Evaluation
+What does each feature represent?
+The ASRS dataset has 111 columns covering:
+
+Identifiers: acn_num_ACN (report number), Time_Date (YYYYMM)
+Spatio-temporal context: Place_Locale Reference (airport code), Place.1_State Reference, Time.1_Local Time Of Day, altitude fields
+Environmental: Flight Conditions (VMC/IMC), Weather, Light, Ceiling, RVR, Visibility
+Aircraft: Make/Model, Operator, Flight Phase, Mission, FAR Part, Crew Size, Maintenance Status
+Personnel: Function, Qualification, Experience, Human Factors
+Events (post-incident): Anomaly type, Detector, When Detected, Miss Distance, Result
+Assessments (post-incident): Primary Problem, Contributing Factors
+Narratives (post-incident): free text from reporter and callback
+
+The first ~50 columns are mostly pre-flight observable; everything from "Events." and "Assessments." onward is post-incident analyst annotation.
+Data leakage risks
+Severe and pervasive. The multiclass model's top features by importance are:
+Events.3_Detector                  14.0%
+Events.4_When Detected             11.6%
+Person 1.2_Reporter Organization   11.4%
+Events_Anomaly                     10.5%
+Events.1_Miss Distance              9.5%
+Assessments.1_Primary Problem       7.4%
+Assessments_Contributing Factors    4.7%
+Every one of these is recorded after the incident. "Miss Distance" is the distance at which two aircraft nearly collided — you cannot know this pre-flight. "Detector" is who detected the incident — this exists only because the incident happened. "Primary Problem" is an analyst's assessment written weeks or months after the event. These features collectively account for ~65% of the model's predictive power. Remove them, and the multiclass model almost certainly degrades to near-random.
+The binary target is itself leaky. severe_flag is constructed by keyword-matching against Events.5_Result, Assessments.1_Primary Problem, and Component.3_Problem — all post-incident fields. So the target and the post-incident features come from the same source. A model that "predicts" severity from other post-incident fields is circular.
+The leakage validator in Notebook 02 is a keyword filter on feature names. It doesn't check target provenance, and it doesn't catch Events.3_Detector because "detector" isn't in its blocklist. It's theater, not a real guard.
+Missing, inconsistent, or biased features
+Extreme missingness in the selected pre-flight features:
+Aircraft 1.18_Cabin Lighting              99.34% missing
+Environment.2_Work Environment Factor     99.24% missing
+Environment.5_RVR.Single Value            99.01% missing
+Aircraft 2.7_Mission                      93.04% missing
+Environment.4_Ceiling                     84.53% missing
+Person 2.4_Qualification                  80.35% missing
+Environment.1_Weather/Visibility          74.17% missing
+Environment_Flight Conditions             40.63% missing
+Environment.3_Light                       39.91% missing
+Of the 13 "usable" features, 7 are >70% missing. After one-hot encoding, the strongest "signals" correlating with the target are the _Unknown category indicators — meaning the model is mostly learning "this field was missing" rather than anything substantive.
+Bias is severe and structural:
+
+Reporter self-selection: ASRS submissions are voluntary, incentivized by immunity. Pilots report what they believe is useful to report. Certain carriers, regions, and incident types are systematically over- or under-represented.
+Temporal reporting bias: reporting norms shifted over 20+ years; what counts as "severe" in 2003 vs 2020 differs.
+Attribution bias: analyst-assigned categories like "Primary Problem" reflect the analyst's framework, not ground truth.
+
+None of this is acknowledged in the notebooks.
+Is the target variable correctly defined and balanced?
+Binary target severe_flag:
+
+62.4% positive, 37.6% negative — mildly imbalanced (not severe imbalance)
+Constructed by OR-ing substring matches across three post-incident fields, which inflates the positive rate and makes the definition arbitrary
+"Severe" here means "any of {damage, accident, emergency, evacuation, evasive action, control, failure, malfunction, inoperative} appeared anywhere in those fields" — that's a very loose net
+
+Multiclass target incident_category:
+
+As built in Notebook 01, this is literally 100% "Other" (1 class) — the function references primary_problem but the actual column is Assessments.1_Primary Problem, so every record falls to the default
+Notebook 04 reports 5 classes with 14.6:1 imbalance, which contradicts Notebook 02's output — indicating the two notebooks were run against different data. The checked-in pipeline is inconsistent with itself
+
+Temporal dependencies
+Time_Date is YYYYMM and spans ~2003–2020. The project uses a random stratified split, which means January 2020 incidents can train a model that predicts December 2005 incidents. This:
+
+Ignores concept drift in reporting practices, aviation technology, ATC procedures, fleet composition
+Prevents the model from being honestly evaluated as a deployment candidate (you'd deploy on future data, which a random split doesn't simulate)
+Inflates performance estimates relative to a time-respecting split
+
+A proper holdout would be: train on 2003–2017, validate on 2018, test on 2019–2020. Expect metrics to drop noticeably under this split.
+
+3. EDA Critical Analysis
+Was the EDA aligned with the prediction goal?
+No. The EDA runs through a checklist — dataset shape, missing data heatmap, feature type counts — without any exploration tied to the stated prediction goal.
+Specifically absent:
+
+No distribution plots of the target variable over time
+No severity rate by airport, by phase of flight, by weather (the crosstabs are set up but gated on column names that never match, so they silently don't execute)
+No analysis of the relationship between the target and the features that will actually be used
+No mutual information or chi-square scan of which categorical features discriminate severity
+
+The "Key Insights" printed at the end ("Most incidents occur during approach/landing phases," "Human factors are the leading incident category," "Maintenance-related incidents show higher severity rates") are hardcoded string literals, not findings computed from the data. They would print the same text for an empty DataFrame.
+Distributions, correlations, target relationships
+Missing entirely:
+
+No histograms of the numeric fields (altitude, miss distance, passenger count)
+No cardinality tables for categoricals beyond nunique()
+No correlation or association heatmap
+No conditional target rate plots (P(severe | weather), P(severe | phase_of_flight))
+No class-conditional distribution comparisons
+
+The only "feature importance" analysis in the EDA is absolute Pearson correlation between one-hot columns and the binary target — and it's computed after preprocessing, not as an EDA step. Pearson on binary one-hots is suboptimal; point-biserial or φ-coefficient or χ² would be more appropriate. The top "important" features from this analysis are all _Unknown missingness indicators, which should have been a red flag.
+Outliers, skewness, missingness
+
+Outliers: never examined. Altitude, miss distance, and passenger count all have realistic outlier patterns in ASRS that aren't checked.
+Skewness: not computed.
+Missingness: counted but not interpreted. No MCAR/MAR/MNAR reasoning, no pattern analysis (which columns co-miss), no decision on whether high-missing columns should be dropped vs imputed vs used as indicator-only.
+
+Visualizations
+Three Figure outputs render, several more are gated on never-matching column names and silently produce nothing. The ones that do render are generic: bar chart of class counts, missing data heatmap, top-20 feature importance bars. Nothing that would illuminate the flight-safety problem specifically — no map, no time series, no phase-of-flight breakdown (the data is there, the code doesn't use it).
+What's missing
+A proper aviation-safety EDA would include:
+
+Time series of incident volume and severity rate, with change-point analysis
+Geographic distribution (airport, state, ARTCC)
+Phase-of-flight distribution overall and conditional on severity
+Aircraft make/model breakdown
+Weather condition (VMC/IMC) conditional severity rate
+Co-occurrence analysis of Events.* fields to define a principled severity target
+Cardinality and missingness decisions documented before feature selection
+A target leakage audit done by human review, not keyword matching
+
+
+4. Preprocessing and Feature Engineering
+Categorical encoding
+One-hot encoding with "top 20 + Other" bucketing. Several problems:
+
+The top-20 list is computed on the full dataset before the train/test split (Notebook 02, cell 6). The set of kept categories is therefore influenced by test-set rows. Mild leakage; the principled fix is to fit the bucketer on train only.
+13 features expand to 215 columns. For features that are 99% missing, you generate ~20 one-hot columns, 19 of which are mostly zero and one of which is "Unknown" with 99% density. These dominate the correlation analysis purely because they're almost-constant.
+No target encoding, no hashing, no embedding — for features with 900+ unique levels (Place_Locale Reference has 907), top-20 + Other throws away most of the signal.
+
+Scaling
+Numeric transformer is declared (StandardScaler) but the numeric feature list is empty — Notebook 02 output confirms Numeric features: 0. Every usable field was classified as categorical, including what should be numeric fields like altitude. The scaler is never applied to anything meaningful. Then Notebook 03 re-applies StandardScaler to the already-one-hot-encoded array, which is redundant (standardizing 0/1 indicators doesn't break anything but adds no value).
+New meaningful features
+None. Zero engineered features beyond one-hot encoding of raw columns. The domain has obvious candidates:
+
+Time features: month, quarter, year, day-of-year, time-of-day bucket (the data has these but they aren't extracted)
+Altitude buckets (low-altitude ops are riskier than cruise)
+Weather severity composite (combining flight conditions, ceiling, visibility)
+Phase × altitude interaction
+Airport traffic tier (hub vs regional)
+Aircraft category (transport vs GA vs UAS)
+
+None of these exist.
+Train-test split
+Three issues:
+
+Random, not temporal. ASRS has a time column. A random split lets future data leak into training.
+Stratified on the binary target only, not on time, class, or other structural variables. For a 5-class multiclass target with 14.6:1 imbalance, this matters.
+Duplicate split cells. Notebook 02 runs the split twice (cells 9 and 11, identical). Harmless but sloppy.
+
+Preprocessing leakage
+
+Top-N category selection uses full data (above).
+LeakagePreventionValidator is a keyword blocklist on feature names; it doesn't catch the real leakage, which is in the Events.* and Assessments.* fields by semantic role, not by name pattern.
+The target itself is constructed from the same post-incident fields that end up in the feature matrix in Notebook 04, which is the most serious leakage path.
+
+
+5. Model Creation Analysis
+Are the chosen models appropriate?
+Logistic Regression + Random Forest + XGBoost is a reasonable starting roster for tabular binary classification. XGBoost is appropriate for this data. The choice is fine in principle.
+Were hyperparameters tuned?
+Partially:
+
+LR: tuned (C, penalty, solver) — but the training crashed with a worker segfault, so no LR model exists.
+RF: tuned (n_estimators, max_depth, min_samples_split) — but this also crashed on memory allocation.
+XGBoost: tuned (n_estimators, max_depth, learning_rate, scale_pos_weight) — this one completed.
+
+The "best model" selection is over a set of one. The comparison table has one row. This is not model selection; it's "what survived."
+Is using multiple models justified?
+The intent is justified; the execution failed. When two of three models crash, you don't have a comparison — you have an accident. The reviewer can't tell whether XGBoost genuinely outperforms LR and RF or whether LR and RF would have won had they trained.
+Trained on properly prepared data?
+No:
+
+The feature set contains post-incident leakage (Notebook 04's importance table proves this).
+The multiclass data in Notebook 04 doesn't match what Notebook 02 produced.
+The binary target construction leaks information by definition.
+
+Overfitting / underfitting
+Binary model: severely underfit at the decision threshold, not overfit. CV ROC-AUC 0.696 ≈ Test ROC-AUC 0.691 — no overfitting gap — but the classifier collapses to near-constant predictions because of the triple-counted class weighting (scale_pos_weight=10 + SMOTE + class_weight='balanced') applied to a target where the "positive" class is already the majority (62%). The scale_pos_weight=10 in particular is backwards; it upweights the majority class further, pushing the decision boundary to "always positive."
+Multiclass model: possibly overfit, but the evidence is confusing because CV macro-F1 = 0.17 and validation macro-F1 = 0.49 — that's a 3x gap in the wrong direction (CV worse than val). This should never happen for a properly-implemented pipeline. It indicates the CV in grid search was run on data different from the val set, which is exactly what the Notebook 02/Notebook 04 inconsistency would produce.
+
+6. Neural Networks — Suitable Here?
+Would a neural net outperform tree-based models on this data?
+Almost certainly not, and not for the right reasons. Let's be specific.
+After preprocessing, X_train is (24,739 × 215) sparse one-hot encoded categorical data with no numeric features. This is the canonical use case for gradient-boosted trees. GBMs handle:
+
+High-cardinality categoricals (especially with native categorical support in LightGBM/CatBoost)
+Feature interactions without manual engineering
+Missing values as a first-class signal
+Small-to-medium tabular data (sub-100k rows) efficiently
+
+Neural networks on 25k rows of sparse tabular data typically:
+
+Need more samples to converge to tree-level performance
+Require careful embedding layers for high-cardinality categoricals (FT-Transformer, TabNet, SAINT)
+Add tuning complexity (architecture, LR schedule, regularization) with marginal or no gain
+
+The empirical literature (Grinsztajn et al. 2022; Shwartz-Ziv & Armon 2022) consistently finds GBMs beat NNs on tabular data below ~100k rows. Your dataset is at 25k training rows with sparse features — firmly in GBM territory.
+XGBoost vs NN for this dataset
+XGBoost advantages here: native handling of sparse matrices, strong default performance, interpretable feature importance + SHAP, fast iteration, 215-feature sparse tabular is its sweet spot.
+NN advantages in general but weak here: end-to-end learning from raw categoricals via embeddings, handling unstructured text (you have narratives!), transfer learning.
+The NN advantage you could actually exploit is the narrative/synopsis text fields in ASRS, which are currently ignored. A transformer fine-tuned on those narratives would extract real signal — but that's a text classification problem, not a tabular one, and it introduces its own leakage risks since the narrative describes the incident after it happened. Still, text + structured features in a two-tower architecture would be the one defensible NN move here.
+When to switch
+Switch to NNs if:
+
+You bring in the narrative text and want to fuse it with structured features
+You accumulate >200k examples
+You need to share representations across related tasks (joint severity + category + outcome)
+You want to use pre-trained aviation domain models (sparse ecosystem, but growing)
+
+For the current tabular-only, 25k-row, heavily-leaky problem: fix the data first, then stick with LightGBM or CatBoost.
+
+7. Major Issues — Comprehensive List
+Dataset handling
+
+Using ASRS to predict "flight risk" when ASRS contains only incidents (no denominator of safe flights)
+Target constructed from post-incident fields (tautological)
+7 of 13 features have >70% missing values
+Pre-flight feature list built from guessed column names, then salvaged by a permissive substring fallback that drops the most informative fields (Flight Phase, Make/Model, Crew Experience)
+No handling of reporter self-selection bias
+No temporal split on 17+ years of data
+
+EDA gaps
+
+"Key Insights" are hardcoded string literals, not computed findings
+Multiclass target function silently returns 100% "Other" class — shipped anyway
+Multiple EDA cells gated on column-name checks that never match; they silently do nothing
+No target distribution analysis by meaningful covariates
+No outlier, skewness, cardinality, or distribution analysis
+Visualizations are generic; none specific to aviation safety
+
+Preprocessing flaws
+
+Top-N category selection fit on full dataset (mild leakage)
+LeakagePreventionValidator is a keyword filter, not a real leakage audit
+Zero engineered features
+Numeric feature list is empty — scaling is vestigial
+Random train-test split despite time column availability
+Duplicate split cells in Notebook 02
+
+Model training
+
+Binary model collapses to near-constant predictions (recall=1.00/0.01 split)
+scale_pos_weight=10 applied to majority-positive target, backwards
+Triple-counted class imbalance correction (SMOTE + class_weight + scale_pos_weight)
+LR and RF both crashed; "model comparison" has one row
+No decision threshold tuning
+No probability calibration despite dashboard using probability thresholds
+
+Leakage / invalid validation
+
+Events.* and Assessments.* fields in multiclass feature matrix account for ~65% of importance
+CV macro-F1 (0.17) and validation macro-F1 (0.49) differ 3x in the wrong direction — indicates CV and val were run on different data
+Notebook 02 and Notebook 04 output inconsistent — pipeline not reproducible end-to-end
+Evaluation notebook (05) uses try/except: hardcoded_dummy_values for missing files, prints "✅ EXCELLENT performance - Ready for production" on fake numbers
+create_results_data.py generates purely random mock predictions and writes to the same paths the dashboard reads — dashboard may be visualizing synthetic data
+No bootstrap CIs, no McNemar, no reliability diagram
+
+Misalignment with business problem
+
+Dashboard labels binary probability as "Flight Risk" with Low/Medium/High thresholds
+Thresholds 0.3/0.5/0.7 are hardcoded, not derived from any cost-benefit analysis
+"Ready for deployment" conclusion across multiple notebooks despite none of the evidence supporting it
+No discussion of the operational use case (who uses this, at what stage of flight operations, with what consequences)
+
+
+8. Correct Rebuild Plan
+Step-by-step pipeline
+Phase 1: Problem reframing. Commit to one of three scoped problems:
+
+Problem A: Incident severity classification (given an incident occurred, classify severity) — feasible with ASRS
+Problem B: Incident category classification (retrospective taxonomic assignment) — feasible with ASRS
+Problem C: Pre-flight risk prediction — NOT feasible with ASRS alone; requires operational flight data
+
+My recommendation: pick A and B, drop C, rewrite the dashboard to reflect retrospective incident analysis rather than forward risk prediction.
+Phase 2: Target engineering.
+
+Build severity as an ordinal (0=Minor, 1=Moderate, 2=Substantial, 3=Critical) from explicit outcome fields only: aircraft damage level, injury severity, emergency declared, evacuation — not from analyst assessments
+Build category target from Assessments.1_Primary Problem directly via a defined taxonomy; handle multi-label explicitly if present
+Document the target definition as a separate markdown spec before any modeling
+
+Phase 3: Rigorous leakage audit.
+
+Human-review every feature for temporal validity
+Hard-code a pre-flight-only feature whitelist based on domain meaning, not name patterns
+Categories: Aircraft (Make/Model, Operator, FAR Part, Age), Flight (Phase planned, Mission, Route), Crew (Function, Qualification, Experience bucketed), Environment (Weather forecast, Light, Airport class), Context (Time of day, Season, Airport)
+Drop all Events.*, Assessments.*, Component.*_Problem, Person.*_Human Factors — these are post-hoc
+
+Phase 4: Data quality.
+
+Drop features with >80% missing; use a missingness indicator where justified for 50-80%
+Handle high-cardinality via frequency encoding or out-of-fold target encoding, not top-20-or-Other
+Build engineered features: time of day bucket, month, altitude bands, weather composite, phase × altitude interaction, airport traffic tier
+
+Phase 5: Temporal split.
+
+Train on oldest 70%, validate on next 15%, test on most recent 15% of Time_Date
+Check for concept drift: plot target rate by year on train vs test
+If drift is severe, consider training on a rolling recent window only
+
+Phase 6: Modeling.
+
+Baseline: stratified-dummy + logistic regression
+Primary: LightGBM with native categorical support (avoids one-hot explosion)
+Secondary: CatBoost (better with high-cardinality)
+Skip NNs unless adding narrative text
+Tune with TPE (Optuna), not grid search; 5-fold time-series CV
+Primary metric: PR-AUC for binary, macro-F1 for multiclass
+Calibrate final model with isotonic regression on validation fold
+
+Phase 7: Evaluation.
+
+Bootstrap 95% CIs on all reported metrics (1000 resamples)
+Reliability diagram for calibration
+Decision threshold tuned on validation to hit a specific recall target
+Per-class PR curves for multiclass
+Error slices by year, airport tier, phase of flight, aircraft category
+Permutation importance + SHAP on the calibrated model
+Explicit comparison to a naive baseline (majority class, marginal-probability)
+
+Phase 8: Reporting.
+
+State the task as retrospective analysis, not pre-flight prediction
+Report metrics with CIs, not point estimates
+Show temporal drift analysis
+Include a "known limitations" section citing reporter bias, survivorship, definition of severity
+Dashboard shows historical patterns with appropriate uncertainty, not a "risk score"
+
+Proper EDA strategy
+Before any modeling:
+
+Target definition validation: plot severity rate by year, by airport, by aircraft type, by phase — does the target behave like severity should?
+Reporter bias check: plot report volume by year, by reporter organization
+Missingness pattern: co-missing heatmap, drop decisions documented
+Cardinality and distribution tables per feature
+Bivariate target relationships: for each candidate feature, compute association strength (χ² for categorical, mutual information for mixed)
+Leakage audit as a signed-off artifact, not a keyword filter
+Temporal stability: train/test drift check per feature
+
+Model selection approach
+
+Fixed family: GBM (LightGBM primary, CatBoost secondary) for tabular-only; add a text encoder if/when narratives are added
+Fixed CV: 5-fold time-series split, never random
+Fixed tuning: 100-trial Optuna with early stopping
+Fixed comparison: report median CV metric + bootstrap CI, not single run
+
+Evaluation framework
+
+Commit to a primary metric before training (not after)
+Report secondary metrics with bootstrap CIs
+Report calibration (Brier, ECE, reliability diagram)
+Report slice performance (by year, airport class, aircraft category, phase)
+Compare to baseline, to previous iteration, to permuted-labels control
+Operational thresholds tied to a stated cost model (e.g., "we can tolerate N% false positives if we catch M% of severe incidents")
+
+
+Bottom Line
+The pipeline as it stands is a scaffolded walkthrough of an ML workflow, not a working flight risk predictor. The business framing (predicting pre-flight risk from an incident-only dataset) is unachievable with ASRS. The binary model is degenerate. The multiclass model's performance is driven by post-incident leakage. The dashboard may be rendering synthetic data. The evaluation notebook prints deployment-ready messages based on hardcoded fallback values.
+None of this is unrecoverable. The data is real and interesting, the scaffolding is reusable, and the correct scope (retrospective incident severity and category classification with rigorous leakage controls and temporal validation) is a legitimate, useful safety-analytics project. But the current version should not be shown as a finished result, and it absolutely should not be labeled production-ready.
+
+Aviation Safety ML Project — Complete Problem Plan
+I'll lay out each problem with objective, dataset choice, ML approach, and execution plan. Each is designed to stand on its own so you can pursue them independently or as an integrated system.
+
+Problem A — Incident Severity Classification
+Objective
+Given an incident report with pre-circumstance context, predict the severity of the incident on an ordinal scale. This is a triage tool — helps safety analysts prioritize which reports need immediate investigation versus routine processing. Operationally valuable because ASRS receives thousands of reports monthly and human triage is the bottleneck.
+Dataset
+ASRS Aviation Safety Reporting System — the same Hugging Face elihoole/asrs-aviation-reports you already have. 38,655 records, 111 columns.
+Target construction
+Build an ordinal severity score (0–3) from physical outcome fields only, not analyst assessments:
+
+Level 0 (Minor): no damage, no injury, no emergency, routine deviation
+Level 1 (Moderate): minor damage or near-miss with miss-distance > threshold
+Level 2 (Substantial): substantial damage, injuries, emergency declared
+Level 3 (Critical): destroyed aircraft, fatalities, evacuation, loss of control
+
+Source fields: aircraft damage indicators, injury fields, emergency/evacuation flags, miss-distance thresholds. Document the rubric as a versioned spec before any modeling.
+Feature set (pre-circumstance only)
+After rigorous leakage audit, keep:
+
+Aircraft: Make/Model, Operator, FAR Part, Crew Size, Number of Seats, Aircraft Zone
+Environment: Flight Conditions (VMC/IMC), Light, Ceiling, Weather/Visibility, RVR
+Flight: Phase of Flight, Mission, Airspace, Route, ATC/Advisory, Nav In Use
+Personnel: Function, Qualification, Experience (bucketed)
+Context: Airport, State, Time of Day, Month, Year, Altitude band
+
+Explicitly drop: all Events.*, all Assessments.*, all Component.*_Problem, Person.*_Human Factors, narratives, synopsis, callback.
+ML approach
+Primary model: LightGBM with native categorical support (avoids the one-hot explosion). Ordinal regression formulation or multiclass with ordinal-aware loss.
+Secondary model: CatBoost for robustness check — handles high-cardinality categoricals well.
+Baseline: Stratified dummy + logistic regression on top features.
+Pipeline
+
+Target engineering notebook: build ordinal severity from outcome fields, validate distribution, document rubric
+Leakage audit notebook: human-reviewed feature whitelist with justification per feature
+Temporal split: train 2003-2017, validate 2018, test 2019-2020 (using Time_Date)
+Feature engineering: bucket experience, derive time features (month, quarter, time-of-day), create altitude bands, missingness indicators for fields between 50-80% missing, drop fields >80% missing
+Encoding: frequency encoding for high-cardinality, ordered target encoding (out-of-fold) where useful
+Training: 5-fold stratified-by-target time-series CV with Optuna tuning (100 trials)
+Calibration: isotonic calibration on validation fold
+Evaluation: ordinal metrics (quadratic weighted kappa, MAE on ordinal scale), per-class precision/recall with bootstrap CIs, confusion matrix, reliability diagram
+Interpretation: SHAP values on calibrated model, slice analysis by year/airport class/phase
+
+Expected realistic performance
+Quadratic weighted kappa 0.45-0.60, macro-F1 0.50-0.65 on 4-class ordinal. If numbers come in dramatically higher, suspect residual leakage.
+Deliverable
+A reproducible severity triage classifier with documented rubric, leakage audit, temporal validation, calibration, and interpretability. This alone is publishable.
+
+Problem B — Incident Category Classification
+Objective
+Given an incident report with structured features and narrative text, classify it into aviation incident taxonomy categories. Automates routing of reports to appropriate review boards (Flight Ops, Maintenance, ATC, etc.). Supports downstream trend analysis by category.
+Dataset
+ASRS — same source. The key difference from Problem A is that Problem B heavily uses the narrative text fields (Report 1_Narrative, Report 1.1_Callback, Report 2_Narrative, Synopsis), not just structured features.
+Target construction
+Derive from Assessments.1_Primary Problem with a defined taxonomy — typical aviation taxonomies include:
+
+Flight Operations (crew procedures, decision-making, CRM)
+Equipment/System (mechanical, avionics, systems)
+ATC/Communication (clearance, readback, frequency)
+Aircraft/Structure (airframe, engine, damage)
+Environment (weather, wake, terrain)
+Airspace/Navigation (incursion, deviation, loss of separation)
+
+Handle multi-label cases explicitly — one incident can be both Flight Ops and ATC. Use multi-label classification, not forced single-label.
+Feature set
+Since this is retrospective categorization (the report itself is the input), you can use more features than Problem A:
+
+Structured: all features from Problem A plus Events_Anomaly, Events.3_Detector, Events.4_When Detected (these are okay here because we're categorizing after the fact, not predicting before the fact)
+Text: narratives, synopsis, callback conversation
+
+Explicit exclusion: Assessments.1_Primary Problem itself (the target source) and Assessments_Contributing Factors (too closely aligned with target).
+ML approach
+Architecture: Two-tower multi-modal fusion network
+Tabular Tower                    Text Tower
+(structured features)            (narratives + synopsis)
+      |                                |
+  LightGBM or                    Sentence-BERT or
+  MLP encoder                    aviation-fine-tuned
+      |                          BERT → CLS embedding
+      |                                |
+      +----------- Concatenate --------+
+                        |
+                Fusion MLP + Multi-label heads
+                        |
+                Per-category sigmoid outputs
+Alternative simpler baseline: TF-IDF + logistic regression per label (multi-label one-vs-rest).
+Mid-complexity option: DistilBERT on narrative only, ignoring structured features. Useful ablation.
+Pipeline
+
+Taxonomy definition notebook: define the category set, handle multi-label mapping from source, document with examples
+Text preprocessing: cleaning, handling ASRS-specific redactions (ZZZ, XXX placeholders), sentence segmentation
+Temporal split: same as Problem A
+Text encoding: fine-tune sentence-BERT on aviation domain (continue pretraining on ASRS narratives first, small budget), then use for classification
+Structured encoding: categorical embedding or one-hot depending on final architecture
+Training: fusion model with AdamW, warmup schedule, multi-label BCE loss with class weighting
+Threshold tuning: per-label threshold optimized on validation for F1
+Evaluation: per-label precision/recall/F1, macro and micro F1, Hamming loss, subset accuracy, confusion per label
+Interpretation: attention weights over text spans, SHAP for structured contributions, worked examples of multi-label cases
+
+Expected realistic performance
+Macro-F1 0.60-0.75 for the fusion model, 0.55-0.65 for text-only, 0.45-0.55 for structured-only. The text contribution is substantial — narrative contains the most direct signal for categorization.
+Deliverable
+Multi-modal multi-label classifier for aviation incident taxonomy with interpretable fusion architecture. Novel contribution: the fusion approach for aviation domain specifically, and the aviation-continued-pretraining of sentence encoders.
+
+Problem C — Pre-Flight Risk Prediction
+Objective
+Given pre-flight features of a scheduled flight, predict the probability of a safety-relevant incident occurring. Unlike Problems A and B, this predicts whether an incident happens, not properties of incidents that already happened. Operationally useful for flight-level risk screening, crew briefing prioritization, and ramp inspection targeting.
+Dataset
+This is the only problem that cannot use ASRS as its base. Integrated multi-source dataset:
+Base (denominator): BTS On-Time Performance (transtats.bts.gov)
+
+Scope: all US domestic commercial flights
+Time window: 2015–2023 (9 years)
+~60 million flight records
+Contains: carrier, tail number, origin, destination, scheduled/actual times, delays
+
+Weather: NOAA Integrated Surface Database / METAR (via Iowa State Mesonet)
+
+Joined by origin + destination airport, at scheduled departure/arrival time
+Contains: temperature, visibility, ceiling, wind, precipitation
+
+Positive class ground truth: NTSB Aviation Accident Database + FAA AIDS
+
+Joined by tail number + date
+NTSB for severe; AIDS for lesser incidents
+~5,000-10,000 matches over the 9-year window
+
+Optional enrichment: ASRS as additional weak-labeled positives (joined by operator + date + route with fuzzy matching; noisy but boosts positive count)
+Aircraft reference: FAA Aircraft Registry for tail-number-to-aircraft-type mapping
+Target
+Binary: incident_within_24h(flight) = 1 if an NTSB/AIDS/ASRS record exists for that tail number within 24 hours of the flight's scheduled departure, else 0.
+Realistic positive rate: ~0.01-0.05%. Extreme class imbalance — this is the real aviation safety base rate, not the inflated 62% you see in ASRS-only analyses.
+Feature set
+All observable before scheduled departure:
+
+Flight: origin, destination, scheduled departure time, day of week, month, carrier
+Aircraft: tail number, aircraft type, aircraft age, recent utilization (flights in last 7/30 days), recent delay pattern
+Weather: origin METAR at departure, destination TAF for arrival, route-weighted weather composite
+Operational state: airport congestion forecast, ATC delay programs active, NOTAM count for route
+Historical: carrier's 30-day incident rate, route's 365-day incident rate, aircraft's 90-day incident history
+
+ML approach
+Primary challenge: extreme class imbalance (positive rate <0.1%).
+Architecture: Two-stage model
+Stage 1: Gradient boosting (LightGBM) as a risk-scoring model, trained with:
+
+Case-control sampling: all positives + random subsample of negatives (e.g., 100:1 ratio)
+Focal loss or inverse-frequency weighting
+Isotonic calibration to recover absolute probabilities
+
+Stage 2: Calibrated risk score → operational thresholds set by cost model (acceptable false-positive rate given crew briefing cost)
+Alternative: Rare-event neural approach — Variational Autoencoder on negative class, use reconstruction error as risk signal. Useful as an ensemble member.
+Pipeline
+This is the heaviest pipeline — expect 6-9 months of serious work.
+
+Data acquisition (months 1-2): download and validate BTS (annual CSVs, ~200GB), NOAA METAR for all US airports, NTSB database export, FAA AIDS, FAA registry
+Data engineering (months 2-4): design join logic (tail number + date match for positives, airport + time windowing for weather), build staging pipeline in Parquet, handle ~100M row joins efficiently
+Target labeling (month 4): NTSB/AIDS/ASRS ingestion, tail-number-to-flight matching with 24h window, manual validation of 200 matches to verify join correctness
+Feature engineering (months 4-5): temporal features, rolling aggregates (carrier/route/aircraft history windows), weather composites, congestion indices
+Temporal split: train 2015-2020, validate 2021, test 2022-2023
+Modeling (months 5-7): baseline → LightGBM with case-control → calibration → threshold tuning
+Validation (month 7): multiple operational definitions (24h, 7day windows), sensitivity analysis on join quality, subgroup fairness (by carrier, airport class)
+Interpretation (month 8): SHAP, prototype operator-facing dashboard with risk explanations
+Writeup/patent (month 9)
+
+Expected realistic performance
+With proper temporal split and real base rates: PR-AUC 0.05-0.15 (sounds low but is significant lift over base rate 0.001), ROC-AUC 0.70-0.80. If you see AUC >0.90, something is leaking.
+Deliverable
+A genuine pre-flight risk scoring system validated on real flight data. The patent-level novelty is in the integrated pipeline (cross-source join, rare-event handling, calibration for operational thresholds), not any single model. File provisional on the pipeline architecture early.
+Caveat
+This is the most valuable project but also the highest risk. If timelines are tight, consider scoping to one US region (e.g., Northeast) for the initial version, then expand. A bounded-scope real-data pipeline beats a full-scope synthesized one every time.
+
+Problem D — Emerging Risk Pattern Discovery
+Objective
+Unsupervised discovery of latent themes in incident narratives, with temporal tracking to flag emerging patterns before they escalate to accidents. This is forward-looking operational intelligence — catches novel failure modes in reported near-misses ahead of regulatory response.
+Operationally valuable: FAA and NTSB currently do manual narrative review. An automated system surfacing emerging clusters with changepoint alerts is genuinely new capability.
+Dataset
+ASRS — narrative text is the primary signal. Same Hugging Face dataset. Use Report 1_Narrative, Report 2_Narrative, and Synopsis fields. Also use Time_Date for temporal tracking.
+Approach
+This is unsupervised, so no "target." The pipeline:
+Stage 1: Narrative representation
+
+Fine-tune a sentence encoder (sentence-BERT or similar) on ASRS narratives using unsupervised contrastive objectives (SimCSE, TSDAE) — this learns aviation-domain semantics without labels
+Encode every narrative as a dense vector
+
+Stage 2: Topic / cluster discovery
+
+BERTopic pipeline: UMAP dimensionality reduction → HDBSCAN clustering → class-based TF-IDF for cluster characterization
+Produces interpretable topics with representative documents and keywords
+Typical output: 100-300 fine-grained topics, hierarchical rollup to 20-30 themes
+
+Stage 3: Temporal dynamics
+
+For each cluster, compute monthly prevalence time series
+Apply changepoint detection (Bayesian changepoint, CUSUM, or PELT algorithm)
+Flag clusters with statistically significant recent increases
+
+Stage 4: Emerging risk alerts
+
+Clusters with (a) recent changepoint toward higher prevalence, (b) high severity-conditional rate (join with Problem A severity labels), (c) novel terminology not in historical clusters → flagged as emerging risks
+Human review by safety analyst validates alerts
+
+Pipeline
+
+Text preparation: clean narratives, handle redaction placeholders, sentence-level or document-level encoding choice
+Domain adaptation: continue-pretrain sentence-BERT on 38k ASRS narratives with SimCSE objective (small compute budget, maybe 4-8 GPU-hours)
+Embedding and clustering: BERTopic with tuned UMAP/HDBSCAN parameters
+Cluster characterization: class-based TF-IDF, representative documents, cluster naming (automated + human review)
+Temporal analysis: monthly cluster prevalence, changepoint detection, trend scoring
+Emerging risk scoring: composite score combining trend strength, severity association, novelty
+Validation: retrospective validation — can the system have flagged known emerging issues (e.g., battery fires in early 2010s, 5G C-band altimeter interference 2022) from narratives published before the public attention?
+Dashboard: timeline view of cluster prevalences, drill-down to representative reports, alert panel
+
+Expected output
+
+Coherent topic model with 100-300 clusters, human-interpretable
+~5-15 genuinely emerging clusters per year flagged
+Retrospective validation showing the system would have flagged 60-80% of known emerging issues within 6 months of their emergence in narratives
+
+Deliverable
+Autonomous emerging-risk surveillance system for aviation narratives. Likely the strongest novelty anchor in your project — this hasn't been done well at scale. Patent claims center on the integration of domain-adapted embeddings, changepoint-triggered alerting, and severity-weighted trend scoring.
+
+Problem E — Contributing Factor Graph Analysis
+Objective
+Extract contributing factors and their relationships from incident narratives to build a temporal knowledge graph. Enables retrospective analysis of which factor combinations precede severe outcomes and supports causal pattern hypothesis generation (not causal inference — ASRS cannot support true counterfactual claims).
+Operationally valuable: current factor analysis is manual and inconsistent across analysts. A structured graph enables systematic pattern mining and cross-report connection.
+Dataset
+ASRS — primarily narrative + the existing Assessments_Contributing Factors / Situations field as weak supervision for factor vocabulary.
+Approach
+Stage 1: Factor extraction from narratives
+
+Treat as a relation extraction task: entities are factors (weather, fatigue, procedure violation, equipment failure, etc.), relations connect factors to outcomes and to each other
+Weak supervision: use the existing Contributing Factors field as labels for narrative sentences
+Model: fine-tuned BERT for named entity recognition on aviation factor vocabulary + relation classifier on factor pairs
+
+Stage 2: Graph construction
+
+Nodes: factors, outcomes, aircraft types, phases of flight
+Edges: "factor-preceded-factor," "factor-contributed-to-outcome," with temporal and conditional probability weights
+Weighted by co-occurrence frequency in incidents, filtered by statistical significance
+
+Stage 3: Pattern mining
+
+Frequent subgraph mining to find recurring factor chains
+Severity-stratified pattern analysis: which factor chains correlate with higher severity
+Temporal evolution: how factor chains shift over years/aircraft generations
+
+Stage 4: Hypothesis generation
+
+Novel factor combinations appearing in recent reports
+High-severity-correlated chains not yet reflected in training curriculum
+Cross-reference with operational databases for exposure context
+
+Pipeline
+
+Factor vocabulary curation: aviation factor taxonomy (fatigue, workload, weather, system failure, procedure deviation, etc.) — 50-100 top-level factors with subtypes
+Weak supervision: align existing Contributing Factors field to narrative spans using distant supervision heuristics
+NER training: fine-tune aviation-domain BERT on factor spans with weak supervision, iterate with active learning on disagreement cases
+Relation extraction: sentence-level binary classifier for factor-pair relations, trained on co-occurrence patterns
+Graph construction: aggregate extractions across all reports, weight edges by frequency and confidence
+Pattern mining: gSpan or similar for frequent subgraphs, stratified by severity
+Visualization: interactive graph explorer with severity heat-mapping and temporal sliders
+Validation: expert review of top-20 mined patterns for operational plausibility
+
+Expected output
+
+Knowledge graph with ~10,000 nodes, ~100,000 edges
+~50-100 frequent factor-chain patterns with severity associations
+Temporal trend analysis across chains
+Expert-validated set of "high-risk factor combinations" for training and operational use
+
+Deliverable
+Aviation factor knowledge graph with mined pattern library. Patent claims center on the weak-supervision pipeline for aviation factors and the severity-stratified pattern mining approach.
+
+Integration — The Unified System
+These five problems form a coherent system:
+
+D (emerging risks) and E (factor patterns) work on narratives to surface what matters
+B (categorization) and A (severity) work on incoming reports to classify them
+C (pre-flight risk) works on flights to predict outcomes
+
+They share infrastructure: the aviation-domain language model serves B, D, and E. The severity rubric from A supplies labels for D and E. The factor graph from E enriches features for A and B. The pre-flight model in C uses severity-weighted historical patterns from A and D.
+For a patent-level project, claim the integrated system as the primary invention with each component as supporting claims. File provisional on the integration architecture first — it's the strongest novelty — then detailed claims on the individual components as the work matures.

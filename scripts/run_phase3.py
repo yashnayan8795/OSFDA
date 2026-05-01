@@ -262,7 +262,7 @@ def run_tier3(splits, label_names, embeddings):
     return fusion, test_report
 
 
-def print_comparison(results):
+def print_comparison(results, min_label_f1: float = 0.30):
     banner("PHASE 3 — MODEL COMPARISON (Test Set)")
     print(f"  {'Model':<30} {'Macro-F1':>10} {'Micro-F1':>10} {'Hamming':>10}")
     print("  " + "-"*65)
@@ -270,11 +270,27 @@ def print_comparison(results):
         print(
             f"  {name:<30} {r['macro_f1']:>10.4f} {r['micro_f1']:>10.4f} {r['hamming_loss']:>10.4f}"
         )
-    # Gate check
-    best_macro = max(r['macro_f1'] for r in results.values())
+
+    # Overall macro-F1 gate
+    best_name, best_report = max(results.items(), key=lambda kv: kv[1]["macro_f1"])
+    best_macro = best_report["macro_f1"]
     gate = "PASSED" if best_macro >= 0.55 else "BELOW TARGET (0.55)"
     print(f"\n  G4 Quality Gate (Macro-F1 >= 0.55): {gate}")
-    print(f"  Best Macro-F1: {best_macro:.4f}")
+    print(f"  Best Macro-F1: {best_macro:.4f}  [{best_name}]")
+
+    # Per-label minimum F1 gate
+    if "per_label" in best_report:
+        failing = [
+            (lbl, metrics["f1"])
+            for lbl, metrics in best_report["per_label"].items()
+            if metrics["f1"] < min_label_f1
+        ]
+        if failing:
+            print(f"\n  WARNING — labels below per-label F1 floor ({min_label_f1:.2f}):")
+            for lbl, f1 in sorted(failing, key=lambda x: x[1]):
+                print(f"    {lbl:<30}  F1={f1:.3f}")
+        else:
+            print(f"\n  Per-label F1 gate ({min_label_f1:.2f}): ALL PASSED")
 
 
 def main():

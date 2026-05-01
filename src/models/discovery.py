@@ -6,11 +6,13 @@ Problem D — Emerging Risk Discovery (Unsupervised)
 3. Emerging Risk Scoring
 """
 
+import logging
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, List, Tuple
-import joblib
+from typing import Dict, Any, List
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 def fit_bertopic(
     texts: pd.Series,
@@ -61,25 +63,64 @@ def get_topic_info(topic_model) -> pd.DataFrame:
 def calculate_temporal_trends(
     df: pd.DataFrame,
     topics: List[int],
-    time_col: str = "Time_Date"
+    time_col: str = "Time_Date",
 ) -> pd.DataFrame:
     """
-    Calculates monthly prevalence for each topic.
+    Calculates monthly prevalence and average severity for each topic.
+
+    Returns two objects:
+      - monthly_counts : wide DataFrame (topics x periods) of report counts —
+        used internally by detect_changepoints and score_emerging_risks.
+      - trends_long    : long DataFrame with columns
+        [topic_id, period, count, avg_severity] — saved to topic_trends.parquet.
+
+    For backwards-compat the function still returns monthly_counts; call
+    calculate_temporal_trends_long() to get the Streamlit-ready long format.
     """
     df = df.copy()
-    df['topic'] = topics
-    
-    # Exclude outliers (-1)
-    df = df[df['topic'] != -1]
-    
-    # Create period
+    df["topic"] = topics
+    df = df[df["topic"] != -1]
+
     if "year" in df.columns and "month" in df.columns:
-        df['period'] = df['year'].astype(str) + "-" + df['month'].astype(str).str.zfill(2)
+        df["period"] = df["year"].astype(str) + "-" + df["month"].astype(str).str.zfill(2)
     else:
-        df['period'] = df[time_col].astype(str)
-        
-    monthly_counts = df.groupby(['topic', 'period']).size().unstack(fill_value=0)
+        df["period"] = df[time_col].astype(str)
+
+    monthly_counts = df.groupby(["topic", "period"]).size().unstack(fill_value=0)
     return monthly_counts
+
+
+def calculate_temporal_trends_long(
+    df: pd.DataFrame,
+    topics: List[int],
+    time_col: str = "Time_Date",
+) -> pd.DataFrame:
+    """
+    Long-format version of calculate_temporal_trends.
+    Returns DataFrame with [topic_id, period, count, avg_severity] — one row
+    per (topic, period) combination. avg_severity is computed per period, not
+    globally, so the Streamlit trend charts show severity evolution over time.
+    """
+    df = df.copy()
+    df["topic"] = topics
+    df = df[df["topic"] != -1]
+
+    if "year" in df.columns and "month" in df.columns:
+        df["period"] = df["year"].astype(str) + "-" + df["month"].astype(str).str.zfill(2)
+    else:
+        df["period"] = df[time_col].astype(str)
+
+    agg: Dict[str, Any] = {"count": ("topic", "size")}
+    if "severity_level" in df.columns:
+        agg["avg_severity"] = ("severity_level", "mean")
+
+    grouped = df.groupby(["topic", "period"]).agg(**agg).reset_index()
+    grouped = grouped.rename(columns={"topic": "topic_id"})
+
+    if "avg_severity" not in grouped.columns:
+        grouped["avg_severity"] = 0.0
+
+    return grouped
 
 def detect_changepoints(
     monthly_counts: pd.DataFrame,
@@ -106,7 +147,8 @@ def detect_changepoints(
             result = algo.predict(pen=penalty)
             # ruptures returns breakpoints including the end of the signal
             changepoints[topic_idx] = [cp for cp in result if cp < len(signal)]
-        except Exception:
+        except Exception as exc:
+            logger.warning("PELT failed for topic %s: %s", topic_idx, exc)
             changepoints[topic_idx] = []
         
     return changepoints

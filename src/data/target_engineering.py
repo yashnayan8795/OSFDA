@@ -18,6 +18,7 @@ RUBRIC v2.0 — Calibrated against actual ASRS field values:
   - No dedicated injury columns — injury info is in Events.5_Result
 """
 
+import re
 import hashlib
 import inspect
 import pandas as pd
@@ -25,6 +26,11 @@ import numpy as np
 from typing import Dict, Any, List, Optional, Tuple
 
 from src.utils.config import load_severity_rubric, load_category_taxonomy
+
+
+def _kw_matches(kw: str, text: str) -> bool:
+    """Case-insensitive whole-word (word-boundary) keyword match."""
+    return bool(re.search(r"\b" + re.escape(kw) + r"\b", text, re.IGNORECASE))
 
 
 # ---------------------------------------------------------------------------
@@ -197,11 +203,11 @@ def map_categories(factors_str: str, taxonomy: Dict[str, Any]) -> List[str]:
     """Map semicolon-delimited contributing factors to multi-label categories."""
     if pd.isna(factors_str):
         return []
-    factors = [f.strip().lower() for f in str(factors_str).split(";")]
+    factors = [f.strip() for f in str(factors_str).split(";")]
     assigned = set()
     for cat, details in taxonomy["categories"].items():
-        keywords = [k.lower() for k in details["keywords"]]
-        if any(any(kw in factor for kw in keywords) for factor in factors):
+        keywords = details["keywords"]
+        if any(_kw_matches(kw, factor) for factor in factors for kw in keywords):
             assigned.add(cat)
     return sorted(assigned)
 
@@ -210,10 +216,9 @@ def map_primary_category(primary_str: str, taxonomy: Dict[str, Any]) -> str:
     """Map Assessments.1_Primary Problem to a single primary category."""
     if pd.isna(primary_str):
         return "Other"
-    primary = str(primary_str).lower()
+    primary = str(primary_str)
     for cat, details in taxonomy["categories"].items():
-        keywords = [k.lower() for k in details["keywords"]]
-        if any(kw in primary for kw in keywords):
+        if any(_kw_matches(kw, primary) for kw in details["keywords"]):
             return cat
     return "Other"
 

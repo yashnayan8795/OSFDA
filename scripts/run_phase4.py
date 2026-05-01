@@ -10,10 +10,10 @@ Usage:
     python scripts/run_phase4.py
 """
 
+import json
 import time
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 from src.utils.config import load_main_config, resolve_path, set_seeds
 from src.data.loader import load_raw_data, parse_time_date
@@ -22,6 +22,7 @@ from src.features.temporal import extract_temporal_features
 from src.features.text import preprocess_narratives, combine_text_fields
 from src.models.discovery import (
     fit_bertopic, get_topic_info, calculate_temporal_trends,
+    calculate_temporal_trends_long,
     detect_changepoints, score_emerging_risks, save_discovery_model
 )
 
@@ -87,7 +88,11 @@ def main():
 
     banner("1. BERTopic Clustering")
     start = time.time()
-    topic_model, topics = fit_bertopic(texts, embeddings, min_topic_size=50)
+    bertopic_params = config.get("model_params", {}).get("bertopic", {})
+    topic_model, topics = fit_bertopic(
+        texts, embeddings,
+        min_topic_size=bertopic_params.get("min_topic_size", 50),
+    )
     topic_info = get_topic_info(topic_model)
     print(f"  Found {len(topic_info) - 1} active topics (excluding outlier class -1).")
     
@@ -97,8 +102,12 @@ def main():
     banner("2. Temporal Dynamics & Changepoints")
     monthly_counts = calculate_temporal_trends(df_ordered, topics, time_col="Time_Date")
     print(f"  Computed monthly counts. Shape: {monthly_counts.shape}")
-    
-    changepoints = detect_changepoints(monthly_counts, penalty=3.0)
+
+    pelt_params = config.get("model_params", {}).get("pelt", {})
+    changepoints = detect_changepoints(
+        monthly_counts,
+        penalty=pelt_params.get("penalty", 3.0),
+    )
     num_cps = sum(len(cps) > 0 for cps in changepoints.values())
     print(f"  Detected changepoints in {num_cps} topics.")
 
@@ -106,17 +115,53 @@ def main():
     scores_df = score_emerging_risks(
         topic_info, monthly_counts, changepoints, df_ordered, topics
     )
-    
+
     # Save results
     scores_path = resolve_path("data/processed/emerging_risks.csv")
     scores_df.to_csv(scores_path, index=False)
     print(f"  Saved risk scores to {scores_path}")
-    
+
     print("\n  Top 10 Emerging Risks:")
     top_10 = scores_df.head(10)
     for _, row in top_10.iterrows():
         print(f"    Topic {row['Topic']:<3} | Score: {row['Risk_Score']:<6.2f} | Growth: {row['Growth_Ratio']:<5.2f} | "
               f"Recent CP: {str(row['Recent_Changepoint']):<5} | Name: {row['Name']}")
+
+    # ──────────────────────────────────────────────────────────
+    # 4. Save Streamlit-required artefacts
+    # ──────────────────────────────────────────────────────────
+    banner("4. Saving Streamlit Artefacts")
+
+    # topic_trends.parquet — long format with per-period avg_severity
+    trends_long = calculate_temporal_trends_long(df_ordered, topics, time_col="Time_Date")
+    trends_path = resolve_path("data/processed/topic_trends.parquet")
+    trends_long.to_parquet(trends_path, index=False)
+    print(f"  Saved topic_trends.parquet  ({len(trends_long)} rows)")
+
+    # topic_representations.json — {topic_id: {keywords: [...]}}
+    reps: dict = {}
+    for _, trow in topic_info.iterrows():
+        tid = int(trow["Topic"])
+        if tid == -1:
+            continue
+        # BERTopic stores top-N (word, weight) tuples per topic
+        raw_kws = topic_model.get_topic(tid)
+        keywords = [w for w, _ in raw_kws] if raw_kws else []
+        reps[str(tid)] = {"keywords": keywords}
+    reps_path = resolve_path("data/processed/topic_representations.json")
+    with open(reps_path, "w") as f:
+        json.dump(reps, f, indent=2)
+    print(f"  Saved topic_representations.json  ({len(reps)} topics)")
+
+    # topic_changepoints.json — {topic_id: [period_indices]}
+    cps_out = {
+        str(int(k)): [int(x) for x in v]
+        for k, v in changepoints.items()
+    }
+    cp_path = resolve_path("data/processed/topic_changepoints.json")
+    with open(cp_path, "w") as f:
+        json.dump(cps_out, f, indent=2)
+    print(f"  Saved topic_changepoints.json  ({len(cps_out)} topics)")
 
     elapsed = time.time() - start
     print(f"\n  Phase 4 done in {elapsed:.1f}s")

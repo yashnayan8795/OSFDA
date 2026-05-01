@@ -1,6 +1,6 @@
 """Run Phase 2: Problem A Severity Model Training & Evaluation."""
 import sys
-import pandas as pd
+import joblib
 import numpy as np
 
 from src.utils.config import (
@@ -19,7 +19,7 @@ from src.features.encoding import (
 )
 from src.models.severity import (
     train_lgbm_severity, calibrate_model, predict_calibrated, save_model,
-    train_catboost_severity,
+    train_catboost_severity, predict_cost_sensitive,
 )
 from src.evaluation.ordinal_metrics import full_severity_report
 from src.evaluation.calibration import expected_calibration_error
@@ -40,7 +40,12 @@ df = bucket_experience(df)
 
 val = validate_severity_distribution(df)
 print("Severity distribution:", val["distribution"])
-print("Valid:", val["is_valid"])
+if not val["is_valid"]:
+    for w in val["warnings"]:
+        print(f"  WARNING: {w}")
+    print("  Rubric distribution is out of expected range — aborting.")
+    sys.exit(1)
+print("  Distribution valid.")
 
 # ============================================================
 # Feature selection
@@ -69,11 +74,15 @@ if not is_clean:
 col_types = identify_column_types(df[feature_cols])
 df = prepare_for_lgbm(df, col_types["categorical"], col_types["numeric"], col_types["medium_missing"])
 
-# Drop high-missing columns
+# Drop high-missing columns (warn so they don't silently reduce feature count)
 for hm in col_types["high_missing"]:
     if hm in feature_cols:
         feature_cols.remove(hm)
-        print(f"Dropped (>80% missing): {hm}")
+        print(f"  WARNING: Dropped (>80% missing): {hm}")
+
+if len(feature_cols) < 5:
+    print(f"  FATAL: Only {len(feature_cols)} features remain after dropping. Check whitelist/data.")
+    sys.exit(1)
 
 print(f"Final features: {len(feature_cols)}")
 print(f"  Categoricals: {[c for c in col_types['categorical'] if c in feature_cols]}")
@@ -96,13 +105,14 @@ print("\nTraining LightGBM severity model...")
 lgb_model, lgb_history = train_lgbm_severity(X_train, y_train, X_val, y_val, cat_features)
 print(f"Best iteration: {lgb_history['best_iteration']}")
 
+cost_config = load_cost_matrix()
+costs = cost_config.get("costs", {})
+
 print("Calibrating LightGBM...")
 lgb_calibrators = calibrate_model(lgb_model, X_val, y_val)
 lgb_cal_probs = predict_calibrated(lgb_model, X_test, lgb_calibrators)
-lgb_y_pred = lgb_cal_probs.argmax(axis=1)
-
-cost_config = load_cost_matrix()
-lgb_report = full_severity_report(y_test.values, lgb_y_pred, cost_config.get("costs"))
+lgb_y_pred = predict_cost_sensitive(lgb_cal_probs, costs)
+lgb_report = full_severity_report(y_test.values, lgb_y_pred, costs)
 
 # ============================================================
 # Train CatBoost
@@ -118,8 +128,8 @@ for col in cat_features:
     X_test_cb[col] = X_test_cb[col].astype(str).replace('nan', 'Missing').fillna('Missing')
 
 cb_cal_probs = predict_calibrated(cb_model, X_test_cb, cb_calibrators)
-cb_y_pred = cb_cal_probs.argmax(axis=1)
-cb_report = full_severity_report(y_test.values, cb_y_pred, cost_config.get("costs"))
+cb_y_pred = predict_cost_sensitive(cb_cal_probs, costs)
+cb_report = full_severity_report(y_test.values, cb_y_pred, costs)
 
 # ============================================================
 # Compare & Select Best
@@ -133,6 +143,7 @@ print(f"  CatBoost QWK: {cb_report['qwk']:.4f}  (Macro-F1: {cb_report['classific
 if cb_report['qwk'] > lgb_report['qwk']:
     print("\n  >> CatBoost wins. Saving CatBoost model...")
     best_model = cb_model
+    best_calibrators = cb_calibrators
     best_report = cb_report
     best_probs = cb_cal_probs
     best_name = "CatBoost"
@@ -141,12 +152,17 @@ if cb_report['qwk'] > lgb_report['qwk']:
 else:
     print("\n  >> LightGBM wins. Saving LightGBM model...")
     best_model = lgb_model
+    best_calibrators = lgb_calibrators
     best_report = lgb_report
     best_probs = lgb_cal_probs
     best_name = "LightGBM"
     model_path = save_model(best_model, str(resolve_path("models")), "severity_lgbm")
 
-print(f"  Model saved: {model_path}")
+# Always save calibrators alongside whichever model won
+cal_path = resolve_path("models/severity_calibrators.joblib")
+joblib.dump(best_calibrators, cal_path)
+print(f"  Model saved:      {model_path}")
+print(f"  Calibrators saved: {cal_path}")
 
 # ============================================================
 # Best Model — Full Evaluation
@@ -154,11 +170,12 @@ print(f"  Model saved: {model_path}")
 print("\n" + "="*50)
 print(f"  BEST MODEL ({best_name}) EVALUATION")
 print("="*50)
-print(f"  QWK:          {best_report['qwk']:.4f}")
-print(f"  QWK 95% CI:   [{best_report['qwk_bootstrap']['ci_low']:.4f}, {best_report['qwk_bootstrap']['ci_high']:.4f}]")
-print(f"  Ordinal MAE:  {best_report['ordinal_mae']:.4f}")
+print(f"  QWK:              {best_report['qwk']:.4f}")
+print(f"  QWK 95% CI:       [{best_report['qwk_bootstrap']['ci_low']:.4f}, {best_report['qwk_bootstrap']['ci_high']:.4f}]")
+print(f"  Ordinal MAE:      {best_report['ordinal_mae']:.4f}")
+print(f"  Class-Wtd MAE:    {best_report['class_weighted_mae']:.4f}")
 if "asymmetric_cost" in best_report:
-    print(f"  Asym. Cost:   {best_report['asymmetric_cost']:.4f}")
+    print(f"  Asym. Cost:       {best_report['asymmetric_cost']:.4f}")
 
 cls_report = best_report["classification_report"]
 print("\n  Per-class metrics:")
@@ -196,9 +213,9 @@ if "year" in X_test.columns:
     for yr in sorted(X_slice["year"].unique()):
         idx = X_slice["year"] == yr
         y_slice = y_test[idx]
-        p_slice = best_probs[idx].argmax(axis=1)
+        p_slice = predict_cost_sensitive(best_probs[idx], costs)
         if len(y_slice) > 10:
-            sr = full_severity_report(y_slice.values, p_slice, cost_config.get("costs"))
+            sr = full_severity_report(y_slice.values, p_slice, costs)
             print(f"    {int(yr)}: QWK={sr['qwk']:.4f}  Macro-F1={sr['classification_report']['macro avg']['f1-score']:.4f}  (n={len(y_slice)})")
 
 # ============================================================
