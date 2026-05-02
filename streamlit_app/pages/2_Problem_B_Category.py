@@ -22,8 +22,10 @@ from streamlit_app.utils.loaders import (
     load_tfidf_model, load_sbert_classifier, load_category_test_data,
     PROCESSED,
 )
+from streamlit_app.utils.sidebar import render_manual_test_sidebar
 
 st.set_page_config(page_title="Problem B — Category", page_icon="🟡", layout="wide")
+render_manual_test_sidebar()
 st.title("🟡 Problem B — Incident Category Classification")
 st.caption(
     "Multi-label taxonomy across 5 categories. "

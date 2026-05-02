@@ -20,9 +20,13 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from streamlit_app.utils.loaders import load_severity_model, load_severity_test_predictions
+from streamlit_app.utils.loaders import (
+    load_severity_model, load_severity_test_predictions, run_severity_predictions,
+)
+from streamlit_app.utils.sidebar import render_manual_test_sidebar, get_uploaded_df
 
 st.set_page_config(page_title="Problem A — Severity", page_icon="🔴", layout="wide")
+render_manual_test_sidebar()
 st.title("🔴 Problem A — Incident Severity Triage")
 st.caption(
     "Ordinal severity 0–3 from pre-circumstance features only. "
@@ -250,59 +254,84 @@ with tab1:
 with tab2:
     with st.spinner("Loading test-set predictions (first time only)…"):
         try:
-            y_true, y_pred, cal_probs, X_test, feature_cols = load_severity_test_predictions()
+            uploaded_df = get_uploaded_df("severity")
+            if uploaded_df is not None:
+                st.info(
+                    f"📤 Manual Test mode — using your uploaded dataset "
+                    f"({len(uploaded_df):,} rows). "
+                    f"Clear it from the sidebar to return to the default test split."
+                )
+                y_true, y_pred, cal_probs, X_test, feature_cols = run_severity_predictions(uploaded_df)
+                data_source_label = "Uploaded data"
+            else:
+                y_true, y_pred, cal_probs, X_test, feature_cols = load_severity_test_predictions()
+                data_source_label = "Held-out test split (2020)"
+
+            has_labels = np.any(y_true >= 0)
 
             from sklearn.metrics import cohen_kappa_score, confusion_matrix, classification_report
-            qwk = cohen_kappa_score(y_true, y_pred, weights="quadratic")
-            mae = float(np.mean(np.abs(y_true - y_pred)))
-            cm = confusion_matrix(y_true, y_pred)
-            cls_report = classification_report(y_true, y_pred, output_dict=True)
 
-            m1, m2, m3, m4 = st.columns(4)
-            m1.metric("QWK (Primary)", f"{qwk:.4f}", help="Quadratic Weighted Kappa — target ≥ 0.45")
-            m2.metric("Ordinal MAE", f"{mae:.3f}", help="Average absolute ordinal distance")
-            m3.metric("Macro-F1", f"{cls_report['macro avg']['f1-score']:.3f}")
-            m4.metric("Test Set Size", f"{len(y_true):,}")
+            if has_labels:
+                qwk = cohen_kappa_score(y_true, y_pred, weights="quadratic")
+                mae = float(np.mean(np.abs(y_true - y_pred)))
+                cm = confusion_matrix(y_true, y_pred)
+                cls_report = classification_report(y_true, y_pred, output_dict=True)
 
-            col_cm, col_cls = st.columns(2)
-            with col_cm:
-                fig = px.imshow(
-                    cm,
-                    labels=dict(x="Predicted", y="Actual", color="Count"),
-                    x=[f"Pred {SEVERITY_LABELS[i]}" for i in range(4)],
-                    y=[f"True {SEVERITY_LABELS[i]}" for i in range(4)],
-                    color_continuous_scale="Blues",
-                    text_auto=True,
-                    title="Confusion Matrix (Test Set)",
+                m1, m2, m3, m4 = st.columns(4)
+                m1.metric("QWK (Primary)", f"{qwk:.4f}", help="Quadratic Weighted Kappa — target ≥ 0.45")
+                m2.metric("Ordinal MAE", f"{mae:.3f}", help="Average absolute ordinal distance")
+                m3.metric("Macro-F1", f"{cls_report['macro avg']['f1-score']:.3f}")
+                m4.metric("Source", data_source_label, delta=f"{len(y_true):,} rows", delta_color="off")
+
+                col_cm, col_cls = st.columns(2)
+                with col_cm:
+                    fig = px.imshow(
+                        cm,
+                        labels=dict(x="Predicted", y="Actual", color="Count"),
+                        x=[f"Pred {SEVERITY_LABELS[i]}" for i in range(4)],
+                        y=[f"True {SEVERITY_LABELS[i]}" for i in range(4)],
+                        color_continuous_scale="Blues",
+                        text_auto=True,
+                        title="Confusion Matrix",
+                    )
+                    fig.update_layout(height=400)
+                    st.plotly_chart(fig, use_container_width=True)
+
+                with col_cls:
+                    rows = []
+                    for i in range(4):
+                        r = cls_report.get(str(i), {})
+                        rows.append({
+                            "Level": f"{i} — {SEVERITY_LABELS[i]}",
+                            "Precision": round(r.get("precision", 0), 3),
+                            "Recall": round(r.get("recall", 0), 3),
+                            "F1": round(r.get("f1-score", 0), 3),
+                            "Support": int(r.get("support", 0)),
+                        })
+                    st.dataframe(
+                        pd.DataFrame(rows).set_index("Level"),
+                        use_container_width=True,
+                        height=200,
+                    )
+                    st.caption("QWK penalises large ordinal jumps (e.g. 0→3) more than adjacent errors (0→1).")
+            else:
+                st.info(
+                    "Ground-truth labels not provided in the upload — "
+                    "showing prediction distribution only. Add a `Severity_Label` "
+                    "column (0–3) to see evaluation metrics."
                 )
-                fig.update_layout(height=400)
-                st.plotly_chart(fig, use_container_width=True)
+                m1, m2 = st.columns(2)
+                m1.metric("Predictions", f"{len(y_pred):,}")
+                m2.metric("Source", data_source_label)
 
-            with col_cls:
-                rows = []
-                for i in range(4):
-                    r = cls_report.get(str(i), {})
-                    rows.append({
-                        "Level": f"{i} — {SEVERITY_LABELS[i]}",
-                        "Precision": round(r.get("precision", 0), 3),
-                        "Recall": round(r.get("recall", 0), 3),
-                        "F1": round(r.get("f1-score", 0), 3),
-                        "Support": int(r.get("support", 0)),
-                    })
-                st.dataframe(
-                    pd.DataFrame(rows).set_index("Level"),
-                    use_container_width=True,
-                    height=200,
-                )
-                st.caption("QWK penalises large ordinal jumps (e.g. 0→3) more than adjacent errors (0→1).")
-
-            st.subheader("Severity Distribution (Test Set)")
+            st.subheader("Severity Distribution")
             fig3 = go.Figure()
-            fig3.add_trace(go.Histogram(x=y_true, name="Actual", opacity=0.7, marker_color="coral"))
+            if has_labels:
+                fig3.add_trace(go.Histogram(x=y_true, name="Actual", opacity=0.7, marker_color="coral"))
             fig3.add_trace(go.Histogram(x=y_pred, name="Predicted", opacity=0.7, marker_color="steelblue"))
             fig3.update_layout(
                 barmode="overlay",
-                title="Predicted vs Actual Distribution",
+                title=f"Predicted vs Actual Distribution · {data_source_label}",
                 xaxis_title="Severity Level",
                 yaxis_title="Count",
                 height=300,
