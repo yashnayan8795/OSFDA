@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 import streamlit as st
+from streamlit_app.utils.sidebar import render_manual_test_sidebar
 
 st.set_page_config(
     page_title="Aviation Safety Analytics",
@@ -56,6 +57,8 @@ with st.sidebar:
         "`python scripts/run_phase4.py` — D\n\n"
         "`python scripts/run_phase5.py` — E"
     )
+
+render_manual_test_sidebar()
 
 # ── Hero section ─────────────────────────────────────────────────────────────
 

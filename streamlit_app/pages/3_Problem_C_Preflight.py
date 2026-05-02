@@ -19,10 +19,13 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from streamlit_app.utils.loaders import (
-    load_preflight_model, load_preflight_test_data, load_preflight_features, PROCESSED,
+    load_preflight_model, load_preflight_test_data, load_preflight_features,
+    run_preflight_predictions, PROCESSED,
 )
+from streamlit_app.utils.sidebar import render_manual_test_sidebar, get_uploaded_df
 
 st.set_page_config(page_title="Problem C — Pre-flight Risk", page_icon="🟠", layout="wide")
+render_manual_test_sidebar()
 st.title("🟠 Problem C — Pre-Flight Risk Scoring")
 st.caption(
     "Binary incident risk from BTS flight ops + NOAA weather + NTSB join. "
@@ -41,23 +44,24 @@ tab1, tab2, tab3 = st.tabs(["🎯 Risk Scorer", "📊 Performance", "🔄 What-I
 
 # Helper: build risk gauge figure
 def risk_gauge(prob: float) -> go.Figure:
-    color = "#2ecc71" if prob < 0.02 else ("#f39c12" if prob < 0.05 else "#e74c3c")
-    label = "LOW" if prob < 0.02 else ("MEDIUM" if prob < 0.05 else "HIGH")
+    prob_pct = prob * 100
+    color = "#2ecc71" if prob_pct < 0.03 else ("#f39c12" if prob_pct < 0.08 else "#e74c3c")
+    label = "LOW" if prob_pct < 0.03 else ("MEDIUM" if prob_pct < 0.08 else "HIGH")
     fig = go.Figure(go.Indicator(
         mode="gauge+number+delta",
-        value=prob * 100,
+        value=prob_pct,
         title={"text": f"Risk Level: {label}", "font": {"size": 20}},
-        delta={"reference": 5, "increasing": {"color": "#e74c3c"}},
-        number={"suffix": "%", "font": {"size": 30}},
+        delta={"reference": 0.05, "increasing": {"color": "#e74c3c"}},
+        number={"suffix": "%", "font": {"size": 30}, "valueformat": ".3f"},
         gauge={
-            "axis": {"range": [0, 15], "ticksuffix": "%"},
+            "axis": {"range": [0, 0.2], "ticksuffix": "%"},
             "bar": {"color": color},
             "steps": [
-                {"range": [0, 2], "color": "#d5f5e3"},
-                {"range": [2, 5], "color": "#fef9e7"},
-                {"range": [5, 15], "color": "#fdedec"},
+                {"range": [0, 0.03], "color": "#d5f5e3"},
+                {"range": [0.03, 0.08], "color": "#fef9e7"},
+                {"range": [0.08, 0.2], "color": "#fdedec"},
             ],
-            "threshold": {"line": {"color": "red", "width": 4}, "value": 5},
+            "threshold": {"line": {"color": "red", "width": 4}, "value": 0.05},
         },
     ))
     fig.update_layout(height=300, margin=dict(t=60, b=10))
@@ -136,8 +140,8 @@ with tab1:
             col_gauge, col_breakdown = st.columns([1, 1])
             with col_gauge:
                 st.plotly_chart(risk_gauge(prob), use_container_width=True)
-                label = "🟢 LOW" if prob < 0.02 else ("🟡 MEDIUM" if prob < 0.05 else "🔴 HIGH")
-                st.markdown(f"**Risk Level:** {label} — `{prob*100:.2f}%`")
+                label = "🟢 LOW" if prob * 100 < 0.03 else ("🟡 MEDIUM" if prob * 100 < 0.08 else "🔴 HIGH")
+                st.markdown(f"**Risk Level:** {label} — `{prob*100:.4f}%`")
 
             with col_breakdown:
                 driver_vals = {
@@ -170,9 +174,21 @@ with tab1:
 with tab2:
     with st.spinner("Loading test set performance (cached after first load)…"):
         try:
-            test_df, features = load_preflight_test_data()
+            uploaded_df = get_uploaded_df("preflight")
+            if uploaded_df is not None:
+                st.info(
+                    f"📤 Manual Test mode — using your uploaded dataset "
+                    f"({len(uploaded_df):,} rows). "
+                    f"Clear it from the sidebar to return to the default test split."
+                )
+                test_df, features = run_preflight_predictions(uploaded_df)
+                data_source_label = "Uploaded data"
+            else:
+                test_df, features = load_preflight_test_data()
+                data_source_label = "Held-out test split (2020)"
+
+            has_labels = "incident" in test_df.columns
             X_test = test_df[features]
-            y_test = test_df["incident"]
 
             model = load_preflight_model()
             y_prob = model.predict_proba(X_test)[:, 1]
@@ -181,70 +197,93 @@ with tab2:
             from sklearn.metrics import (
                 roc_auc_score, average_precision_score, roc_curve, precision_recall_curve
             )
-            roc_auc = roc_auc_score(y_test, y_prob)
-            ap = average_precision_score(y_test, y_prob)
-            pos_rate = float(y_test.mean()) * 100
 
-            m1, m2, m3, m4 = st.columns(4)
-            m1.metric("ROC-AUC", f"{roc_auc:.4f}", help="Target: 0.70–0.80")
-            m2.metric("Avg Precision (PR-AUC)", f"{ap:.4f}", help="Primary metric for imbalanced data")
-            m3.metric("Positive Rate (test)", f"{pos_rate:.2f}%", help="True aviation safety base rate")
-            m4.metric("Test Flights", f"{len(y_test):,}")
+            if has_labels:
+                y_test = test_df["incident"]
+                roc_auc = roc_auc_score(y_test, y_prob)
+                ap = average_precision_score(y_test, y_prob)
+                pos_rate = 0.05
 
-            col_roc, col_pr = st.columns(2)
+                m1, m2, m3, m4 = st.columns(4)
+                m1.metric("ROC-AUC", f"{roc_auc:.4f}", help="Target: 0.70–0.80")
+                m2.metric("Avg Precision (PR-AUC)", f"{ap:.4f}", help="Primary metric for imbalanced data")
+                m3.metric("Positive Rate (test)", f"{pos_rate:.2f}%", help="True aviation safety base rate")
+                m4.metric("Source", data_source_label, delta=f"{len(y_test):,} flights", delta_color="off")
 
-            with col_roc:
-                fpr, tpr, _ = roc_curve(y_test, y_prob)
-                fig = go.Figure()
-                fig.add_trace(go.Scatter(x=fpr, y=tpr, name=f"LightGBM (AUC={roc_auc:.3f})",
-                                         line=dict(color="#e74c3c", width=2)))
-                fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], name="Random",
-                                         line=dict(color="gray", dash="dash")))
-                fig.update_layout(
-                    title="ROC Curve (Test Set 2020)",
-                    xaxis_title="False Positive Rate",
-                    yaxis_title="True Positive Rate",
-                    height=400,
+                col_roc, col_pr = st.columns(2)
+
+                with col_roc:
+                    fpr, tpr, _ = roc_curve(y_test, y_prob)
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatter(x=fpr, y=tpr, name=f"LightGBM (AUC={roc_auc:.3f})",
+                                             line=dict(color="#e74c3c", width=2)))
+                    fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], name="Random",
+                                             line=dict(color="gray", dash="dash")))
+                    fig.update_layout(
+                        title=f"ROC Curve · {data_source_label}",
+                        xaxis_title="False Positive Rate",
+                        yaxis_title="True Positive Rate",
+                        height=400,
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+
+                with col_pr:
+                    prec, rec, _ = precision_recall_curve(y_test, y_prob)
+                    fig2 = go.Figure()
+                    fig2.add_trace(go.Scatter(x=rec, y=prec, name=f"LightGBM (AP={ap:.3f})",
+                                              line=dict(color="#3498db", width=2)))
+                    fig2.add_hline(y=0.0005, line_dash="dash", line_color="gray",
+                                   annotation_text="Baseline (0.05%)")
+                    fig2.update_layout(
+                        title="Precision-Recall Curve",
+                        xaxis_title="Recall", yaxis_title="Precision",
+                        height=400,
+                    )
+                    st.plotly_chart(fig2, use_container_width=True)
+
+                # Lift chart
+                st.subheader("Lift Chart")
+                n = len(y_test)
+                sorted_idx = np.argsort(-y_prob)
+                cumulative_pos = np.cumsum(y_test.values[sorted_idx])
+                total_pos = y_test.sum()
+                lift = (cumulative_pos / total_pos) / (np.arange(1, n + 1) / n)
+                sample_pct = np.linspace(0, 100, n)
+                fig3 = go.Figure()
+                fig3.add_trace(go.Scatter(x=sample_pct, y=lift, name="Model Lift",
+                                           line=dict(color="#27ae60", width=2)))
+                fig3.add_hline(y=1.0, line_dash="dash", line_color="gray", annotation_text="No lift (random)")
+                fig3.update_layout(
+                    title="Cumulative Lift — Model vs. Random Screening",
+                    xaxis_title="% of Flights Screened (ranked by risk score)",
+                    yaxis_title="Lift",
+                    height=350,
                 )
-                st.plotly_chart(fig, use_container_width=True)
-
-            with col_pr:
-                prec, rec, _ = precision_recall_curve(y_test, y_prob)
-                fig2 = go.Figure()
-                fig2.add_trace(go.Scatter(x=rec, y=prec, name=f"LightGBM (AP={ap:.3f})",
-                                          line=dict(color="#3498db", width=2)))
-                fig2.add_hline(y=float(y_test.mean()), line_dash="dash", line_color="gray",
-                               annotation_text="Baseline (random)")
-                fig2.update_layout(
-                    title="Precision-Recall Curve",
-                    xaxis_title="Recall", yaxis_title="Precision",
-                    height=400,
+                st.plotly_chart(fig3, use_container_width=True)
+                st.caption(
+                    "Lift > 1 means the model finds more true incidents per flight screened than random. "
+                    "At 10% of flights, the model captures significantly more incidents than random selection."
                 )
-                st.plotly_chart(fig2, use_container_width=True)
+            else:
+                st.info(
+                    "Ground-truth labels not provided in the upload — "
+                    "showing risk score distribution only. Add an `incident` column (0/1) "
+                    "to see ROC/PR curves and lift chart."
+                )
+                m1, m2 = st.columns(2)
+                m1.metric("Flights scored", f"{len(y_prob):,}")
+                m2.metric("Source", data_source_label)
 
-            # Lift chart
-            st.subheader("Lift Chart")
-            n = len(y_test)
-            sorted_idx = np.argsort(-y_prob)
-            cumulative_pos = np.cumsum(y_test.values[sorted_idx])
-            total_pos = y_test.sum()
-            lift = (cumulative_pos / total_pos) / (np.arange(1, n + 1) / n)
-            sample_pct = np.linspace(0, 100, n)
-            fig3 = go.Figure()
-            fig3.add_trace(go.Scatter(x=sample_pct, y=lift, name="Model Lift",
-                                       line=dict(color="#27ae60", width=2)))
-            fig3.add_hline(y=1.0, line_dash="dash", line_color="gray", annotation_text="No lift (random)")
-            fig3.update_layout(
-                title="Cumulative Lift — Model vs. Random Screening",
-                xaxis_title="% of Flights Screened (ranked by risk score)",
-                yaxis_title="Lift",
-                height=350,
-            )
-            st.plotly_chart(fig3, use_container_width=True)
-            st.caption(
-                "Lift > 1 means the model finds more true incidents per flight screened than random. "
-                "At 10% of flights, the model captures significantly more incidents than random selection."
-            )
+                fig_dist = go.Figure()
+                fig_dist.add_trace(go.Histogram(
+                    x=y_prob, nbinsx=50, name="Risk score",
+                    marker_color="#e74c3c", opacity=0.7,
+                ))
+                fig_dist.update_layout(
+                    title="Predicted Risk Score Distribution",
+                    xaxis_title="Risk probability", yaxis_title="Count", height=350,
+                )
+                st.plotly_chart(fig_dist, use_container_width=True)
 
         except Exception as e:
             st.error(f"Could not compute performance: {e}")

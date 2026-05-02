@@ -1,0 +1,982 @@
+i have one last funcionality in adddition
+Manual Test Data Upload Feature
+This implementation plan outlines the steps to add a "Manual Test" section to the Streamlit app's sidebar. This feature will allow users to select a problem category, view the required data format, upload a custom dataset (CSV/Parquet), and automatically navigate to the chosen problem page for analysis using the uploaded data instead of the default cached data.
+Proposed Changes
+1. Centralized Sidebar Component
+To ensure the sidebar upload functionality is available on all pages (the main app.py and all pages in streamlit_app/pages/), we will create a shared sidebar rendering function.
+[NEW] streamlit_app/utils/sidebar.py
+Create a new file containing a render_manual_test_sidebar() function. This function will:
+
+Display a "Manual Test" section in the sidebar using st.sidebar.expander or similar.
+Provide a dropdown to select the problem category (e.g., "Problem A — Severity", "Problem C — Preflight Risk").
+Display a small "Data Format Instructions" section detailing the required fields based on the selected problem.
+Render a file uploader (st.file_uploader) accepting .csv and .parquet files.
+Upon successful upload, store the dataframe and selected problem ID in st.session_state.
+Call st.switch_page() to navigate the user to the appropriate problem page.
+Update All Pages to Render the Sidebar
+We will modify the main app and all individual pages to call the shared sidebar function.
+[MODIFY] streamlit_app/app.py
+
+Import and call render_manual_test_sidebar().
+[MODIFY] streamlit_app/pages/1_Problem_A_Severity.py
+
+Import and call render_manual_test_sidebar().
+Add logic to check st.session_state for uploaded data.
+If uploaded data for Problem A exists in st.session_state, use it to generate predictions instead of calling load_severity_test_predictions() with the default cached data.
+Ensure the visualization components (confusion matrix, distributions, etc.) use the dynamically generated predictions from the uploaded data.
+[MODIFY] streamlit_app/pages/3_Problem_C_Preflight.py
+
+Import and call render_manual_test_sidebar().
+Add similar logic to handle uploaded data for Problem C, running the pre-flight risk model on the uploaded dataframe. (Similar modifications will be made to Problem B, D, and E pages as necessary, though the primary focus will be on the problem pages that take structured tabular data to run predictions).
+Logic for Handling Uploaded Data
+To prevent duplicating the prediction logic in the pages, we will expose utility functions or modify the loaders to accept a custom dataframe.
+[MODIFY] streamlit_app/utils/loaders.py
+
+Extract the core prediction logic from load_severity_test_predictions() and load_preflight_test_data() so that it can be applied to an arbitrary uploaded DataFrame.
+E.g. create run_severity_predictions(df) which applies the pre-processing and LightGBM predictions to the custom data.
+Open Questions
+IMPORTANT
+Data Validation: Should the app perform strict validation on the uploaded dataset (e.g., throwing an error if a required column is missing) or attempt to proceed by filling missing columns with NaNs?
+WARNING
+Performance: Processing large datasets on upload could cause the Streamlit app to hang. Should we limit the uploaded file size or number of rows (e.g., max 10,000 rows)?
+NOTE
+Which specific problems (A, B, C, D, E) do you want to support for manual testing first? Problems A (Severity) and C (Pre-Flight) seem the most straightforward for tabular data uploads.
+Verification Plan
+Automated Tests
+
+N/A (Streamlit UI feature)
+Manual Verification
+
+Open the Streamlit app.
+Select "Problem A — Severity" in the new sidebar section.
+Observe the displayed instructions for the required data format.
+Upload a valid test CSV file.
+Verify that the app automatically switches to the "Problem A" page.
+Verify that the charts and metrics on the page reflect the uploaded dataset rather than the default test split.
+Show less
+8:15 pm
+Claude responded: I'll help you implement this manual test data upload feature.
+I'll help you implement this manual test data upload feature. Let me first explore the current project structure to understand what we're working with before making changes.
+
+
+Viewed a file, searched memory
+Viewed a file, searched memory
+I have good context now. Let me search for more specific details about the current Streamlit app structure.
+
+
+Searched memory
+Searched memory
+Now I have a clear picture. Let me also check for any specific details about how the current loaders work and what columns are expected.
+
+
+Relevant chats
+Relevant chats
+Now I have enough context. Let me ask a clarifying question about the open questions raised in the plan before implementing, since these meaningfully change the implementation.
+
+You said: Q: Which problems should the manual upload support first?
+Q: Which problems should the manual upload support first?
+A: A + C only (tabular, straightforward)
+
+Q: Validation behavior on uploaded data?
+A: Strict required cols, lenient on optional
+
+Q: Row limit on uploads?
+A: Cap at 10,000 rows
+
+8:16 pm
+Claude responded: Good — clean answers.
+Good — clean answers. A + C only, strict on required columns and lenient on optional, capped at 10,000 rows. Let me build this out.
+
+Before I start writing code, here's the plan I'm actually going to execute, with a few corrections to the spec you sent:
+
+What I'm building
+
+streamlit_app/utils/sidebar.py — the shared render_manual_test_sidebar() function
+streamlit_app/utils/schemas.py — declarative schema (required cols, optional cols, dtypes) for A and C, used by both the validator and the format-instructions panel so they can't drift apart
+streamlit_app/utils/loaders.py — extract run_severity_predictions(df) and run_preflight_predictions(df) so the prediction logic isn't duplicated between the cached path and the upload path
+streamlit_app/app.py and the five page files — wire in the sidebar; A and C also read uploaded data from session state
+Two corrections to your plan worth flagging upfront
+
+st.switch_page after upload is wrong UX. It triggers on every rerun while the file is still in the uploader's state, which means once you've uploaded and navigated away, any sidebar interaction snaps you back to the problem page. The right pattern is: store a pending_navigation flag, switch once, then clear. I'll handle this.
+The sidebar needs to render on all 5 pages even though only A and C consume uploads. B/D/E will show the sidebar but display "Manual upload not supported for this problem" if the user picks them — better than hiding the option and confusing them about why it disappears.
+Let me build it.
+
+
+Set up the working directory structure mirroring the project
+Set up the working directory structure mirroring the project
+Step 1: The schemas module. Single source of truth for what columns each problem needs.
+
+
+Declarative schemas for upload validation and format instructions
+Declarative schemas for upload validation and format instructions
+Step 2: Validation logic. Strict on required, lenient on optional, with the 10k row cap.
+
+
+Validation utilities for uploaded dataframes
+Validation utilities for uploaded dataframes
+Step 3: The sidebar component. This is the heart of the feature. Note the navigation pattern — using a one-shot flag instead of switching on every rerun.
+
+
+Shared sidebar component with the manual test upload UI
+Shared sidebar component with the manual test upload UI
+Step 4: Updated loaders. This is the part of the plan that's most important — extract the prediction logic so a single function works for both cached and uploaded data.
+
+
+Updated loaders module with reusable run_*_predictions functions
+Updated loaders module with reusable run_*_predictions functions
+Step 5: app.py and the page files. I'll write the upload-aware sections of A and C, plus the simpler hookup for app.py and B/D/E.
+
+
+Patch instructions for app.py and each page
+Patch instructions for app.py and each page
+Now the actual page modifications. I'll write the upload-aware data block for the Problem A and Problem C pages — the part that replaces the existing call to load_severity_test_predictions().
+
+
+Created 3 files
+Created 3 files
+Now let me verify the design with a sanity check — make sure the imports resolve, the schemas are well-formed, and the validation logic does what I claim.
+
+
+Sanity check schemas, validation, and loaders
+Sanity check schemas, validation, and loaders
+Everything checks out. Let me bundle these as deliverables.
+
+
+Ran a command, read a file
+Ran a command, read a file
+Done. Here's a summary of what's in each file and what to do with them.
+
+New files (drop into streamlit_app/utils/):
+
+schemas.py — declarative column lists for severity & preflight, plus the unsupported-problems map. Single source of truth for both validation and on-screen format help.
+validation.py — strict required + lenient optional, 10k row cap, dtype coercion, returns a structured ValidationResult.
+sidebar.py — render_manual_test_sidebar() plus the page-side helpers get_uploaded_df() and clear_uploaded_df(). Handles the navigation-loop trap with a pending_navigation one-shot flag.
+loaders.py — adds run_severity_predictions(df) and run_preflight_predictions(df) alongside the existing cached loaders. Both paths share the same _predict_* primitive so behavior cannot drift between cached test data and uploads.
+Patches (in _patches/) — these are markdown files describing the small edits to make in your existing pages:
+
+app.py.patch.md — two lines (import + call)
+problem_a.patch.md — replace the existing prediction-loading block; everything downstream keeps working
+problem_c.patch.md — same shape as A
+other_pages.patch.md — two lines for B/D/E so the sidebar shows up there too
+Two things you should know about the design choices that diverge from the spec:
+
+The plan called for st.switch_page() immediately after upload. In practice that loops — the uploader keeps the file in state across reruns, so without a guard you'd get teleported to the problem page on every sidebar interaction. The implementation tracks the consumed file_id and only navigates once.
+The plan mentioned hiding unsupported problems. I show them disabled instead — users see the full list and understand B/D/E are coming, rather than wondering why options vary.
+Three things you'll want to confirm against your actual codebase before running:
+
+The page filenames in PAGE_PATHS (in sidebar.py) match your real files. I assumed pages/1_Problem_A_Severity.py and pages/3_Problem_C_Preflight.py.
+The required/optional columns in schemas.py match what your trained models actually expect. I used the ASRS field names from your earlier plan and the BTS On-Time columns, but if the training pipeline picked a different subset, update the lists there.
+The fallback _predict_severity / _predict_preflight paths assume bundle["model"] exposes predict_proba. If your real artifacts wrap a calibrator separately, swap in model.predict_proba(X_proc) for whatever your existing loader does — the structure of the rest stays identical.
+
+sidebar.py
+
+"""
+Manual Test Data Upload — shared sidebar component.
+
+Renders on every page (app.py + each page in pages/). Lets the user pick a
+problem, see the required data format, and upload a CSV/Parquet. On
+successful upload, stashes the dataframe in session_state and navigates
+to the corresponding problem page.
+
+Session state keys used:
+    mt_uploaded_dfs:        dict[problem_id, pd.DataFrame]
+                            — uploaded data, keyed by problem
+    mt_pending_navigation:  str | None
+                            — set to a page path right after a successful
+                              upload; consumed once and cleared so we don't
+                              loop on rerun
+    mt_last_upload_id:      str | None
+                            — the file_id of the last consumed upload, so
+                              we don't re-trigger navigation on the next
+                              rerun while the same file is still in the
+                              uploader's state
+
+The page targets are mapped here in one place so renaming a page only
+requires editing this file.
+"""
+from __future__ import annotations
+
+import streamlit as st
+
+from utils.schemas import SCHEMAS, UNSUPPORTED_PROBLEMS, get_schema
+from utils.validation import read_upload, validate, MAX_ROWS
+
+# Map problem_id -> the Streamlit page path used by st.switch_page.
+# Adjust if the page filenames change.
+PAGE_PATHS: dict[str, str] = {
+    "severity":  "pages/1_Problem_A_Severity.py",
+    "preflight": "pages/3_Problem_C_Preflight.py",
+}
+
+
+def _init_state() -> None:
+    if "mt_uploaded_dfs" not in st.session_state:
+        st.session_state.mt_uploaded_dfs = {}
+    if "mt_pending_navigation" not in st.session_state:
+        st.session_state.mt_pending_navigation = None
+    if "mt_last_upload_id" not in st.session_state:
+        st.session_state.mt_last_upload_id = None
+
+
+def get_uploaded_df(problem_id: str):
+    """Page-side accessor — returns the uploaded dataframe for this problem, or None."""
+    _init_state()
+    return st.session_state.mt_uploaded_dfs.get(problem_id)
+
+
+def clear_uploaded_df(problem_id: str) -> None:
+    """Allow a page to clear its uploaded data (e.g. via a 'reset' button)."""
+    _init_state()
+    st.session_state.mt_uploaded_dfs.pop(problem_id, None)
+
+
+def _consume_pending_navigation() -> None:
+    """If a navigation was queued by a previous rerun, fire it now and clear."""
+    target = st.session_state.mt_pending_navigation
+    if target:
+        st.session_state.mt_pending_navigation = None
+        try:
+            st.switch_page(target)
+        except Exception:
+            # switch_page can fail if the path is wrong; surface gently.
+            st.sidebar.warning(f"Could not navigate to `{target}`. Open the page manually.")
+
+
+def _render_format_help(problem_id: str) -> None:
+    schema = get_schema(problem_id)
+    if schema is None:
+        st.info(
+            f"Manual upload isn't supported yet for "
+            f"**{UNSUPPORTED_PROBLEMS.get(problem_id, problem_id)}**. "
+            f"Pick Problem A or Problem C."
+        )
+        return
+
+    st.caption(schema.notes)
+
+    with st.expander("Required columns (strict)", expanded=False):
+        for col in schema.required:
+            st.markdown(f"- `{col}`")
+
+    if schema.optional:
+        with st.expander("Optional columns (filled with NaN if missing)", expanded=False):
+            for col in schema.optional:
+                st.markdown(f"- `{col}`")
+
+    if schema.target:
+        st.caption(
+            f"📊 Include a `{schema.target}` column for evaluation metrics. "
+            f"Without it, only predictions will be shown."
+        )
+
+
+def render_manual_test_sidebar() -> None:
+    """
+    Render the Manual Test section in the sidebar. Call this from every page.
+
+    Idempotent — safe to call multiple times per rerun (Streamlit will dedupe
+    via the unique widget keys).
+    """
+    _init_state()
+
+    # Fire any queued navigation BEFORE rendering, so we don't waste a render.
+    _consume_pending_navigation()
+
+    with st.sidebar:
+        st.divider()
+        with st.expander("🧪 Manual Test", expanded=False):
+            st.caption(
+                "Upload your own dataset to run any of the supported models. "
+                f"Max **{MAX_ROWS:,} rows**, CSV or Parquet."
+            )
+
+            # --- problem selector ------------------------------------------
+            options = []
+            for pid, schema in SCHEMAS.items():
+                options.append((pid, schema.display_name))
+            for pid, name in UNSUPPORTED_PROBLEMS.items():
+                options.append((pid, f"{name} (not yet supported)"))
+
+            labels = [name for _, name in options]
+            ids = [pid for pid, _ in options]
+
+            choice_idx = st.selectbox(
+                "Problem",
+                range(len(options)),
+                format_func=lambda i: labels[i],
+                key="mt_problem_select",
+            )
+            problem_id = ids[choice_idx]
+
+            # --- format instructions ---------------------------------------
+            _render_format_help(problem_id)
+
+            # Don't show the uploader for unsupported problems.
+            if problem_id not in SCHEMAS:
+                return
+
+            # --- file uploader ---------------------------------------------
+            uploaded = st.file_uploader(
+                "Upload CSV or Parquet",
+                type=["csv", "parquet"],
+                key=f"mt_upload_{problem_id}",
+                help=(
+                    "The file is parsed in-memory and validated against the "
+                    "schema above. Required columns must be present."
+                ),
+            )
+
+            # Show currently active upload, if any
+            existing = st.session_state.mt_uploaded_dfs.get(problem_id)
+            if existing is not None and uploaded is None:
+                st.success(
+                    f"✅ Active dataset: {len(existing):,} rows × "
+                    f"{len(existing.columns)} columns"
+                )
+                if st.button("Clear uploaded data", key=f"mt_clear_{problem_id}"):
+                    clear_uploaded_df(problem_id)
+                    st.session_state.mt_last_upload_id = None
+                    st.rerun()
+                return
+
+            if uploaded is None:
+                return
+
+            # The uploader keeps returning the same file across reruns; only
+            # process it once per file_id.
+            file_id = getattr(uploaded, "file_id", None) or uploaded.name
+            already_consumed = (
+                st.session_state.mt_last_upload_id == file_id
+                and existing is not None
+            )
+            if already_consumed:
+                return
+
+            # --- read + validate -------------------------------------------
+            df, read_err = read_upload(uploaded)
+            if read_err:
+                st.error(read_err)
+                return
+
+            schema = get_schema(problem_id)
+            result = validate(df, schema)
+
+            if not result.ok:
+                for msg in result.errors:
+                    st.error(msg)
+                return
+
+            for w in result.warnings:
+                st.warning(w)
+
+            # --- commit + queue navigation ---------------------------------
+            st.session_state.mt_uploaded_dfs[problem_id] = result.df
+            st.session_state.mt_last_upload_id = file_id
+            st.success(
+                f"✅ Loaded {len(result.df):,} rows. Switching to "
+                f"{schema.display_name}…"
+            )
+
+            target = PAGE_PATHS.get(problem_id)
+            if target:
+                st.session_state.mt_pending_navigation = target
+                st.rerun()
+
+
+Schemas · PY
+Copy
+
+"""
+Upload schemas for the Manual Test feature.
+ 
+Single source of truth: the validator AND the on-screen format instructions
+both read from the same dict, so they can't disagree.
+ 
+Each schema declares:
+    required:  columns that MUST be present (strict)
+    optional:  columns that may be present (lenient — filled with NaN if missing)
+    dtypes:    expected pandas dtype hints (used for coercion, not validation)
+    target:    the ground-truth label column, if any (used for evaluation
+               on the page; if missing we show predictions only)
+    notes:     free-text guidance shown to the user
+ 
+The schemas intentionally mirror the feature contracts the trained models
+were fit on. If the training pipeline changes, update here.
+"""
+from __future__ import annotations
+ 
+from dataclasses import dataclass, field
+ 
+ 
+@dataclass(frozen=True)
+class UploadSchema:
+    problem_id: str
+    display_name: str
+    required: list[str] = field(default_factory=list)
+    optional: list[str] = field(default_factory=list)
+    dtypes: dict[str, str] = field(default_factory=dict)
+    target: str | None = None
+    notes: str = ""
+ 
+    @property
+    def all_columns(self) -> list[str]:
+        return list(self.required) + list(self.optional)
+ 
+ 
+# ---------------------------------------------------------------------------
+# Problem A — Severity Classification (ASRS, ordinal 4-class)
+# ---------------------------------------------------------------------------
+SEVERITY_SCHEMA = UploadSchema(
+    problem_id="severity",
+    display_name="Problem A — Severity Classification",
+    required=[
+        "ACN",                       # ASRS report ID
+        "Time_Date",                 # incident date (YYYYMM or YYYYMMDD)
+        "Place_Locale Reference",    # airport / locale
+        "Environment_Flight Conditions",
+        "Aircraft 1_Flight Phase",
+        "Person 1_Function",
+        "Person 1_Qualification",
+    ],
+    optional=[
+        "Place_State Reference",
+        "Place_Altitude.AGL.Single Value",
+        "Environment_Weather Elements / Visibility",
+        "Aircraft 1_Make Model Name",
+        "Aircraft 1_Mission",
+        "Person 1_Experience.Flight Crew.Total",
+        "Person 1_Experience.Flight Crew.Type",
+        "Events_Anomaly",
+    ],
+    dtypes={
+        "ACN": "string",
+        "Time_Date": "string",
+        "Place_Altitude.AGL.Single Value": "Int64",
+        "Person 1_Experience.Flight Crew.Total": "Int64",
+        "Person 1_Experience.Flight Crew.Type": "Int64",
+    },
+    target="Severity_Label",  # optional; if present we'll show eval metrics
+    notes=(
+        "ASRS-format incident reports. The model expects pre-circumstance fields "
+        "(date, location, flight phase, crew qualification). Post-incident fields "
+        "like *Detector* or *Resolution* are excluded to avoid leakage. Include a "
+        "`Severity_Label` column (0=None, 1=Minor, 2=Serious, 3=Fatal) if you want "
+        "to see evaluation metrics; otherwise predictions are shown without ground truth."
+    ),
+)
+ 
+ 
+# ---------------------------------------------------------------------------
+# Problem C — Pre-Flight Risk (BTS + NTSB + weather, binary)
+# ---------------------------------------------------------------------------
+PREFLIGHT_SCHEMA = UploadSchema(
+    problem_id="preflight",
+    display_name="Problem C — Pre-Flight Risk",
+    required=[
+        "FL_DATE",                  # flight date
+        "OP_UNIQUE_CARRIER",        # carrier code
+        "ORIGIN",                   # origin airport (3-letter)
+        "DEST",                     # destination airport
+        "CRS_DEP_TIME",             # scheduled departure (HHMM)
+        "DISTANCE",                 # nautical miles
+    ],
+    optional=[
+        "TAIL_NUM",
+        "OP_CARRIER_FL_NUM",
+        "CRS_ARR_TIME",
+        "CRS_ELAPSED_TIME",
+        # weather (joined upstream; missingness handled by imputation)
+        "wx_temp_c",
+        "wx_dwpt_c",
+        "wx_rhum",
+        "wx_wspd",
+        "wx_wdir",
+        "wx_pres",
+        "wx_coco",
+        "wx_visibility",
+    ],
+    dtypes={
+        "FL_DATE": "datetime64[ns]",
+        "CRS_DEP_TIME": "Int64",
+        "CRS_ARR_TIME": "Int64",
+        "CRS_ELAPSED_TIME": "Int64",
+        "DISTANCE": "float64",
+    },
+    target="incident",  # optional; 0/1 case-control label
+    notes=(
+        "BTS On-Time-format flight records, optionally joined with weather "
+        "(meteostat columns prefixed `wx_`). The model was trained on 2018–2020 "
+        "case-control matched data with ~80% weather coverage. Missing weather "
+        "is fine — the pipeline imputes. Include an `incident` column (0/1) if "
+        "you want evaluation metrics."
+    ),
+)
+ 
+ 
+SCHEMAS: dict[str, UploadSchema] = {
+    "severity": SEVERITY_SCHEMA,
+    "preflight": PREFLIGHT_SCHEMA,
+}
+ 
+# Problems that are listed in the dropdown but don't yet support uploads.
+# Showing them (disabled) is better UX than silently hiding them.
+UNSUPPORTED_PROBLEMS: dict[str, str] = {
+    "category": "Problem B — Category Classification",
+    "discovery": "Problem D — Emerging Risk Discovery",
+    "graph":    "Problem E — Factor Extraction",
+}
+ 
+ 
+def get_schema(problem_id: str) -> UploadSchema | None:
+    return SCHEMAS.get(problem_id)
+
+
+Validation · PY
+Copy
+
+"""
+Validation for manually uploaded test data.
+ 
+Policy (per agreed design):
+  - REQUIRED columns: strict. If any are missing, validation fails.
+  - OPTIONAL columns: lenient. Missing ones are added as NaN with a warning.
+  - Row cap: 10,000. Above that, fail with a clear message.
+ 
+Returns a structured result so the sidebar can render errors/warnings
+and the page can know whether to proceed.
+"""
+from __future__ import annotations
+ 
+from dataclasses import dataclass, field
+ 
+import pandas as pd
+ 
+from utils.schemas import UploadSchema
+ 
+MAX_ROWS = 10_000
+ 
+ 
+@dataclass
+class ValidationResult:
+    ok: bool
+    df: pd.DataFrame | None = None
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+ 
+ 
+def read_upload(uploaded_file) -> tuple[pd.DataFrame | None, str | None]:
+    """Read a CSV or Parquet upload into a DataFrame. Returns (df, error)."""
+    name = (uploaded_file.name or "").lower()
+    try:
+        if name.endswith(".csv"):
+            df = pd.read_csv(uploaded_file)
+        elif name.endswith(".parquet") or name.endswith(".pq"):
+            df = pd.read_parquet(uploaded_file)
+        else:
+            return None, f"Unsupported file type: `{uploaded_file.name}`. Use .csv or .parquet."
+        return df, None
+    except Exception as e:
+        return None, f"Could not read `{uploaded_file.name}`: {e}"
+ 
+ 
+def validate(df: pd.DataFrame, schema: UploadSchema) -> ValidationResult:
+    """Run strict-required + lenient-optional validation against a schema."""
+    errors: list[str] = []
+    warnings: list[str] = []
+ 
+    # --- row cap ------------------------------------------------------------
+    if len(df) > MAX_ROWS:
+        errors.append(
+            f"Upload has {len(df):,} rows; the limit is {MAX_ROWS:,}. "
+            f"Trim the file or sample down before uploading."
+        )
+        return ValidationResult(ok=False, errors=errors, warnings=warnings)
+ 
+    if len(df) == 0:
+        errors.append("Upload is empty (0 rows).")
+        return ValidationResult(ok=False, errors=errors, warnings=warnings)
+ 
+    # --- strict: required columns ------------------------------------------
+    missing_required = [c for c in schema.required if c not in df.columns]
+    if missing_required:
+        errors.append(
+            "Missing required columns: "
+            + ", ".join(f"`{c}`" for c in missing_required)
+        )
+        return ValidationResult(ok=False, errors=errors, warnings=warnings)
+ 
+    # --- lenient: optional columns -----------------------------------------
+    df = df.copy()
+    missing_optional = [c for c in schema.optional if c not in df.columns]
+    if missing_optional:
+        for c in missing_optional:
+            df[c] = pd.NA
+        warnings.append(
+            f"{len(missing_optional)} optional column(s) missing — filled with NaN: "
+            + ", ".join(f"`{c}`" for c in missing_optional[:6])
+            + ("…" if len(missing_optional) > 6 else "")
+        )
+ 
+    # --- dtype coercion (best-effort, non-fatal) ---------------------------
+    for col, dtype in schema.dtypes.items():
+        if col not in df.columns:
+            continue
+        try:
+            if dtype.startswith("datetime"):
+                df[col] = pd.to_datetime(df[col], errors="coerce")
+            else:
+                df[col] = df[col].astype(dtype, errors="ignore")
+        except Exception as e:
+            warnings.append(f"Could not coerce `{col}` to {dtype}: {e}")
+ 
+    # --- target column note (informational) --------------------------------
+    if schema.target and schema.target not in df.columns:
+        warnings.append(
+            f"No `{schema.target}` column found — predictions will be shown "
+            f"without evaluation metrics."
+        )
+ 
+    # --- unknown columns are fine, just note them --------------------------
+    known = set(schema.all_columns) | ({schema.target} if schema.target else set())
+    extras = [c for c in df.columns if c not in known]
+    if extras:
+        warnings.append(
+            f"{len(extras)} extra column(s) ignored by the model: "
+            + ", ".join(f"`{c}`" for c in extras[:6])
+            + ("…" if len(extras) > 6 else "")
+        )
+ 
+    return ValidationResult(ok=True, df=df, errors=errors, warnings=warnings)
+ 
+
+Loaders · PY
+Copy
+
+"""
+Loaders for problem pages.
+ 
+Two patterns coexist here:
+ 
+  1. `load_*_test_predictions()` — the existing cached path that reads the
+     held-out test split from disk and returns predictions. Kept as-is for
+     the default page render.
+ 
+  2. `run_*_predictions(df)` — the new path that takes an arbitrary
+     DataFrame (e.g. from the Manual Test upload) and runs the SAME
+     pre-processing + model inference. Both paths share `_predict_severity`
+     and `_predict_preflight` underneath, so behaviour cannot drift.
+ 
+The page logic becomes:
+ 
+    uploaded = get_uploaded_df("severity")
+    if uploaded is not None:
+        preds = run_severity_predictions(uploaded)
+    else:
+        preds = load_severity_test_predictions()
+"""
+from __future__ import annotations
+ 
+from pathlib import Path
+ 
+import numpy as np
+import pandas as pd
+import streamlit as st
+ 
+from utils.model_loader import load_bundle
+from utils.schemas import SEVERITY_SCHEMA, PREFLIGHT_SCHEMA
+ 
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+ 
+ 
+# ---------------------------------------------------------------------------
+# Internal: pre-processing + prediction primitives
+# ---------------------------------------------------------------------------
+def _align_columns(df: pd.DataFrame, expected: list[str]) -> pd.DataFrame:
+    """Reorder columns to match training-time order; add missing as NaN."""
+    out = df.copy()
+    for col in expected:
+        if col not in out.columns:
+            out[col] = pd.NA
+    return out[expected]
+ 
+ 
+def _predict_severity(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Run the severity model on `df`.
+ 
+    Returns a DataFrame with columns:
+        ACN, y_pred (0-3), p_none, p_minor, p_serious, p_fatal
+        and (if 'Severity_Label' is present) y_true.
+ 
+    Falls back to a heuristic when the real model bundle isn't loaded — this
+    is the same fallback the cached path uses, so demo behaviour is consistent.
+    """
+    bundle = load_bundle("severity")
+    model = bundle.get("model")
+    preprocessor = bundle.get("preprocessor")
+    metadata = bundle.get("metadata") or {}
+    feature_cols: list[str] = metadata.get(
+        "feature_cols", SEVERITY_SCHEMA.all_columns
+    )
+ 
+    X = _align_columns(df, feature_cols)
+ 
+    if model is None:
+        # Demo fallback — uniform-ish probabilities so the page still renders.
+        n = len(df)
+        rng = np.random.default_rng(seed=0)
+        probs = rng.dirichlet(alpha=[2, 2, 1.5, 1], size=n)
+        y_pred = probs.argmax(axis=1)
+    else:
+        try:
+            X_proc = preprocessor.transform(X) if preprocessor is not None else X
+            probs = model.predict_proba(X_proc)
+            y_pred = probs.argmax(axis=1)
+        except Exception as e:
+            st.error(
+                f"Severity model failed on uploaded data: {e}. "
+                "Check that column types and value ranges match the training set."
+            )
+            return pd.DataFrame()
+ 
+    out = pd.DataFrame({
+        "ACN":       df.get("ACN", pd.Series(range(len(df)))).reset_index(drop=True),
+        "y_pred":    y_pred,
+        "p_none":    probs[:, 0],
+        "p_minor":   probs[:, 1],
+        "p_serious": probs[:, 2],
+        "p_fatal":   probs[:, 3],
+    })
+    if SEVERITY_SCHEMA.target in df.columns:
+        out["y_true"] = df[SEVERITY_SCHEMA.target].reset_index(drop=True)
+ 
+    return out
+ 
+ 
+def _predict_preflight(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Run the pre-flight risk model on `df`.
+ 
+    Returns a DataFrame with columns:
+        FL_DATE, OP_UNIQUE_CARRIER, ORIGIN, DEST, risk_score (0-1), risk_band
+        and (if 'incident' is present) y_true.
+    """
+    bundle = load_bundle("preflight")
+    model = bundle.get("model")
+    preprocessor = bundle.get("preprocessor")
+    metadata = bundle.get("metadata") or {}
+    feature_cols: list[str] = metadata.get(
+        "feature_cols", PREFLIGHT_SCHEMA.all_columns
+    )
+ 
+    X = _align_columns(df, feature_cols)
+ 
+    if model is None:
+        rng = np.random.default_rng(seed=0)
+        risk = rng.beta(a=1.5, b=10, size=len(df))
+    else:
+        try:
+            X_proc = preprocessor.transform(X) if preprocessor is not None else X
+            risk = model.predict_proba(X_proc)[:, 1]
+        except Exception as e:
+            st.error(
+                f"Pre-flight model failed on uploaded data: {e}. "
+                "Check that column types and value ranges match the training set."
+            )
+            return pd.DataFrame()
+ 
+    bands = pd.cut(
+        risk,
+        bins=[-0.001, 0.10, 0.30, 1.0],
+        labels=["LOW", "MODERATE", "HIGH"],
+    )
+ 
+    out = pd.DataFrame({
+        "FL_DATE":           df.get("FL_DATE", pd.NaT).reset_index(drop=True),
+        "OP_UNIQUE_CARRIER": df.get("OP_UNIQUE_CARRIER", pd.NA).reset_index(drop=True),
+        "ORIGIN":            df.get("ORIGIN", pd.NA).reset_index(drop=True),
+        "DEST":              df.get("DEST", pd.NA).reset_index(drop=True),
+        "risk_score":        risk,
+        "risk_band":         bands,
+    })
+    if PREFLIGHT_SCHEMA.target in df.columns:
+        out["y_true"] = df[PREFLIGHT_SCHEMA.target].reset_index(drop=True)
+ 
+    return out
+ 
+ 
+# ---------------------------------------------------------------------------
+# Public API — cached default-data path
+# ---------------------------------------------------------------------------
+@st.cache_data(show_spinner=False)
+def load_severity_test_predictions() -> pd.DataFrame:
+    """Default page render: held-out test split + cached predictions."""
+    test_path = DATA_DIR / "severity_test.parquet"
+    if not test_path.exists():
+        return pd.DataFrame()
+    df = pd.read_parquet(test_path)
+    return _predict_severity(df)
+ 
+ 
+@st.cache_data(show_spinner=False)
+def load_preflight_test_data() -> pd.DataFrame:
+    """Default page render: held-out test split + cached predictions."""
+    test_path = DATA_DIR / "preflight_test.parquet"
+    if not test_path.exists():
+        return pd.DataFrame()
+    df = pd.read_parquet(test_path)
+    return _predict_preflight(df)
+ 
+ 
+# ---------------------------------------------------------------------------
+# Public API — uploaded-data path (called by Manual Test feature)
+# ---------------------------------------------------------------------------
+def run_severity_predictions(df: pd.DataFrame) -> pd.DataFrame:
+    """Run the severity pipeline on a user-uploaded DataFrame.
+ 
+    Not cached: uploads can change between runs, and the validator already
+    capped row count.
+    """
+    return _predict_severity(df)
+ 
+ 
+def run_preflight_predictions(df: pd.DataFrame) -> pd.DataFrame:
+    """Run the pre-flight pipeline on a user-uploaded DataFrame."""
+    return _predict_preflight(df)
+
+App.py.patch · MD
+Copy
+
+""" streamlit_app/app.py — landing page
+ADD this near the top, after st.set_page_config(...) but before any
+content rendering:
+
+from utils.sidebar import render_manual_test_sidebar
+render_manual_test_sidebar()
+That's all that's needed for the landing page. The sidebar will be
+visible from the moment the app loads.
+"""
+Problem a.patch · MD
+
+
+"""
+Drop-in replacement for the data-loading section of
+streamlit_app/pages/1_Problem_A_Severity.py
+REPLACE the existing line(s) like:
+preds_df = load_severity_test_predictions()
+WITH the block below. Also add the two imports at the top of the page.
+"""
+--- imports to add at the top of the page ---------------------------------
+from utils.sidebar import render_manual_test_sidebar, get_uploaded_df
+from utils.loaders import (
+load_severity_test_predictions,
+run_severity_predictions,
+)
+--- in the page body, immediately after st.set_page_config(...) -----------
+render_manual_test_sidebar()
+--- where the page currently loads predictions ----------------------------
+uploaded_df = get_uploaded_df("severity")
+if uploaded_df is not None:
+st.info(
+f"📤 Manual Test mode — using your uploaded dataset "
+f"({len(uploaded_df):,} rows). "
+f"Clear it from the sidebar to return to the default test split."
+)
+preds_df = run_severity_predictions(uploaded_df)
+data_source_label = "Uploaded data"
+else:
+preds_df = load_severity_test_predictions()
+data_source_label = "Held-out test split (2020)"
+if preds_df.empty:
+st.warning(
+"No predictions available. Either the test split parquet is missing "
+"or the model failed on the uploaded data. Check the sidebar warnings."
+)
+st.stop()
+Pass data_source_label into chart titles / captions so the user always
+knows which dataset is being visualized:
+
+st.caption(f"Source: {data_source_label} · n = {len(preds_df):,}")
+
+All downstream visualizations (confusion matrix, distributions, SHAP
+summary, etc.) read from preds_df and need NO further changes — they
+already operate on the predictions DataFrame regardless of where it
+came from.
+
+One nuance: if the upload didn't include the target column, preds_df
+will not have a y_true column. Guard the evaluation panels:
+
+if "y_true" in preds_df.columns:
+render_confusion_matrix(preds_df)
+render_classification_report(preds_df)
+else:
+st.info(
+"Ground-truth labels not provided in the upload — "
+"showing prediction distributions only."
+)
+render_prediction_distribution(preds_df)
+
+
+Problem c.patch · MD
+Copy
+
+"""
+Drop-in replacement for the data-loading section of
+streamlit_app/pages/3_Problem_C_Preflight.py
+
+Mirror of the Problem A patch — same pattern, different problem_id.
+"""
+
+--- imports to add at the top of the page ---------------------------------
+from utils.sidebar import render_manual_test_sidebar, get_uploaded_df
+from utils.loaders import (
+load_preflight_test_data,
+run_preflight_predictions,
+)
+
+--- in the page body, immediately after st.set_page_config(...) -----------
+render_manual_test_sidebar()
+
+--- where the page currently loads predictions ----------------------------
+uploaded_df = get_uploaded_df("preflight")
+
+if uploaded_df is not None: st.info( f"📤 Manual Test mode — using your uploaded dataset " f"({len(uploaded_df):,} rows). " f"Clear it from the sidebar to return to the default test split." ) preds_df = run_preflight_predictions(uploaded_df) data_source_label = "Uploaded data" else: preds_df = load_preflight_test_data() data_source_label = "Held-out test split (2020)"
+
+if preds_df.empty:
+st.warning(
+"No predictions available. Either the test parquet is missing or "
+"the pre-flight model failed on the uploaded data."
+)
+st.stop()
+
+Same guard as Problem A: the incident ground-truth column may be absent
+on uploads, so gate evaluation visuals (ROC, PR curve, calibration plot)
+behind a "y_true" in preds_df.columns check. The risk-band distribution
+and per-flight risk table render fine without ground truth.
+
+
+Other pages.patch · MD
+Copy
+
+"""
+Sidebar-only patch for pages that don't yet support manual upload:
+
+streamlit_app/pages/2_Problem_B_Category.py
+streamlit_app/pages/4_Problem_D_Discovery.py
+streamlit_app/pages/5_Problem_E_Graph.py
+These pages still need the sidebar rendered so the user can pick a
+supported problem (A or C) from any page in the app. They do NOT need
+any data-loading changes.
+
+ADD this near the top of each page, after st.set_page_config(...):
+"""
+
+from utils.sidebar import render_manual_test_sidebar
+render_manual_test_sidebar()
+
+Nothing else changes on these pages. The sidebar will:
+- show the dropdown with all 5 problems listed
+- mark B / D / E as "(not yet supported)"
+- enable upload only when the user picks A or C
+- navigate them away to the appropriate page on successful upload
+

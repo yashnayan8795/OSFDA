@@ -20,8 +20,10 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from streamlit_app.utils.loaders import load_emerging_risks
+from streamlit_app.utils.sidebar import render_manual_test_sidebar
 
 st.set_page_config(page_title="Problem D — Emerging Risks", page_icon="🟣", layout="wide")
+render_manual_test_sidebar()
 st.title("🟣 Problem D — Emerging Risk Discovery")
 st.caption(
     "Unsupervised narrative clustering (BERTopic / PCA+MiniBatchKMeans) + "

@@ -19,8 +19,10 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from streamlit_app.utils.loaders import load_graph_data, load_factor_patterns
+from streamlit_app.utils.sidebar import render_manual_test_sidebar
 
 st.set_page_config(page_title="Problem E — Factor Graph", page_icon="🔵", layout="wide")
+render_manual_test_sidebar()
 st.title("🔵 Problem E — Contributing Factor Knowledge Graph")
 st.caption(
     "Co-occurrence graph of contributing factors, flight phases, FAR parts, and aircraft types. "
