@@ -1,0 +1,39 @@
+{
+  "features_path": "E:\\OSFDA\\data\\processed\\preflight_features_final.parquet",
+  "model_path": "E:\\OSFDA\\models\\preflight_lgbm_calibrated.joblib",
+  "n_train": 809823,
+  "n_test": 202455,
+  "test_positive_rate": 0.04762539823664518,
+  "true_prior": 0.04761735412604048,
+  "heuristic_threshold": 0.2380867706302024,
+  "heuristic_results": {
+    "roc_auc": 0.7666196630296771,
+    "pr_auc": 0.09816245157672629,
+    "brier_score": 0.04726544345462206,
+    "ece": 0.04550275929479833,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "threshold": 0.2380867706302024,
+    "n_positive": 9642,
+    "n_negative": 192813
+  },
+  "threshold_tuning": {
+    "optimize": "f1",
+    "best_threshold": 0.2380867706302024,
+    "best_multiplier": 5.0,
+    "best_score": -1.0
+  },
+  "tuned_results": {
+    "roc_auc": 0.7666196630296771,
+    "pr_auc": 0.09816245157672629,
+    "brier_score": 0.04726544345462206,
+    "ece": 0.04550275929479833,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "threshold": 0.2380867706302024,
+    "n_positive": 9642,
+    "n_negative": 192813
+  }
+}

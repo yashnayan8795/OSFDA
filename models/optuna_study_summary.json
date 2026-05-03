@@ -1,0 +1,19 @@
+{
+  "study_name": "severity_lgbm_narrative32",
+  "n_trials_completed": 200,
+  "best_qwk": 0.5631013798289641,
+  "best_params": {
+    "num_leaves": 81,
+    "max_depth": 11,
+    "learning_rate": 0.013751018833445146,
+    "min_child_samples": 114,
+    "colsample_bytree": 0.37356032788358595,
+    "subsample": 0.5146299560932945,
+    "subsample_freq": 3,
+    "reg_alpha": 5.8831678434744655e-05,
+    "reg_lambda": 0.003064580482211513,
+    "min_gain_to_split": 0.9513808688037851
+  },
+  "narrative_pca_dim": 32,
+  "use_narrative": true
+}

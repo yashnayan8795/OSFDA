@@ -70,6 +70,17 @@ problem_a_whitelist:
     justification: "Known pre-flight, bucket into ordinal bands"
     action: "derive"
 
+# Problem A text inputs: narrative columns allowed ONLY as PCA-compressed SBERT embeddings.
+# These must NEVER be passed as raw string categoricals to LightGBM.
+# The leakage audit's get_problem_a_text_features() reads this section.
+problem_a_text:
+  - feature: "Report 1_Narrative"
+    justification: "Written by reporter before outcome fields are coded — pre-outcome text. Safe as SBERT→PCA embedding."
+    action: "embed_only"
+  - feature: "Report 1.2_Synopsis"
+    justification: "Short summary written at report time — pre-outcome. Safe as SBERT→PCA embedding."
+    action: "embed_only"
+
 # Problem B extras: retrospective features allowed AFTER incident
 problem_b_extra:
   - feature: "Events_Anomaly"

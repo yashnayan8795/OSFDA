@@ -4,12 +4,19 @@ Phase 3 — Problem B: Category Classification
 Runs three tiers:
   1. TF-IDF + Logistic Regression (baseline)
   2. Sentence-BERT text tower (ablation)
-  3. Fusion: Text Tower + LightGBM tabular embeddings → MLP
+  3. Fusion: Text Tower + LightGBM tabular embeddings → Focal Loss MLP
 
 Outputs a comparison table and saves all models.
 Usage:
     python scripts/run_phase3.py [--tier {1,2,3,all}]
+                                 [--model-name all-MiniLM-L6-v2]
+                                 [--focal-gamma 2.0]
+                                 [--label-smooth 0.05]
 """
+
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import argparse
 import time
@@ -124,25 +131,25 @@ def run_tier1(splits, label_names):
     return model, test_report
 
 
-def run_tier2(splits, label_names):
+def run_tier2(splits, label_names, model_name="all-MiniLM-L6-v2", cache_prefix="emb_all_MiniLM_L6_v2"):
     banner("TIER 2 — Sentence-BERT Text Tower (ablation)")
     start = time.time()
 
     # Encode texts
     print("  Encoding train texts...")
-    emb_train = encode_texts(splits["train"]["text"], batch_size=128)
+    emb_train = encode_texts(splits["train"]["text"], model_name=model_name, batch_size=128)
     print("  Encoding val texts...")
-    emb_val   = encode_texts(splits["val"]["text"],   batch_size=128)
+    emb_val   = encode_texts(splits["val"]["text"],   model_name=model_name, batch_size=128)
     print("  Encoding test texts...")
-    emb_test  = encode_texts(splits["test"]["text"],  batch_size=128)
+    emb_test  = encode_texts(splits["test"]["text"],  model_name=model_name, batch_size=128)
 
     print(f"  Embedding dim: {emb_train.shape[1]}")
 
-    # Save embeddings for reuse
+    # Save embeddings for reuse (model-name-aware cache)
     emb_path = resolve_path("data/processed")
-    np.save(emb_path / "emb_train.npy", emb_train)
-    np.save(emb_path / "emb_val.npy",   emb_val)
-    np.save(emb_path / "emb_test.npy",  emb_test)
+    np.save(emb_path / f"{cache_prefix}_train.npy", emb_train)
+    np.save(emb_path / f"{cache_prefix}_val.npy",   emb_val)
+    np.save(emb_path / f"{cache_prefix}_test.npy",  emb_test)
     print("  Embeddings saved.")
 
     model = build_text_tower(
@@ -168,7 +175,7 @@ def run_tier2(splits, label_names):
     return model, test_report, (emb_train, emb_val, emb_test)
 
 
-def run_tier3(splits, label_names, embeddings):
+def run_tier3(splits, label_names, embeddings, focal_gamma=2.0, label_smooth=0.05):
     banner("TIER 3 — Fusion Model (Text + Tabular)")
     start = time.time()
     emb_train, emb_val, emb_test = embeddings
@@ -228,8 +235,14 @@ def run_tier3(splits, label_names, embeddings):
     print(f"  Tabular encoding shape: {tab_train.shape}")
 
     # Fusion model
-    print("  Training Fusion MLP heads...")
-    fusion = FusionMLP(hidden_dims=(256, 128), max_epochs=20)
+    print("  Training Fusion MLP heads (FocalLoss)...")
+    fusion = FusionMLP(
+        hidden_dims=(256, 128),
+        max_epochs=20,
+        focal_gamma=focal_gamma,
+        label_smoothing=label_smooth,
+        use_pos_weight=True,
+    )
     fusion.fit(
         emb_train, tab_train, splits["train"]["y"],
         emb_val,   tab_val,   splits["val"]["y"],
@@ -296,6 +309,19 @@ def print_comparison(results, min_label_f1: float = 0.30):
 def main():
     parser = argparse.ArgumentParser(description="Run Phase 3 category model")
     parser.add_argument("--tier", choices=["1", "2", "3", "all"], default="all")
+    parser.add_argument(
+        "--model-name", default="all-MiniLM-L6-v2",
+        help="Sentence-transformers model name or path to local fine-tuned model. "
+             "Default: all-MiniLM-L6-v2"
+    )
+    parser.add_argument(
+        "--focal-gamma", type=float, default=2.0,
+        help="Focal loss gamma parameter (0=standard BCE, 2.0=recommended). Default: 2.0"
+    )
+    parser.add_argument(
+        "--label-smooth", type=float, default=0.05,
+        help="Label smoothing epsilon (0=off, 0.05=recommended). Default: 0.05"
+    )
     args = parser.parse_args()
 
     set_seeds()
@@ -307,6 +333,10 @@ def main():
 
     print(f"  Labels: {label_names}")
     print(f"  Train: {len(splits['train']['text'])}, Val: {len(splits['val']['text'])}, Test: {len(splits['test']['text'])}")
+    if args.tier in ("2", "3", "all"):
+        print(f"  SBERT model: {args.model_name}")
+    if args.tier in ("3", "all"):
+        print(f"  Focal loss: γ={args.focal_gamma}, ε={args.label_smooth}")
 
     results = {}
     embeddings = None
@@ -320,25 +350,37 @@ def main():
     if run_all or args.tier in ("2", "3"):
         # Check for cached embeddings first
         emb_path = resolve_path("data/processed")
-        if (emb_path / "emb_train.npy").exists() and args.tier in ("3", "all"):
-            print("\n  Loading cached embeddings...")
-            emb_train = np.load(emb_path / "emb_train.npy")
-            emb_val   = np.load(emb_path / "emb_val.npy")
-            emb_test  = np.load(emb_path / "emb_test.npy")
+        # Include model name in cache key so different models don't collide
+        safe_model = args.model_name.replace("/", "_").replace("-", "_")
+        cache_prefix = f"emb_{safe_model}"
+        if (emb_path / f"{cache_prefix}_train.npy").exists() and args.tier in ("3", "all"):
+            print(f"\n  Loading cached embeddings ({safe_model})...")
+            emb_train = np.load(emb_path / f"{cache_prefix}_train.npy")
+            emb_val   = np.load(emb_path / f"{cache_prefix}_val.npy")
+            emb_test  = np.load(emb_path / f"{cache_prefix}_test.npy")
             embeddings = (emb_train, emb_val, emb_test)
             print(f"  Loaded cached embeddings, shape: {emb_train.shape}")
         else:
-            _, r, embeddings = run_tier2(splits, label_names)
+            _, r, embeddings = run_tier2(splits, label_names, model_name=args.model_name,
+                                        cache_prefix=cache_prefix)
             results["Text Tower (SBERT)"] = r
 
     if run_all or args.tier == "3":
         if embeddings is None:
             emb_path = resolve_path("data/processed")
-            emb_train = np.load(emb_path / "emb_train.npy")
-            emb_val   = np.load(emb_path / "emb_val.npy")
-            emb_test  = np.load(emb_path / "emb_test.npy")
+            safe_model = args.model_name.replace("/", "_").replace("-", "_")
+            cache_prefix = f"emb_{safe_model}"
+            if (emb_path / f"{cache_prefix}_train.npy").exists():
+                emb_train = np.load(emb_path / f"{cache_prefix}_train.npy")
+                emb_val   = np.load(emb_path / f"{cache_prefix}_val.npy")
+                emb_test  = np.load(emb_path / f"{cache_prefix}_test.npy")
+            else:
+                emb_train = np.load(emb_path / "emb_train.npy")
+                emb_val   = np.load(emb_path / "emb_val.npy")
+                emb_test  = np.load(emb_path / "emb_test.npy")
             embeddings = (emb_train, emb_val, emb_test)
-        _, r = run_tier3(splits, label_names, embeddings)
+        _, r = run_tier3(splits, label_names, embeddings,
+                         focal_gamma=args.focal_gamma, label_smooth=args.label_smooth)
         results["Fusion (Text + Tabular)"] = r
 
     if results:
