@@ -57,3 +57,50 @@ def categorize_weather(df: pd.DataFrame) -> pd.DataFrame:
         df['wind_cat'] = 'Unknown'
 
     return df
+
+
+def engineer_preflight_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Engineer advanced pre-flight risk features including:
+    - Route, Carrier, and Airport expanding risk rates
+    - NOAA weather severity indicators
+    """
+    df = df.copy()
+    
+    # 1. Historical Risk Rates
+    if 'route_id' not in df.columns and 'ORIGIN' in df.columns and 'DEST' in df.columns:
+        df['route_id'] = df['ORIGIN'] + '_' + df['DEST']
+        
+    if 'incident' in df.columns:
+        if 'ORIGIN' in df.columns:
+            df['airport_risk_rate'] = compute_historical_rates(df, 'ORIGIN', 'incident')
+        if 'OP_UNIQUE_CARRIER' in df.columns:
+            df['carrier_risk_rate'] = compute_historical_rates(df, 'OP_UNIQUE_CARRIER', 'incident')
+        if 'route_id' in df.columns:
+            df['route_risk_rate'] = compute_historical_rates(df, 'route_id', 'incident')
+            
+    # Fill NAs in risk rates
+    for col in ['airport_risk_rate', 'carrier_risk_rate', 'route_risk_rate']:
+        if col in df.columns:
+            df[col] = df[col].fillna(0.0)
+
+    # 2. NOAA Weather Severity Features
+    # Wind gust / crosswind component estimation (assume typical 45-degree angle fallback)
+    if 'wspd' in df.columns:
+        df['crosswind_component_kt'] = df['wspd'] * 0.707
+    else:
+        df['crosswind_component_kt'] = 0.0
+        
+    # Populate NOAA severity indicators (if not present, default to 0/False)
+    if 'icing_pirep_count_24h' not in df.columns:
+        df['icing_pirep_count_24h'] = 0.0
+    if 'sigmet_active' not in df.columns:
+        df['sigmet_active'] = 0
+    if 'convective_activity' not in df.columns:
+        # Infer from precip rate or set to 0
+        if 'prcp' in df.columns:
+            df['convective_activity'] = (df['prcp'] > 5.0).astype(int)
+        else:
+            df['convective_activity'] = 0
+            
+    return df

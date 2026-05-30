@@ -127,7 +127,7 @@ def evaluate_preflight_model(
     from sklearn.metrics import (
         roc_auc_score, average_precision_score,
         brier_score_loss, precision_score, recall_score, f1_score,
-        confusion_matrix,
+        confusion_matrix, ndcg_score,
     )
 
     y_pred = (y_prob >= threshold).astype(int)
@@ -145,6 +145,17 @@ def evaluate_preflight_model(
     cm = confusion_matrix(y_true, y_pred, labels=[0, 1])
     tn, fp, fn, tp = (int(x) for x in cm.ravel())
 
+    # Ranking Metrics (NDCG)
+    ndcg_10 = float(ndcg_score(y_true.reshape(1, -1), y_prob.reshape(1, -1), k=10)) if n_pos > 0 else 0.0
+    ndcg_100 = float(ndcg_score(y_true.reshape(1, -1), y_prob.reshape(1, -1), k=100)) if n_pos > 0 else 0.0
+    
+    # Lift at top decile (10%)
+    n_decile = max(int(len(y_true) * 0.10), 1)
+    top_indices = np.argsort(y_prob)[::-1][:n_decile]
+    top_decile_precision = y_true[top_indices].mean()
+    overall_precision = y_true.mean()
+    lift_top_decile = float(top_decile_precision / max(overall_precision, 1e-5))
+
     return {
         "roc_auc": roc_auc,
         "pr_auc": pr_auc,
@@ -153,11 +164,15 @@ def evaluate_preflight_model(
         "precision": float(precision_score(y_true, y_pred, zero_division=0)),
         "recall": float(recall_score(y_true, y_pred, zero_division=0)),
         "f1": float(f1_score(y_true, y_pred, zero_division=0)),
+        "ndcg_10": ndcg_10,
+        "ndcg_100": ndcg_100,
+        "lift_top_decile": lift_top_decile,
         "threshold": float(threshold),
         "n_positive": n_pos,
         "n_negative": n_neg,
         "confusion_matrix": {"tn": tn, "fp": fp, "fn": fn, "tp": tp},
     }
+
 
 
 def _ece(y_true: np.ndarray, y_prob: np.ndarray, n_bins: int = 10) -> float:

@@ -98,7 +98,10 @@ print(f"Model    : {model_path}")
 # ─────────────────────────────────────────────────────────────────────────────
 print("\nLoading features...")
 df = pd.read_parquet(features_path)
+from src.features.preflight import engineer_preflight_features
+df = engineer_preflight_features(df)
 print(f"  Shape: {df.shape}")
+
 
 # Detect label column
 label_candidates = ["incident", "label", "is_incident", "y", "target"]
@@ -113,12 +116,13 @@ print(f"  Label column: '{label_col}'  | Positive rate: {df[label_col].mean():.4
 # Temporal test split
 # ─────────────────────────────────────────────────────────────────────────────
 # Sort by date column if available; otherwise by index
-date_candidates = ["fl_date", "date", "Date", "incident_date", "flight_date"]
+date_candidates = ["FL_DATE", "fl_date", "date", "Date", "incident_date", "flight_date"]
 date_col = next((c for c in date_candidates if c in df.columns), None)
+
 
 if date_col is not None:
     df = df.sort_values(date_col).reset_index(drop=True)
-    print(f"  Sorted by '{date_col}': {df[date_col].min()} → {df[date_col].max()}")
+    print(f"  Sorted by '{date_col}': {df[date_col].min()} -> {df[date_col].max()}")
 else:
     print("  WARNING: No date column found — using row order for temporal split.")
 

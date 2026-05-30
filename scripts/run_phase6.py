@@ -10,16 +10,22 @@ import joblib
 from pathlib import Path
 
 from src.models.preflight import PriorShiftedCalibratedModel
+from src.features.preflight import engineer_preflight_features
 
 def main():
     print("Loading data...")
     df = pd.read_parquet("data/processed/preflight_features_final.parquet")
     
+    # Run our new advanced feature engineering
+    print("Engineering features...")
+    df = engineer_preflight_features(df)
+    
     features = [
         'month_sin', 'month_cos', 'dow_sin', 'dow_cos', 'hour', 
         'temp', 'rhum', 'prcp', 'wspd', 'pres',
         'airport_risk_rate', 'carrier_risk_rate', 'route_risk_rate',
-        'DISTANCE'
+        'DISTANCE',
+        'crosswind_component_kt', 'icing_pirep_count_24h', 'sigmet_active', 'convective_activity'
     ]
     
     # Handle missing year
@@ -38,7 +44,7 @@ def main():
     X_test, y_test   = test_df[features], test_df['incident']
     
     train_prior = y_train.mean()
-    true_prior = 0.0005 # 0.05%
+    true_prior = 0.0476  # The actual positive rate is 4.76%
     
     print(f"Train prior: {train_prior:.4f}, True target prior: {true_prior:.4f}")
     
@@ -47,13 +53,14 @@ def main():
         n_estimators=500,
         learning_rate=0.05,
         num_leaves=31,
-        is_unbalance=True,
+        scale_pos_weight=20.0,  # Handle 4.76% positive rate: (1 - 0.0476)/0.0476 approx 20
         random_state=42
     )
     
     model.fit(
         X_train, y_train,
         eval_set=[(X_val, y_val)],
+        eval_metric='auc',
         callbacks=[lgb.early_stopping(stopping_rounds=50)]
     )
     
@@ -63,6 +70,7 @@ def main():
     
     print("Applying Prior Probability Shift...")
     shifted_model = PriorShiftedCalibratedModel(calibrated_model, true_prior, train_prior, features)
+
     
     print("Evaluating Test Set...")
     probs = shifted_model.predict_proba(X_test)[:, 1]
