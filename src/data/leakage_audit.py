@@ -96,6 +96,28 @@ def get_problem_a_text_features(
     return approved_text
 
 
+def get_problem_a_interaction_features(
+    df: pd.DataFrame,
+    whitelist: Optional[Dict[str, Any]] = None,
+) -> List[str]:
+    """
+    Return the list of engineered interaction features whitelisted for Problem A.
+
+    These are cross-products of pre-flight columns (e.g. phase × aircraft) that
+    are safe by construction because all source columns are pre-incident.
+    They must NEVER include any post-incident field.
+    """
+    if whitelist is None:
+        whitelist = load_feature_whitelist()
+
+    approved_interactions = [
+        item["feature"]
+        for item in whitelist.get("problem_a_interaction", [])
+        if item["feature"] in df.columns
+    ]
+    return approved_interactions
+
+
 def get_problem_b_features(
     df: pd.DataFrame,
     whitelist: Optional[Dict[str, Any]] = None,
@@ -177,7 +199,11 @@ def validate_no_leakage(
         approved_text = set(
             item["feature"] for item in whitelist.get("problem_a_text", [])
         )
-        unapproved = feature_set - approved_a - approved_text
+        # Build the set of approved interaction features so they don't trip the keyword gate
+        approved_interaction = set(
+            item["feature"] for item in whitelist.get("problem_a_interaction", [])
+        )
+        unapproved = feature_set - approved_a - approved_text - approved_interaction
         for col in unapproved:
             if any(kw.lower() in col.lower() for kw in LEAKAGE_KEYWORDS):
                 leaking.append(

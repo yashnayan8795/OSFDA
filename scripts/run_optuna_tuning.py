@@ -1,12 +1,15 @@
 """Run Optuna hyperparameter tuning for the severity model.
 
-Changes in this version
------------------------
-* Narrative SBERT→PCA features are included in the dataset by default
-  (--no-narrative to disable for ablation).
-* Default n_trials increased to 200 (was 50).
-* Ordinal LightGBM objective is available via --ordinal flag.
-* CLI: --n-trials, --timeout, --use-narrative, --ordinal.
+Constraints enforced
+--------------------
+* Narratives scanned for rubric-leaking phrases before SBERT encoding.
+* PCA(128) is fit ONCE on the training split before any Optuna trial.
+  Within each trial, dimensions are dynamically sliced (narr_pca_0..N-1)
+  so PCA is never refit per trial.
+* --narrative-pca-dim sweep: if set to 0, Optuna will suggest the best
+  PCA dim from [32, 64, 96, 128] as a hyperparameter per trial.
+* All tuning uses train + val only. Test set is never read here.
+* Random seed 42 for all ops.
 """
 import sys
 from pathlib import Path
@@ -26,6 +29,7 @@ from src.utils.config import (
 )
 from src.data.loader import load_raw_data, parse_time_date
 from src.data.target_engineering import apply_severity_rubric
+from src.data.rubric_scanner import prepare_safe_narratives, print_scan_report
 from src.data.leakage_audit import get_problem_a_features, get_problem_a_text_features
 from src.features.temporal import (
     extract_temporal_features, create_temporal_split, get_split_data,
@@ -56,9 +60,9 @@ parser.add_argument("--timeout", type=int, default=3600,
 parser.add_argument("--use-narrative", action=argparse.BooleanOptionalAction, default=True,
                     help="Include SBERT→PCA narrative features (default: True)")
 parser.add_argument("--narrative-pca-dim", type=int, default=32,
-                    help="PCA dimensions for narrative embeddings (default: 32)")
+                    help="PCA dims: 32, 64, 96, 128. Set 0 to let Optuna sweep [32,64,96,128] (default: 32)")
 parser.add_argument("--ordinal", action=argparse.BooleanOptionalAction, default=False,
-                    help="Use ordinal cumulative logit objective (default: False — standard multiclass)")
+                    help="Use ordinal cumulative logit objective (default: False)")
 args = parser.parse_args()
 
 set_seeds()
@@ -90,73 +94,70 @@ for hm in col_types["high_missing"]:
         feature_cols.remove(hm)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Narrative embeddings
+# Narrative embeddings (Phase 0: rubric scan, then PCA(128) fit ONCE)
+# If --narrative-pca-dim=0, Optuna will sweep [32,64,96,128] per trial.
 # ─────────────────────────────────────────────────────────────────────────────
 narrative_dim = 0
+PCA_DIM_SWEEP_MAX = 128       # Always fit PCA at max depth; slice per trial
+PCA_DIM_SWEEP_OPTIONS = [32, 64, 96, 128]
+raw_emb = None
+_pca128 = None                # Pre-fitted PCA(128) — fit once, used for all trials
+_emb_pca128 = None            # All samples embedded at 128 dims
+
 if args.use_narrative:
-    pca_artifact_path = resolve_path("models/severity_narrative_pca.joblib")
+    print("\n─── Narrative Safety Scan (Phase 0) ───")
+    text_cols = get_problem_a_text_features(df, whitelist)
+    if text_cols:
+        # 1. Scan and mask rubric-leaking phrases
+        df, scan_report = prepare_safe_narratives(df, text_cols=text_cols, mask=True)
+        print_scan_report(scan_report)
 
-    if pca_artifact_path.exists():
-        print("Loading cached narrative PCA artifact...")
-        pca_artifact = joblib.load(pca_artifact_path)
-        pca = pca_artifact["pca"]
-        emb_cols = pca_artifact["pca_cols"]
-        text_cols = pca_artifact["text_cols"]
+        safe_text_cols = [f"{c}_safe" for c in text_cols if f"{c}_safe" in df.columns]
+        combined_col = "_combined_narrative_safe"
+        df[combined_col] = df[safe_text_cols].fillna("").agg(" ".join, axis=1)
 
-        # Re-encode texts (needed because df is freshly loaded)
+        # 2. Encode with SBERT
         from sentence_transformers import SentenceTransformer
-        df = preprocess_narratives(df, narrative_cols=text_cols)
-        clean_cols = [f"{c}_clean" for c in text_cols if f"{c}_clean" in df.columns]
-        if clean_cols:
-            df["_combined_narrative"] = df[clean_cols].fillna("").agg(" ".join, axis=1)
-        else:
-            df["_combined_narrative"] = df[text_cols].fillna("").agg(" ".join, axis=1)
-
         encoder = SentenceTransformer("all-MiniLM-L6-v2")
         encoder.max_seq_length = 256
-        raw_emb = encoder.encode(df["_combined_narrative"].tolist(), batch_size=128,
-                                  show_progress_bar=True, normalize_embeddings=True)
-        emb_pca = pca.transform(raw_emb)
-        narrative_dim = len(emb_cols)
-    else:
-        print("No cached PCA artifact — encoding from scratch...")
-        from sentence_transformers import SentenceTransformer
+        print(f"  Encoding {len(df)} texts (batch=128)...")
+        raw_emb = encoder.encode(df[combined_col].tolist(), batch_size=128,
+                                 show_progress_bar=True, normalize_embeddings=True)
+        print(f"  Raw embedding shape: {raw_emb.shape}")
+
+        # 3. Fit PCA(128) ONCE on training split only
         from sklearn.decomposition import PCA
+        train_mask = df["split"] == "train"
+        _pca128 = PCA(n_components=PCA_DIM_SWEEP_MAX, random_state=42)
+        _pca128.fit(raw_emb[train_mask.values])
+        _emb_pca128 = _pca128.transform(raw_emb)  # shape: (N, 128)
 
-        text_cols = get_problem_a_text_features(df, whitelist)
-        if text_cols:
-            df = preprocess_narratives(df, narrative_cols=text_cols)
-            clean_cols = [f"{c}_clean" for c in text_cols if f"{c}_clean" in df.columns]
-            if clean_cols:
-                df["_combined_narrative"] = df[clean_cols].fillna("").agg(" ".join, axis=1)
-            else:
-                df["_combined_narrative"] = df[text_cols].fillna("").agg(" ".join, axis=1)
+        explained = _pca128.explained_variance_ratio_.cumsum()
+        print(f"  PCA(128) cumulative variance: "
+              f"@32={explained[31]:.1%}  @64={explained[63]:.1%}  "
+              f"@96={explained[95]:.1%}  @128={explained[127]:.1%}")
 
-            encoder = SentenceTransformer("all-MiniLM-L6-v2")
-            encoder.max_seq_length = 256
-            raw_emb = encoder.encode(df["_combined_narrative"].tolist(), batch_size=128,
-                                      show_progress_bar=True, normalize_embeddings=True)
-
-            train_mask = df["split"] == "train"
-            pca_dim = min(args.narrative_pca_dim, raw_emb.shape[1])
-            pca = PCA(n_components=pca_dim, random_state=42)
-            pca.fit(raw_emb[train_mask.values])
-            emb_pca = pca.transform(raw_emb)
+        # If pca_dim is fixed (not sweep mode), attach those dims to df now
+        if args.narrative_pca_dim > 0:
+            pca_dim = min(args.narrative_pca_dim, PCA_DIM_SWEEP_MAX)
             emb_cols = [f"narr_pca_{i}" for i in range(pca_dim)]
+            emb_df = pd.DataFrame(_emb_pca128[:, :pca_dim], columns=emb_cols, index=df.index)
+            df = pd.concat([df, emb_df], axis=1)
+            feature_cols = feature_cols + emb_cols
             narrative_dim = pca_dim
-
-            joblib.dump({"pca": pca, "pca_cols": emb_cols, "text_cols": text_cols},
-                        pca_artifact_path)
+            print(f"  PCA({pca_dim}) attached. Total features: {len(feature_cols)}")
         else:
-            print("  WARNING: No text columns found. Skipping narrative features.")
-            emb_pca = None
+            # Sweep mode: attach all 128 dims; Optuna will slice per trial
+            emb_cols = [f"narr_pca_{i}" for i in range(PCA_DIM_SWEEP_MAX)]
+            emb_df = pd.DataFrame(_emb_pca128, columns=emb_cols, index=df.index)
+            df = pd.concat([df, emb_df], axis=1)
+            # feature_cols is intentionally NOT updated here;
+            # each trial will add narr_pca_0..{dim-1} dynamically
+            narrative_dim = PCA_DIM_SWEEP_MAX
+            print(f"  PCA(128) sweep mode: Optuna will select best dim from {PCA_DIM_SWEEP_OPTIONS}")
+    else:
+        print("  WARNING: No text columns found. Skipping narrative features.")
 
-    if narrative_dim > 0:
-        import pandas as _pd
-        emb_df = _pd.DataFrame(emb_pca, columns=emb_cols, index=df.index)
-        df = _pd.concat([df, emb_df], axis=1)
-        feature_cols = feature_cols + emb_cols
-        print(f"  Narrative PCA({narrative_dim}) added. Total features: {len(feature_cols)}")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Split
@@ -181,6 +182,27 @@ if args.ordinal:
         )
 else:
     def objective(trial):
+        # ── Dynamic PCA dim slicing (sweep mode only) ────────────────────────
+        # In fixed mode (args.narrative_pca_dim > 0), feature_cols already
+        # contains the correct narr_pca_* columns.
+        # In sweep mode (args.narrative_pca_dim == 0), we slice on-the-fly.
+        _X_train = X_train
+        _X_val = X_val
+        _cat_features = cat_features
+
+        if args.narrative_pca_dim == 0 and _emb_pca128 is not None:
+            trial_pca_dim = trial.suggest_categorical("pca_dim", PCA_DIM_SWEEP_OPTIONS)
+            # Build augmented train/val with sliced PCA cols (NOT modifying global df)
+            _narr_cols = [f"narr_pca_{i}" for i in range(trial_pca_dim)]
+            # Create augmented feature sets for this trial only
+            _base_cols = [c for c in feature_cols if not c.startswith("narr_pca_")]
+            _X_train = X_train[_base_cols].copy()
+            _X_val = X_val[_base_cols].copy()
+            splits_trial = get_split_data(df, "severity_level", _base_cols + _narr_cols)
+            _X_train, _ = splits_trial["train"]
+            _X_val, _ = splits_trial["val"]
+            _cat_features = [c for c in cat_features if c in _X_train.columns]
+
         params = {
             "objective": "multiclass",
             "num_class": 4,
@@ -201,7 +223,7 @@ else:
             "seed": 42,
         }
 
-        dtrain, dval = build_lgbm_dataset(X_train, y_train, X_val, y_val, cat_features)
+        dtrain, dval = build_lgbm_dataset(_X_train, y_train, _X_val, y_val, _cat_features)
         callbacks = [lgb.early_stopping(stopping_rounds=50), lgb.log_evaluation(period=0)]
         model = lgb.train(
             params, dtrain, num_boost_round=2000,
@@ -209,7 +231,7 @@ else:
             callbacks=callbacks,
         )
 
-        val_probs = model.predict(X_val)
+        val_probs = model.predict(_X_val)
         val_pred = val_probs.argmax(axis=1)
         return quadratic_weighted_kappa(y_val, val_pred)  # Maximize QWK
 

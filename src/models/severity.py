@@ -70,6 +70,67 @@ def train_catboost_severity(X_train, y_train, X_val, y_val, categorical_features
     return model, X_train_cb, X_val_cb
 
 
+def train_catboost_severity_weighted(
+    X_train, y_train, X_val, y_val, categorical_features,
+    class_weights=None, seed: int = 42
+):
+    """
+    Train CatBoost with explicit class weights for minority-class boosting.
+
+    Parameters
+    ----------
+    class_weights : list of float, optional
+        Per-class weights in label order [w0, w1, w2, w3].
+        Example: [1, 5, 20, 100] heavily penalizes missing Level 3.
+        If None, trains without class weighting (equivalent to train_catboost_severity).
+    seed : int
+        Random seed for reproducibility. Default 42.
+
+    Returns
+    -------
+    (model, X_train_cb, X_val_cb)
+
+    Notes
+    -----
+    After training with weights, you MUST rerun isotonic calibration + temperature
+    scaling on the validation set before evaluating or accepting the model.
+    The asymmetric loss shifts the model's probability estimates away from
+    class priors; calibration corrects this shift.
+    """
+    from catboost import CatBoostClassifier, Pool
+
+    X_train_cb = X_train.copy()
+    X_val_cb = X_val.copy()
+    for col in categorical_features:
+        if col in X_train_cb.columns:
+            X_train_cb[col] = X_train_cb[col].astype(str).replace("nan", "Missing").fillna("Missing")
+            X_val_cb[col] = X_val_cb[col].astype(str).replace("nan", "Missing").fillna("Missing")
+
+    train_pool = Pool(X_train_cb, y_train, cat_features=categorical_features)
+    val_pool = Pool(X_val_cb, y_val, cat_features=categorical_features)
+
+    model_params = dict(
+        iterations=1000,
+        learning_rate=0.05,
+        depth=6,
+        loss_function="MultiClass",
+        eval_metric="MultiClass",
+        random_seed=seed,
+        od_type="Iter",
+        od_wait=50,
+        verbose=100,
+        task_type="CPU",
+    )
+    if class_weights is not None:
+        model_params["class_weights"] = class_weights
+
+    model = CatBoostClassifier(**model_params)
+    model.fit(train_pool, eval_set=val_pool, use_best_model=True)
+    return model, X_train_cb, X_val_cb
+
+
+
+
 def optuna_objective(trial, X_train, y_train, X_val, y_val, categorical_features):
     params = {
         "objective": "multiclass", "num_class": 4, "metric": "multi_logloss",
