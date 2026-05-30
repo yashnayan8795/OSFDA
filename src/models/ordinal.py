@@ -367,3 +367,170 @@ def ordinal_optuna_objective(
     except Exception as e:
         print(f"  [Ordinal Optuna] Trial failed: {e}")
         return -1.0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Ordinal CatBoost Cumulative Binary Decomposition
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _get_ordinal_catboost_params(seed: int = 42) -> dict:
+    """Default CatBoost binary params for ordinal threshold classifiers."""
+    return {
+        "iterations": 1000,
+        "learning_rate": 0.05,
+        "depth": 6,
+        "loss_function": "Logloss",
+        "eval_metric": "Logloss",
+        "random_seed": seed,
+        "od_type": "Iter",
+        "od_wait": 50,
+        "verbose": 0,
+        "task_type": "CPU",
+    }
+
+
+def train_ordinal_catboost(
+    X_train: pd.DataFrame,
+    y_train: np.ndarray,
+    X_val: pd.DataFrame,
+    y_val: np.ndarray,
+    categorical_features: List[str],
+    num_classes: int = 4,
+    params: Optional[Dict[str, Any]] = None,
+    seed: int = 42,
+) -> Tuple[List, Dict[str, Any]]:
+    """
+    Train K-1 binary CatBoost classifiers for ordinal regression.
+
+    Mirrors train_ordinal_lgbm but uses CatBoost, which handles
+    high-cardinality aviation categoricals (Flight Phase, Aircraft, Operator)
+    natively via its ordered target statistics method.
+
+    Parameters
+    ----------
+    X_train, X_val : pd.DataFrame
+    y_train, y_val : np.ndarray - integer labels in {0..num_classes-1}
+    categorical_features : list of str
+    num_classes : int
+    params : dict, optional - CatBoost binary params.
+    seed : int - random seed (default 42).
+
+    Returns
+    -------
+    (classifiers, info)
+    """
+    try:
+        from catboost import CatBoostClassifier, Pool
+    except ImportError as e:
+        raise ImportError("CatBoost is required for train_ordinal_catboost.") from e
+
+    if params is None:
+        params = _get_ordinal_catboost_params(seed)
+
+    X_train_cb = X_train.copy()
+    X_val_cb = X_val.copy()
+    for col in categorical_features:
+        if col in X_train_cb.columns:
+            X_train_cb[col] = X_train_cb[col].astype(str).replace("nan", "Missing").fillna("Missing")
+            X_val_cb[col] = X_val_cb[col].astype(str).replace("nan", "Missing").fillna("Missing")
+
+    classifiers = []
+    best_iterations = []
+    y_train_arr = np.array(y_train)
+    y_val_arr = np.array(y_val)
+
+    for k in range(1, num_classes):
+        y_bin_train = (y_train_arr >= k).astype(int)
+        y_bin_val = (y_val_arr >= k).astype(int)
+
+        train_pool = Pool(X_train_cb, y_bin_train, cat_features=categorical_features)
+        val_pool = Pool(X_val_cb, y_bin_val, cat_features=categorical_features)
+
+        clf = CatBoostClassifier(**params)
+        print(f"  [Ordinal CatBoost] Training threshold clf P(Y>={k})...")
+        clf.fit(train_pool, eval_set=val_pool, use_best_model=True)
+
+        classifiers.append(clf)
+        best_iterations.append(clf.best_iteration_)
+
+    info = {
+        "best_iterations": best_iterations,
+        "thresholds": list(range(1, num_classes)),
+        "cat_features": categorical_features,
+    }
+    return classifiers, info
+
+
+def predict_ordinal_catboost_probs(
+    classifiers: List,
+    X: pd.DataFrame,
+    categorical_features: Optional[List[str]] = None,
+    num_classes: int = 4,
+) -> np.ndarray:
+    """
+    Reconstruct class probabilities from K-1 CatBoost threshold classifiers.
+
+    Returns np.ndarray of shape (n_samples, num_classes), rows sum to 1.
+    """
+    if categorical_features is None:
+        categorical_features = []
+
+    X_cb = X.copy()
+    for col in categorical_features:
+        if col in X_cb.columns:
+            X_cb[col] = X_cb[col].astype(str).replace("nan", "Missing").fillna("Missing")
+
+    cum_probs = np.column_stack([
+        clf.predict_proba(X_cb)[:, 1] for clf in classifiers
+    ])
+
+    cum_probs = np.clip(cum_probs, 1e-7, 1 - 1e-7)
+    for j in range(1, cum_probs.shape[1]):
+        cum_probs[:, j] = np.minimum(cum_probs[:, j], cum_probs[:, j - 1])
+
+    class_probs = np.zeros((len(X), num_classes), dtype=np.float64)
+    class_probs[:, 0] = 1.0 - cum_probs[:, 0]
+    for k in range(1, num_classes - 1):
+        class_probs[:, k] = cum_probs[:, k - 1] - cum_probs[:, k]
+    class_probs[:, num_classes - 1] = cum_probs[:, num_classes - 2]
+
+    class_probs = np.clip(class_probs, 0, None)
+    row_sums = class_probs.sum(axis=1, keepdims=True)
+    row_sums = np.where(row_sums == 0, 1, row_sums)
+    return class_probs / row_sums
+
+
+def calibrate_ordinal_catboost(
+    classifiers: List,
+    X_val: pd.DataFrame,
+    y_val: np.ndarray,
+    categorical_features: Optional[List[str]] = None,
+    num_classes: int = 4,
+) -> List[IsotonicRegression]:
+    """Fit per-class isotonic regressors for ordinal CatBoost on the validation set."""
+    probs = predict_ordinal_catboost_probs(classifiers, X_val, categorical_features, num_classes)
+    calibrators = []
+    for cls in range(num_classes):
+        iso = IsotonicRegression(out_of_bounds="clip")
+        iso.fit(probs[:, cls], (np.array(y_val) == cls).astype(int))
+        calibrators.append(iso)
+    return calibrators
+
+
+def predict_ordinal_catboost_calibrated(
+    classifiers: List,
+    X: pd.DataFrame,
+    calibrators: List[IsotonicRegression],
+    categorical_features: Optional[List[str]] = None,
+    num_classes: int = 4,
+) -> np.ndarray:
+    """Return calibrated class probabilities for ordinal CatBoost."""
+    raw_probs = predict_ordinal_catboost_probs(classifiers, X, categorical_features, num_classes)
+    cal_probs = np.column_stack([
+        cal.predict(raw_probs[:, i]) for i, cal in enumerate(calibrators)
+    ])
+    cal_probs = np.clip(cal_probs, 0, None)
+    row_sums = cal_probs.sum(axis=1, keepdims=True)
+    row_sums = np.where(row_sums == 0, 1, row_sums)
+    return cal_probs / row_sums
+

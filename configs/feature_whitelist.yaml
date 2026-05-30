@@ -70,6 +70,21 @@ problem_a_whitelist:
     justification: "Known pre-flight, bucket into ordinal bands"
     action: "derive"
 
+# Problem A engineered interaction features (pre-flight features crossed)
+# These are created from columns already in problem_a_whitelist.
+# They are EXCLUDED from leakage audit checks because they are cross-products
+# of pre-flight whitelisted columns — never from post-incident fields.
+problem_a_interaction:
+  - feature: "phase_aircraft"
+    justification: "Cross of Aircraft 1.9_Flight Phase x Aircraft 1.2_Make Model Name — both pre-flight"
+    action: "derive"
+  - feature: "experience_conditions"
+    justification: "Cross of experience_bucket x Environment_Flight Conditions — both pre-flight"
+    action: "derive"
+  - feature: "crew_size_mission"
+    justification: "Cross of Aircraft 1.4_Crew Size x Aircraft 1.7_Mission — both pre-flight"
+    action: "derive"
+
 # Problem A text inputs: narrative columns allowed ONLY as PCA-compressed SBERT embeddings.
 # These must NEVER be passed as raw string categoricals to LightGBM.
 # The leakage audit's get_problem_a_text_features() reads this section.

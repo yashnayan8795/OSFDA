@@ -112,6 +112,68 @@ def bucket_experience(
     return df
 
 
+def engineer_interaction_features(
+    df: pd.DataFrame,
+) -> tuple:
+    """
+    Engineer pre-flight interaction features from whitelisted Problem A columns.
+
+    All source columns are pre-incident (from problem_a_whitelist).
+    The interactions are string concatenations treated as new categoricals.
+
+    Created features
+    ----------------
+    - ``phase_aircraft``         : Flight Phase × Aircraft Make/Model
+    - ``experience_conditions``  : Experience bucket × Flight Conditions
+    - ``crew_size_mission``      : Crew Size × Mission type
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Must contain columns from problem_a_whitelist (already prepared).
+
+    Returns
+    -------
+    (df_with_interactions, new_feature_names)
+        df_with_interactions : pd.DataFrame with new columns added.
+        new_feature_names    : list of str — names of the new feature columns.
+    """
+    df = df.copy()
+    new_features = []
+
+    def _safe_str(series: pd.Series) -> pd.Series:
+        return series.fillna("unknown").astype(str).str.strip().str.lower()
+
+    # 1. Flight Phase × Aircraft Make/Model
+    phase_col = "Aircraft 1.9_Flight Phase"
+    aircraft_col = "Aircraft 1.2_Make Model Name"
+    if phase_col in df.columns and aircraft_col in df.columns:
+        df["phase_aircraft"] = (
+            _safe_str(df[phase_col]) + "__" + _safe_str(df[aircraft_col])
+        ).astype("category")
+        new_features.append("phase_aircraft")
+
+    # 2. Experience Bucket × Flight Conditions
+    exp_col = "experience_bucket"
+    conditions_col = "Environment_Flight Conditions"
+    if exp_col in df.columns and conditions_col in df.columns:
+        df["experience_conditions"] = (
+            _safe_str(df[exp_col]) + "__" + _safe_str(df[conditions_col])
+        ).astype("category")
+        new_features.append("experience_conditions")
+
+    # 3. Crew Size × Mission Type
+    crew_col = "Aircraft 1.4_Crew Size"
+    mission_col = "Aircraft 1.7_Mission"
+    if crew_col in df.columns and mission_col in df.columns:
+        df["crew_size_mission"] = (
+            _safe_str(df[crew_col]) + "__" + _safe_str(df[mission_col])
+        ).astype("category")
+        new_features.append("crew_size_mission")
+
+    return df, new_features
+
+
 def frequency_encode(
     train_df: pd.DataFrame,
     val_df: pd.DataFrame,
