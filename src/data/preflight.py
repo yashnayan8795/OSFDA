@@ -17,55 +17,85 @@ def load_preflight_raw(data_dir: Path = Path('data/raw')) -> Tuple[pd.DataFrame,
     bts = pd.concat([pd.read_parquet(f) for f in bts_files], ignore_index=True)
     return ntsb, bts
 
-def create_match_keys(ntsb: pd.DataFrame) -> Set[Tuple]:
-    """
-        Extract unique (date, airport) pairs from NTSB incidents.
-    """
-    ntsb = ntsb.copy()
-    ntsb['event_date'] = pd.to_datetime(ntsb['event_date']).dt.date
-    # FAA LID to IATA normalization (simple upper for POC)
-    ntsb['airport_code'] = ntsb['arpt_id'].str.strip().str.upper()
-    
-    keys = set(zip(ntsb['event_date'], ntsb['airport_code']))
-    return {k for k in keys if pd.notna(k[0]) and pd.notna(k[1])}
+import numpy as np
 
-def label_bts_incidents(bts: pd.DataFrame, ntsb_keys: Set[Tuple], window_days: int = 3) -> pd.DataFrame:
+def label_bts_incidents(bts: pd.DataFrame, ntsb: pd.DataFrame) -> pd.DataFrame:
     """
-    Flag BTS flights that occurred near an NTSB incident day (within window_days) at the same airport.
+    Flag BTS flights that occurred near an NTSB incident, assigning a confidence score
+    based on the strength of the match (Origin, Dest, Time Window).
     """
     bts = bts.copy()
     bts['match_date'] = pd.to_datetime(bts['FL_DATE']).dt.date
     
-    # Map airport -> list of incident dates for O(1) lookup
-    airport_incidents = {}
-    for date, airport in ntsb_keys:
-        if pd.isna(date) or pd.isna(airport):
-            continue
-        airport = str(airport).strip().upper()
-        if airport not in airport_incidents:
-            airport_incidents[airport] = []
-        airport_incidents[airport].append(date)
+    # Preprocess NTSB data for matching
+    ntsb_clean = ntsb.copy()
+    ntsb_clean['event_date'] = pd.to_datetime(ntsb_clean['event_date']).dt.date
     
-    # Convert dates to list of pd.Timestamp objects for distance calculation
-    for apt in airport_incidents:
-        airport_incidents[apt] = pd.to_datetime(airport_incidents[apt])
+    # Extract available airports
+    ntsb_clean['ev_apt'] = ntsb_clean['ev_nr_apt_id'].str.strip().str.upper()
+    ntsb_clean['dprt_apt'] = ntsb_clean['dprt_apt_id'].str.strip().str.upper()
+    ntsb_clean['dest_apt'] = ntsb_clean['dest_apt_id'].str.strip().str.upper()
+    
+    # Convert NTSB to list of dicts for faster iteration
+    ntsb_records = ntsb_clean[['event_date', 'ev_apt', 'dprt_apt', 'dest_apt']].to_dict('records')
+    
+    confidence_scores = []
+    is_incident = []
+    
+    for _, row in bts.iterrows():
+        b_date = row['match_date']
+        b_orig = str(row['ORIGIN']).strip().upper()
+        b_dest = str(row.get('DEST', '')).strip().upper()
         
-    is_incident_day = []
-    for d, a in zip(bts['match_date'], bts['ORIGIN']):
-        if pd.isna(d) or pd.isna(a):
-            is_incident_day.append(False)
+        if pd.isna(b_date) or pd.isna(b_orig):
+            confidence_scores.append(0.0)
+            is_incident.append(False)
             continue
-        a = str(a).strip().upper()
-        if a not in airport_incidents:
-            is_incident_day.append(False)
-            continue
+            
+        best_conf = 0.0
         
-        # Check if any incident date is within window_days
-        flight_date = pd.to_datetime(d)
-        dates = airport_incidents[a]
-        diffs = np.abs((dates - flight_date).days)
-        is_incident_day.append(np.any(diffs <= window_days))
+        for n in ntsb_records:
+            n_date = n['event_date']
+            if pd.isna(n_date):
+                continue
+                
+            day_diff = abs((n_date - b_date).days)
+            if day_diff > 3:
+                continue
+                
+            # Check Origin match (either explicit departure or event location)
+            origin_match = (b_orig == n['dprt_apt']) or (b_orig == n['ev_apt'])
+            if not origin_match:
+                continue
+                
+            dest_match = (b_dest == n['dest_apt']) and pd.notna(n['dest_apt']) and n['dest_apt'] != ''
+            
+            # Apply hierarchical rules
+            # Very High (1.0): ORIGIN + DEST + ±1 day
+            if origin_match and dest_match and day_diff <= 1:
+                conf = 1.0
+            # High (0.8): ORIGIN + DEST + ±3 day
+            elif origin_match and dest_match and day_diff <= 3:
+                conf = 0.8
+            # Medium (0.6): ORIGIN only + ±1 day
+            elif origin_match and day_diff <= 1:
+                conf = 0.6
+            # Low (0.3): ORIGIN only + ±3 day
+            elif origin_match and day_diff <= 3:
+                conf = 0.3
+            else:
+                conf = 0.0
+                
+            if conf > best_conf:
+                best_conf = conf
+                if best_conf == 1.0:
+                    break # can't get better
+                    
+        confidence_scores.append(best_conf)
+        is_incident.append(best_conf > 0.0)
         
-    bts['is_incident_day'] = is_incident_day
+    bts['incident_confidence'] = confidence_scores
+    bts['is_incident_day'] = is_incident
     return bts
+
 
