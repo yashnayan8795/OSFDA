@@ -27,6 +27,9 @@ categories:
       - "ATC Equipment / Nav Facility / Buildings"
       - "Airspace Structure"
       - "Airport"
+      - "Staffing"
+      - "ATC"
+      - "Clearance"
     description: "ATC equipment, airspace structure, airport infrastructure issues"
 
   Environment:
@@ -38,4 +41,8 @@ categories:
   Airspace_Navigation:
     keywords:
       - "Chart Or Publication"
+      - "Navigation"
+      - "Airspace"
+      - "GPS"
+      - "FMS"
     description: "Navigation charts, publications, airspace deviations"
