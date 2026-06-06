@@ -40,7 +40,8 @@ class FocalLoss:
     pos_weight : torch.Tensor or None  Per-label N_neg/N_pos weights.
     label_smoothing : float  Smooth {0,1} targets to {ε/2, 1-ε/2}.
     """
-    def __init__(self, gamma: float = 2.0, pos_weight=None, label_smoothing: float = 0.0):
+    def __init__(self, alpha: float = 0.25, gamma: float = 2.0, pos_weight=None, label_smoothing: float = 0.0):
+        self.alpha = alpha
         self.gamma = gamma
         self.pos_weight = pos_weight
         self.label_smoothing = label_smoothing
@@ -53,10 +54,10 @@ class FocalLoss:
             logits, targets, pos_weight=self.pos_weight, reduction="none"
         )
         if self.gamma == 0:
-            return bce.mean()
+            return (self.alpha * bce).mean()
         import torch
         pt = torch.exp(-bce)
-        return ((1.0 - pt) ** self.gamma * bce).mean()
+        return (self.alpha * (1.0 - pt) ** self.gamma * bce).mean()
 
 
 def compute_pos_weights(y_train: pd.DataFrame, label_names: List[str], clip_max: float = 50.0):
@@ -274,6 +275,7 @@ class FusionMLP:
         max_epochs: int = 30,
         batch_size: int = 128,
         patience: int = 5,
+        focal_alpha: float = 0.25,
         focal_gamma: float = 2.0,
         label_smoothing: float = 0.05,
         use_pos_weight: bool = True,
@@ -284,12 +286,14 @@ class FusionMLP:
         self.max_epochs = max_epochs
         self.batch_size = batch_size
         self.patience = patience
+        self.focal_alpha = focal_alpha
         self.focal_gamma = focal_gamma
         self.label_smoothing = label_smoothing
         self.use_pos_weight = use_pos_weight
         self.random_state = random_state
         self.model = None
         self.scaler = None
+        self.calibrators: Dict[str, Any] = {}
         self.thresholds: Dict[str, float] = {}
         self.label_names: List[str] = []
 
@@ -331,6 +335,7 @@ class FusionMLP:
             print(f"    pos_weight: {[f'{w:.1f}' for w in pos_weight.tolist()]}")
 
         criterion = FocalLoss(
+            alpha=self.focal_alpha,
             gamma=self.focal_gamma,
             pos_weight=pos_weight,
             label_smoothing=self.label_smoothing,
@@ -406,9 +411,16 @@ class FusionMLP:
         self.model.eval()
         with torch.no_grad():
             val_logits = self.model(torch.tensor(X_va))
-            val_probs = torch.sigmoid(val_logits).numpy()
+            val_probs_raw = torch.sigmoid(val_logits).numpy()
 
-        prob_dict = {l: val_probs[:, i] for i, l in enumerate(label_names)}
+        from sklearn.isotonic import IsotonicRegression
+        prob_dict = {}
+        for i, l in enumerate(label_names):
+            ir = IsotonicRegression(out_of_bounds="clip")
+            ir.fit(val_probs_raw[:, i], Y_va[:, i])
+            self.calibrators[l] = ir
+            prob_dict[l] = ir.transform(val_probs_raw[:, i])
+
         self.thresholds = tune_thresholds(prob_dict, y_val, label_names)
 
     def predict(
@@ -422,7 +434,12 @@ class FusionMLP:
         X_test = self.scaler.transform(X_test_raw)
         with torch.no_grad():
             logits = self.model(torch.tensor(X_test))
-            probs = torch.sigmoid(logits).numpy()
+            probs_raw = torch.sigmoid(logits).numpy()
+            
+        probs = np.column_stack([
+            self.calibrators[l].transform(probs_raw[:, i])
+            for i, l in enumerate(self.label_names)
+        ])
             
         thresholds = np.array([self.thresholds[l] for l in self.label_names])
         preds = (probs >= thresholds).astype(int)

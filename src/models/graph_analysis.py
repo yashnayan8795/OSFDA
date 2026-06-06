@@ -194,10 +194,30 @@ def build_multilayer_graph(
     edge_stats = edge_stats[edge_stats["weight"] >= min_edge_weight]
     edge_stats["avg_severity"] = edge_stats["severity_sum"] / edge_stats["weight"]
 
+    import scipy.stats as stats
+    N = len(df)
+    
     for (f1, f2), erow in edge_stats.iterrows():
+        weight = int(erow["weight"])
+        count_1 = G.nodes[f1]["count"]
+        count_2 = G.nodes[f2]["count"]
+        
+        # 2x2 contingency table for chi-squared test
+        A = weight
+        B = count_1 - A
+        C = count_2 - A
+        D = N - A - B - C
+        
+        # Only add edge if statistically significant (p < 0.05) and positive counts
+        if B >= 0 and C >= 0 and D >= 0:
+            obs = [[A, B], [C, D]]
+            chi2, p, dof, ex = stats.chi2_contingency(obs, correction=False)
+            if p >= 0.05:
+                continue
+                
         G.add_edge(
             f1, f2,
-            weight=int(erow["weight"]),
+            weight=weight,
             severity_sum=float(erow["severity_sum"]),
             avg_severity=float(erow["avg_severity"]),
         )
@@ -250,7 +270,14 @@ def compute_centrality_report(G: nx.Graph, top_k: int = 15) -> pd.DataFrame:
     Returns a DataFrame sorted by weighted degree.
     """
     degree_cent = nx.degree_centrality(G)
-    betweenness = nx.betweenness_centrality(G, weight="weight")
+    
+    # Severity-conditioned betweenness: only consider edges with avg_severity >= 2.0
+    severe_edges = [(u, v) for u, v, d in G.edges(data=True) if d.get("avg_severity", 0) >= 2.0]
+    G_severe = G.edge_subgraph(severe_edges)
+    
+    # Compute betweenness on the severe subgraph
+    betweenness_severe = nx.betweenness_centrality(G_severe, weight="weight")
+    betweenness = {n: betweenness_severe.get(n, 0.0) for n in G.nodes()}
     weighted_deg = {n: sum(d["weight"] for _, _, d in G.edges(n, data=True))
                     for n in G.nodes()}
 
@@ -287,7 +314,7 @@ def graph_summary(G: nx.Graph, communities: Dict[str, int]) -> Dict[str, Any]:
 
 def export_graph_to_json(G: nx.Graph, path: Path):
     """Export graph to node-link JSON for React/D3 visualization."""
-    data = nx.node_link_data(G)
+    data = nx.node_link_data(G, edges="links")
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w") as f:

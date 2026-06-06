@@ -1,0 +1,241 @@
+Problem A — Incident Severity Classification
+
+Predict ordinal severity (0–3) from pre-incident metadata + narrative
+
+Dataset
+38,655 ASRS reports
+Temporal split: Train 2012–2018, Val 2018–2019, Test 2019–2022
+Labels: Rubric v2.1 (deterministic, 4-level ordinal)
+Model trained
+CatBoost multiclass (winner) + LightGBM
+26 tabular features + 32 PCA narrative dims
+Optuna 200 trials, isotonic calibration
+Current results
+!
+QWK = 0.2387 (tabular only) → 0.563 (+ narrative PCA-32)
+Target was 0.45–0.60. Tabular-only falls far short; narrative brings it into range but remains borderline.
+✓
+ECE = 0.028 — well-calibrated probability outputs
+Probability estimates are trustworthy. If model says 70% Level 2, it's right ~70% of the time.
+✗
+Macro-F1 = 0.3488 — poor class balance performance
+Critical (Level 3) incidents are heavily minority class. Model under-predicts them.
+Root cause of the gap
+The fundamental ceiling is that severity is defined by what happened after the event, but the model can only see what was knowable before or at the moment of the event. The narrative text bridges this gap partially (QWK jumps from 0.24 → 0.56) — but the narrative is compressed into PCA-32, which loses ~80% of its embedding information. The 26 tabular features alone are essentially "who, where, when" — they have weak intrinsic correlation with how bad things got.
+
+Tabular only
+0.24
++ PCA-32 narrative
+0.563
+Theoretical target
+0.65+
+Improvements to make
+1. Increase PCA dims from 32 → 64 or 128
+High impact
+The current narrative_pca_dim=32 discards most of the SBERT embedding (which is 384-dim). Optuna found 32 as optimal for speed, not accuracy. Re-run the Optuna study with n_components as a trial parameter in range [32, 64, 96, 128]. Expected QWK gain: +0.03 to +0.06. Risk: memory usage scales linearly but remains manageable.
+2. Replace PCA with UMAP (if Numba becomes available)
+High impact
+PCA is a linear projection — it cannot capture semantic clusters in the SBERT embedding space. UMAP preserves local neighbourhood structure, which is exactly what topic-level severity signal lives in. On a fresh environment (Google Colab, WSL2, or a Linux CI runner where Numba is not blocked), replace the PCA step with umap.UMAP(n_components=15, metric='cosine'). Literature benchmark shows UMAP → 10–15% better downstream classification vs PCA on sentence embeddings.
+3. Apply asymmetric cost matrix during training
+High impact
+The project already has cost_matrix.yaml defining that missing a Critical (Level 3) costs 100× more than over-triaging a Minor. But CatBoost is currently trained with class_weights_mode="Balanced" — a symmetric treatment. Wire in the asymmetric costs using CatBoost's loss_function='MultiClass' with custom class_weights=[1, 5, 20, 100] (matching the cost matrix diagonal neighbours). This will hurt overall accuracy but raise recall for Level 3, which is the safety-critical metric. Evaluate with weighted cost score, not just QWK.
+4. Add ordinal-aware loss function
+Medium impact
+CatBoost's MultiClass treats all misclassifications as equal distance. Replace or augment with an ordinal regression loss — e.g. OrdinalCrossEntropy (available in custom CatBoost losses) or convert the target to a cumulative binary encoding (4 binary targets: ≥1, ≥2, ≥3) and train 3 binary classifiers. Cumulative link models consistently improve QWK by 0.02–0.05 on ordinal health/safety data.
+5. Add interaction features: flight phase × aircraft type
+Medium impact
+Landing phase + helicopter is the highest-severity co-occurrence in Problem E. Yet Problem A's feature set treats Aircraft 1.9_Flight Phase and Aircraft 1.2_Make Model Name as independent. Explicitly engineer their interaction: phase_aircraft = flight_phase + "_" + aircraft_type_bucket. CatBoost can handle this as a native categorical. Also add experience_bucket × flight_conditions (low-experience pilots in IMC is a documented high-risk combination).
+6. Slice analysis — re-train on severity ≥ 2 subsample
+Targeted
+Level 0 (minor) incidents make up ~40–50% of training data and are easy to classify — they inflate QWK without helping on safety-critical predictions. Train a secondary model exclusively on severity ≥ 1 incidents and use a two-stage classifier: Stage 1 = binary (minor vs not), Stage 2 = ordinal among {1, 2, 3}. This forces the model to learn the hard boundary between Moderate, Substantial, and Critical rather than wasting capacity on the easy majority class.
+
+
+
+Problem B — Category Classification
+
+Multi-label routing of incidents into 8 taxonomy categories
+
+Dataset
+38,655 ASRS reports
+Multi-label binary matrix (8 categories)
+Source: Assessments_Contributing Factors / Situations (semicolon-delimited)
+Label imbalance: Flight_Operations ~60% of incidents
+Model trained
+3-tier pipeline:
+Tier 1: TF-IDF + LogReg (baseline)
+Tier 2: SBERT + LogReg (text tower)
+Tier 3: SBERT + LightGBM leaves → PyTorch Fusion MLP (BCEWithLogitsLoss)
+Not calibrated yet
+Current results
+!
+Tier 3 Macro-F1 = 0.622 — target met but minority categories still weak
+Macro-F1 treats all 8 categories equally. "ATC_Communication" and "Airspace_Navigation" are likely dragging the average down.
+!
+Model is NOT calibrated (category_model_info.json: calibrated=false)
+BCEWithLogitsLoss outputs raw logits. The decision threshold is implicitly 0.5 — not optimised per category.
+✗
+Severe label imbalance — "Flight_Operations" dominates
+~60% of incidents are tagged Flight_Operations. The model will predict this class almost always, hiding poor performance on rare categories.
+Root cause of the gap
+The taxonomy has two structural problems. First, "Flight_Operations" maps to keywords like Human Factors, Procedure, Company Policy — these are extremely broad and appear in most incidents, creating a trivially easy positive class. Second, rarer categories like Airspace_Navigation (maps only to "Chart Or Publication") and ATC_Communication have very few positive training examples, leading to near-zero recall. The threshold of 0.5 applied uniformly ignores this per-category imbalance.
+
+Improvements to make
+1. Per-category threshold optimisation
+High impact
+The current model uses threshold=0.5 for all 8 categories. After training, sweep each category's threshold independently (e.g. threshold grid from 0.1 to 0.9) and maximise per-category F1 on the validation set. For rare categories like Airspace_Navigation, the optimal threshold might be 0.15. This alone can lift Macro-F1 by 0.04–0.08 without retraining. Store the per-category thresholds in the model artifact as optimal_thresholds.json.
+2. Expand the taxonomy keyword mappings
+High impact
+The current category_taxonomy_v1.yaml maps ATC_Communication to only 3 keywords and Airspace_Navigation to only 1 ("Chart Or Publication"). Examine the actual unique values in Assessments_Contributing Factors / Situations column and expand the mappings to cover more edge cases. Specifically: "Staffing" (currently in Flight_Operations) should potentially also trigger ATC_Communication. Run a frequency audit of all unique contributing factor values not yet mapped — these appear as false negatives for every category.
+3. Add probability calibration to the Fusion MLP
+High impact
+The model info file explicitly records "calibrated": false. Apply Platt scaling (sigmoid calibration) per class on the validation set after training. This converts raw logits to calibrated probabilities, making the threshold tuning in improvement #1 more principled. Without calibration, a raw logit of 0.3 for one category may not be comparable to 0.3 for another.
+4. Use focal loss instead of BCEWithLogitsLoss
+Medium impact
+Focal loss (Lin et al., 2017 — from object detection) down-weights easy examples (Flight_Operations, which the model gets right with high confidence) and forces the model to focus on hard, rare examples (Airspace_Navigation, ATC_Communication). Replace the loss in the PyTorch MLP: FL = -alpha * (1 - p)^gamma * log(p) with gamma=2.0, alpha=0.25 as starting values. Particularly effective for multi-label imbalanced classification.
+5. Add cross-label features — severity label as input to category model
+Medium impact
+Problem A's output (predicted severity) is a valid feature for Problem B since Problem B is a retrospective categorisation task (post-incident, so post-incident features are allowed). Add the predicted_severity_proba vector (4 floats) from the calibrated CatBoost model as additional features in the Fusion MLP's tabular input. High severity incidents are disproportionately "Equipment_System" — this signal is currently missing.
+6. Aviation domain-specific SBERT fine-tuning
+Medium-term
+The current model uses all-MiniLM-L6-v2, a general-purpose SBERT model. Aviation terminology (TCAS RA, VMC, IFR, NOTAM) may not be well-represented in its vocabulary. Fine-tune a sentence encoder on ASRS report pairs using contrastive loss — pairs of incidents from the same category as positives, different categories as negatives. Even 10,000 training pairs with SimCSE or TSDAE would shift the embedding space toward aviation semantics.
+
+Problem C — Pre-flight Risk Score
+
+Predict probability a flight will produce a reportable incident
+
+Dataset
+1,012,278 total rows (BTS flights + NOAA weather + NTSB)
+Train: 809,823 · Test: 202,455
+Positive rate: 4.76% — severe class imbalance
+9,642 positive cases in test set
+Model trained
+LightGBM (calibrated)
+Model info status: "STUB" — the preflight model is incomplete
+ROC-AUC = 0.767
+PR-AUC = 0.098
+F1 = 0.0 at any tested threshold
+Current results
+✓
+ROC-AUC = 0.767 — model has discrimination ability
+Can rank flights by risk. Top-decile flights by predicted score are significantly more likely to produce incidents.
+✗
+F1 = 0.0, Precision = 0.0, Recall = 0.0 at all thresholds tested
+Threshold tuning (best_multiplier=5.0) produced no positive predictions. The model never crossed any decision threshold in a useful way.
+✗
+PR-AUC = 0.098 (random baseline ≈ 0.048) — very low precision territory
+Even the best operating point on the PR curve offers low precision. At 4.76% positive rate, a model must achieve very high precision to be operationally useful.
+!
+Model status is "STUB" — the preflight module is architecturally incomplete
+The preflight_model_info.json records version=0.1.0-alpha, status=STUB, trained_at=N/A. This is the most underdeveloped of the five problems.
+Root cause of the failures
+This problem has two intertwined issues. First, the data linkage between BTS flight records and ASRS incidents is probabilistic — not every BTS flight has a definitive ASRS "not reported" status; absence of a report ≠ absence of an incident. This introduces false negatives in the training labels (some "controls" are mislabelled). Second, the feature set likely lacks the most predictive signal: route-level historical incident rates (which routes have historically produced more ASRS reports?) and carrier safety profiles. The model appears to be trained mostly on schedule/weather features.
+
+Improvements to make
+1. SMOTE or class-weighted oversampling during training
+Critical — fix F1=0
+With 4.76% positive rate, LightGBM's default decision boundary is pushed so far toward "not incident" that no sample ever crosses it. Two approaches — apply both and compare: (a) scale_pos_weight = 95.24 / 4.76 ≈ 20 in LightGBM to upweight positive class; (b) SMOTE oversampling on training data before fitting. Expected outcome: F1 will become non-zero, at the cost of some precision. A model with F1=0.10 is infinitely more useful than F1=0.0.
+2. Add route-level and carrier-level historical incident rate features
+High impact
+The most predictive pre-flight signal is history: routes that have produced ASRS incidents before are more likely to produce them again (same airport pair → similar approaches, same crew base, same ATC facility). Engineer: route_incident_rate_3yr (ASRS incidents per 1000 departures on this origin-destination pair in the past 3 years), carrier_incident_rate_1yr, airport_incident_rate_1yr. These are leak-free (historical lookback only, never using future data). Expected AUC gain: +0.03 to +0.08.
+3. Use ASRS-to-BTS probabilistic linkage, not exact matching
+Data quality fix
+Current case-control sampling matches incidents to controls on route/date/aircraft. But ASRS reports are anonymous — the airline, exact flight number, and date may be slightly obscured. Exact matching likely misses many true cases and mis-assigns controls. Replace with fuzzy temporal matching: a BTS flight is a "likely case" if any ASRS incident was filed within ±3 days on the same route with the same aircraft category. This cleans the training labels and reduces false negatives in the control group.
+4. Target: rank-based evaluation rather than binary classification
+Reframe the problem
+At 4.76% positive rate, binary classification metrics (precision/recall/F1) are inherently harsh. The operationally useful question is: "among the 100 flights departing today, which 10 are highest risk?" — a ranking problem, not a classification problem. Report NDCG@10 (normalised discounted cumulative gain at top-10) and lift at top decile alongside ROC-AUC and PR-AUC. The model's ROC-AUC of 0.767 may correspond to 3–5× lift in the top decile, which is operationally meaningful even with low precision.
+5. Add NOAA weather severity features
+Medium impact
+The current weather enrichment notebook (05d_weather_enrichment.ipynb) joins NOAA data, but the feature set used in training is unclear. Ensure the following are present as features: crosswind_component_kt, icing_pirep_count_24h, sigmet_active, convective_activity at departure airport on day of flight. IMC conditions are already present as a feature in Problem A and shown to correlate with severity — the same signal applies here.
+
+
+Problem D — Emerging Risk Discovery
+
+Surface growing topic clusters in incident narratives over time
+
+Dataset
+38,655 ASRS narrative texts
+SBERT encoded → PCA(15) → BERTopic
+Monthly time series per topic (2012–2022)
+Risk score = growth × severity × changepoint_multiplier
+Model trained
+BERTopic (30 topics)
+PCA(15) instead of UMAP (environment constraint)
+MiniBatchKMeans instead of HDBSCAN
+PELT changepoint detection (penalty=3.0)
+13 changepoints across all topics
+Current results
+✓
+30 coherent topics discovered — all interpretable
+Top risk: Topic 21 (tire/gear/wheel, score 4.79, growth 3.1×). Topic 3 (smoke/odour) has a confirmed changepoint.
+!
+PCA(15) used instead of UMAP — topic boundaries are blurrier
+PCA projects linearly; semantically distinct topics may merge or split incorrectly because their embedding clusters are not linearly separable.
+!
+MiniBatchKMeans used instead of HDBSCAN — cannot detect noise points
+KMeans forces every document into a cluster. HDBSCAN identifies low-density regions as "outliers" — this matters for rare emerging risks that haven't formed a cluster yet.
+✗
+Risk score formula is ad hoc — growth × severity × changepoint
+The formula has no statistical grounding. A topic growing from 2 to 4 incidents/month (100% growth) scores the same as one growing from 100 to 200 (also 100%) — but the latter is far more operationally significant.
+Improvements to make
+1. Replace KMeans with HDBSCAN (even outside BERTopic)
+High impact
+Install HDBSCAN directly (pip install hdbscan — no Numba required in newer versions). Use it as BERTopic's cluster model: BERTopic(hdbscan_model=HDBSCAN(min_cluster_size=50, metric='euclidean')). HDBSCAN will assign low-frequency emerging risks as noise points initially — these can be tracked as "pre-topic signals" and monitored for cluster formation over time. This is the most principled way to catch genuinely new risk categories before they're large enough to cluster.
+2. Statistically ground the risk score with Poisson rate test
+High impact
+Replace the ad hoc growth × severity × changepoint_multiplier with a statistically motivated score. Model topic monthly counts as a Poisson process. Test whether the recent rate (last 12 months) is significantly higher than the historical rate (all prior months) using a Poisson rate ratio test. Report the p-value and rate ratio. This gives: (a) a defensible statistical claim in your thesis, (b) a way to distinguish statistically significant growth from noise, and (c) separation between "frequent and stable" vs "rare and growing" topics.
+3. Add topic drift tracking — temporal coherence of keywords
+Novel contribution
+Right now, topics are fit on the full corpus. But "GPS jamming" (Topic 6) barely existed in 2015 and now appears regularly. Fit BERTopic separately on 2012–2017 and 2018–2022 subcorpora and compute cosine similarity between the representative word vectors for matched topics. Topics with low temporal cosine similarity (<0.6) are "drifting" — their semantic content is changing, which is itself an emerging risk signal. This is a meaningful research contribution with no prior work in the aviation ASRS literature.
+4. Tune PELT penalty per-topic via cross-validation
+Medium impact
+The current penalty=3.0 is a global fixed value. For high-volume topics (Topic 0 has 20,677 incidents), this penalty is too loose — spurious changepoints appear due to seasonal fluctuation. For low-volume topics (Topic 22 has 73 incidents), penalty=3.0 may be too strict — real changes are missed. Use BIC (Bayesian Information Criterion) to select the penalty independently per topic: ruptures.Pelt(model="rbf").fit(signal).predict(pen=ruptures.evaluate.bic(signal)).
+5. Link emerging risk topics back to Problem E factor graph
+Integration
+Topics in Problem D and factors in Problem E are currently disconnected. GPS jamming (Topic 6) likely corresponds to "Software and Automation" or navigation-related nodes in the factor graph. Cross-reference: for each emerging topic, find which factor graph community has the most overlapping incidents. This creates a pipeline from "emerging signal" → "contributing factor structure" → "which flight phases are involved" — a complete risk narrative that no other work does end-to-end.
+
+
+Problem E — Contributing Factor Graph
+
+Knowledge graph of co-occurring factors in high-severity incidents
+
+Dataset
+38,655 ASRS reports
+Nodes: FACTOR (60 total), PHASE, AIRCRAFT, FAR Part
+Edge source: co-occurrence in same incident
+Edge weight: co-occurrence count × avg severity
+Model trained
+NetworkX multi-layer graph
+Louvain community detection (4 communities)
+Betweenness centrality top-15
+Critical finding: Edge count = 0 in saved graph!
+factor_graph.json has nodes but no links
+Current results
+✗
+CRITICAL: factor_graph.json contains 60 nodes but 0 edges
+The saved graph JSON has an empty "links" list. All community detection and centrality results were computed in-memory but the graph structure was not serialised correctly. Results shown in viz notebooks may not be reproducible from the saved artifact.
+✓
+Node metadata is complete — 60 nodes with type, community, avg_severity
+Sample: FACTOR:Human Factors, count=23,418, avg_severity=0.996, community=1. The node data is valid.
+!
+Top pattern relies on counts of 10 — statistically weak
+"Landing + Helicopter" co-occurs only 10 times. Small-N co-occurrences inflate apparent severity scores and produce fragile conclusions.
+Root cause of the gap
+The graph serialisation bug is the highest priority — without edges, the graph is just a list of nodes. The cause is likely using nx.node_link_data(G) which stores edges in the "links" key, but the graph was serialised as a directed graph while being built as undirected (or vice versa), causing the edge list to be empty after conversion. The fix requires re-running the graph construction and verifying the save step.
+
+Improvements to make
+1. Fix the graph serialisation bug — edges must be saved
+Critical bug fix
+Verify and fix: data = nx.node_link_data(G); assert len(data["links"]) > 0. If the graph is a MultiGraph, use nx.node_link_data(G, edges="links") (NetworkX 3.x changed the key name). After re-serialising, validate the saved JSON: node count should be 60, edge count should be >200 (based on the min_edge_weight=5 filter). Add this assertion to the test suite in test_sanity.py.
+2. Apply minimum co-occurrence threshold based on chi-squared test
+Statistical rigor
+The current min_edge_weight=5 filter is arbitrary. Replace with a statistical significance filter: for each co-occurrence pair (A, B), compute chi-squared independence test against the null hypothesis that A and B appear independently. Only include edges with p < 0.05. This eliminates the "Landing + Helicopter, n=10" problem — pairs with small absolute counts won't survive the chi-squared filter unless their co-occurrence rate is truly above chance given their individual frequencies.
+3. Add temporal layers — compare 2012–2017 vs 2018–2022 subgraphs
+Novel insight
+The current graph is static — it pools all years. Build two subgraphs (pre/post 2018) and compare their structure. Edges present in the recent subgraph but absent in the historical subgraph are new factor interactions — operationally important because they may reflect new aircraft types or operational procedures. Compute the Jaccard similarity between edge sets of the two time windows. New edges unique to 2018–2022 are the highest-priority findings for a safety thesis.
+4. Compute severity-conditioned centrality (not just co-occurrence centrality)
+Better metric
+Current betweenness centrality weights edges by co-occurrence × avg_severity. This means a factor that appears in many low-severity incidents will score higher than one that appears in fewer but critical incidents. Recompute centrality on the severity ≥ 2 subgraph only (substantial + critical incidents). A factor that is central only in the high-severity subgraph is a more actionable finding than one that appears across all incidents regardless of outcome.
+5. Add NLP-extracted factors from narrative text via weak supervision
+Richer graph
+Currently, factor nodes only come from the structured Assessments_Contributing Factors column. But the narrative text contains additional factors not captured in the structured fields ("captain was fatigued", "FMS database was outdated", "runway lights were out"). Use a simple keyword/regex weak supervision approach (Snorkel-style labelling functions) to extract additional factor mentions from narratives. Even 10 labelling functions covering the most common narrative phrases would add 500–2,000 new edges to the graph, making the community structure more robust.
+

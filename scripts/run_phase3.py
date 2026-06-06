@@ -232,7 +232,53 @@ def run_tier3(splits, label_names, embeddings, focal_gamma=2.0, label_smooth=0.0
     tab_train = encode_split(all_splits_dfs["train"])
     tab_val   = encode_split(all_splits_dfs["val"])
     tab_test  = encode_split(all_splits_dfs["test"])
-    print(f"  Tabular encoding shape: {tab_train.shape}")
+    
+    print("  Injecting Problem A severity probabilities...")
+    try:
+        from catboost import CatBoostClassifier
+        from src.models.severity import predict_calibrated
+        import json
+        import joblib
+
+        cb_model = CatBoostClassifier()
+        cb_model.load_model(str(resolve_path("models/severity_catboost.cbm")))
+        best_calibrators = joblib.load(resolve_path("models/severity_calibrators.joblib"))
+        
+        with open(resolve_path("models/severity_feature_cols.json")) as f:
+            feat_info = json.load(f)
+            sev_feature_cols = feat_info["feature_cols"]
+
+        def get_sev_probs(sp_df):
+            df_cb = sp_df.copy()
+            for col in sev_feature_cols:
+                if col not in df_cb.columns:
+                    df_cb[col] = 0.0
+            
+            from src.features.encoding import identify_column_types
+            col_types = identify_column_types(df_cb[sev_feature_cols])
+            cat_features = col_types["categorical"]
+            for col in cat_features:
+                if col in df_cb.columns:
+                    df_cb[col] = df_cb[col].astype(str).replace("nan", "Missing").fillna("Missing")
+            
+            return predict_calibrated(cb_model, df_cb[sev_feature_cols], best_calibrators).astype(np.float32)
+
+        sev_probs_train = get_sev_probs(splits["train"]["df"])
+        sev_probs_val   = get_sev_probs(splits["val"]["df"])
+        sev_probs_test  = get_sev_probs(splits["test"]["df"])
+        
+        tab_train = np.hstack([tab_train, sev_probs_train])
+        tab_val   = np.hstack([tab_val, sev_probs_val])
+        tab_test  = np.hstack([tab_test, sev_probs_test])
+        print("    Severity probabilities successfully injected.")
+    except Exception as e:
+        print(f"    WARNING: Could not generate severity probabilities: {e}")
+        # Default to 0s if we can't load the model
+        tab_train = np.hstack([tab_train, np.zeros((len(tab_train), 4), dtype=np.float32)])
+        tab_val   = np.hstack([tab_val, np.zeros((len(tab_val), 4), dtype=np.float32)])
+        tab_test  = np.hstack([tab_test, np.zeros((len(tab_test), 4), dtype=np.float32)])
+
+    print(f"  Tabular encoding shape (with severity): {tab_train.shape}")
 
     # Fusion model
     print("  Training Fusion MLP heads (FocalLoss)...")
