@@ -16,6 +16,10 @@ sys.path.insert(0, str(ROOT))
 
 MODELS = ROOT / "models"
 PROCESSED = ROOT / "data" / "processed"
+PROCESSED_SHARED = PROCESSED / "shared"
+PROCESSED_A = PROCESSED / "problem_a"
+PROCESSED_B = PROCESSED / "problem_b"
+PROCESSED_C = PROCESSED / "problem_c"
 RAW = ROOT / "data" / "raw"
 
 
@@ -244,8 +248,8 @@ def load_sbert_classifier():
 @st.cache_data
 def load_category_test_data():
     """Returns (y_true_df, label_names) for the test split."""
-    splits = pd.read_parquet(PROCESSED / "temporal_splits.parquet")
-    cats = pd.read_parquet(PROCESSED / "category_targets.parquet")
+    splits = pd.read_parquet(PROCESSED_SHARED / "temporal_splits.parquet")
+    cats = pd.read_parquet(PROCESSED_B / "category_targets.parquet")
     label_cols = [c for c in cats.columns if c not in ["acn_num_ACN", "primary_category"]]
 
     merged = splits.merge(cats, on="acn_num_ACN", how="inner")
@@ -290,7 +294,7 @@ def load_preflight_features():
 def load_preflight_test_data():
     import joblib
     import src.models.preflight
-    df = pd.read_parquet(PROCESSED / "preflight_features_final.parquet")
+    df = pd.read_parquet(PROCESSED_C / "preflight_features_final.parquet")
     artifact = joblib.load(MODELS / "preflight_lgbm_calibrated.joblib")
     if isinstance(artifact, dict) and "features" in artifact:
         features = [f for f in artifact["features"] if f in df.columns]

@@ -26,7 +26,7 @@ for w in val["warnings"]:
 print("Rubric hash:", rubric_hash())
 
 # Save severity targets
-sev_path = resolve_path("data/processed/severity_targets.parquet")
+sev_path = resolve_path("data/processed/problem_a/severity_targets.parquet")
 sev_path.parent.mkdir(parents=True, exist_ok=True)
 df[["acn_num_ACN", "severity_level"]].to_parquet(sev_path, index=False)
 
@@ -41,7 +41,7 @@ print(f"Zero labels: {zero} ({zero/len(df)*100:.1f}%)")
 print("Primary category distribution:")
 print(df["primary_category"].value_counts())
 
-cat_path = resolve_path("data/processed/category_targets.parquet")
+cat_path = resolve_path("data/processed/problem_b/category_targets.parquet")
 cat_out = pd.concat([df[["acn_num_ACN", "primary_category"]], cat_matrix], axis=1)
 cat_out.to_parquet(cat_path, index=False)
 
@@ -69,6 +69,6 @@ for s in ["train", "val", "test"]:
     print(f"  {s}: {count} ({pct}%) — years {ymin}-{ymax}")
 print(f"Valid (no overlap): {split_info['is_valid']}")
 
-split_path = resolve_path("data/processed/temporal_splits.parquet")
+split_path = resolve_path("data/processed/shared/temporal_splits.parquet")
 df[["acn_num_ACN", "year", "month", "split"]].to_parquet(split_path, index=False)
 print("\nPhase 1 complete!")

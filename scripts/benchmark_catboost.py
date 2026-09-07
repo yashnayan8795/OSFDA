@@ -12,7 +12,7 @@ from src.features.preflight import engineer_preflight_features
 
 def main():
     print("Loading data...")
-    df = pd.read_parquet("data/processed/preflight_features_final.parquet")
+    df = pd.read_parquet("data/processed/problem_c/preflight_features_final.parquet")
     
     print("Engineering features...")
     df = engineer_preflight_features(df)

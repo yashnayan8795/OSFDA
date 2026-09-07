@@ -7,10 +7,10 @@ from src.data.preflight import label_bts_incidents
 def main():
     print("Loading data...")
     # Load raw data
-    ntsb = pd.read_parquet("data/raw/ntsb_accidents.parquet")
+    ntsb = pd.read_parquet("data/raw/ntsb/ntsb_accidents.parquet")
     
     # Load processed features to get the flights (it already has weather joined etc)
-    df = pd.read_parquet("data/processed/preflight_features_final.parquet")
+    df = pd.read_parquet("data/processed/problem_c/preflight_features_final.parquet")
     
     # Remove old incident columns if they exist
     if 'incident' in df.columns:
@@ -31,7 +31,7 @@ def main():
     print(df['incident_confidence'].value_counts())
     
     # Save back to processed
-    out_path = "data/processed/preflight_features_final.parquet"
+    out_path = "data/processed/problem_c/preflight_features_final.parquet"
     df.to_parquet(out_path)
     print(f"Saved updated labels to {out_path}")
 

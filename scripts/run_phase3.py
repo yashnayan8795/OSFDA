@@ -146,7 +146,7 @@ def run_tier2(splits, label_names, model_name="all-MiniLM-L6-v2", cache_prefix="
     print(f"  Embedding dim: {emb_train.shape[1]}")
 
     # Save embeddings for reuse (model-name-aware cache)
-    emb_path = resolve_path("data/processed")
+    emb_path = resolve_path("data/processed/shared/embeddings")
     np.save(emb_path / f"{cache_prefix}_train.npy", emb_train)
     np.save(emb_path / f"{cache_prefix}_val.npy",   emb_val)
     np.save(emb_path / f"{cache_prefix}_test.npy",  emb_test)
@@ -395,7 +395,7 @@ def main():
 
     if run_all or args.tier in ("2", "3"):
         # Check for cached embeddings first
-        emb_path = resolve_path("data/processed")
+        emb_path = resolve_path("data/processed/shared/embeddings")
         # Include model name in cache key so different models don't collide
         safe_model = args.model_name.replace("/", "_").replace("-", "_")
         cache_prefix = f"emb_{safe_model}"
@@ -413,7 +413,7 @@ def main():
 
     if run_all or args.tier == "3":
         if embeddings is None:
-            emb_path = resolve_path("data/processed")
+            emb_path = resolve_path("data/processed/shared/embeddings")
             safe_model = args.model_name.replace("/", "_").replace("-", "_")
             cache_prefix = f"emb_{safe_model}"
             if (emb_path / f"{cache_prefix}_train.npy").exists():

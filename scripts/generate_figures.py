@@ -80,7 +80,7 @@ def fig_problem_c_curves():
     from src.models.preflight import PriorShiftedCalibratedModel
 
     # Load data
-    df = pd.read_parquet(resolve_path("data/processed/preflight_features_final.parquet"))
+    df = pd.read_parquet(resolve_path("data/processed/problem_c/preflight_features_final.parquet"))
     artifact = joblib.load(resolve_path("models/preflight_lgbm_calibrated.joblib"))
 
     model_obj = artifact["model"]

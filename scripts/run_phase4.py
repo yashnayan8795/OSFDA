@@ -43,7 +43,7 @@ def main():
     df = combine_text_fields(df, output_col="combined_text")
 
     # Load cached embeddings from Phase 3 if they exist
-    emb_path = resolve_path("data/processed")
+    emb_path = resolve_path("data/processed/shared/embeddings")
     if (emb_path / "emb_train.npy").exists():
         print("Loading cached SBERT embeddings from Phase 3...")
         # To align correctly with df, we should recreate splits or just use the same split logic

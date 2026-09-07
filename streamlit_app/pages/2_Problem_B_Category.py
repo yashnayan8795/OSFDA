@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT))
 
 from streamlit_app.utils.loaders import (
     load_tfidf_model, load_sbert_classifier, load_category_test_data,
-    PROCESSED,
+    PROCESSED, PROCESSED_B, PROCESSED_SHARED,
 )
 from streamlit_app.utils.sidebar import render_manual_test_sidebar
 
@@ -213,7 +213,7 @@ with tab2:
     # Label distribution from processed data
     st.subheader("Training Label Distribution")
     try:
-        cats = pd.read_parquet(PROCESSED / "category_targets.parquet")
+        cats = pd.read_parquet(PROCESSED_B / "category_targets.parquet")
         label_cols = [c for c in cats.columns if c not in ["acn_num_ACN", "primary_category"]]
         counts = {LABEL_DISPLAY.get(c, c): int(cats[c].sum()) for c in label_cols}
         fig = px.bar(
@@ -250,8 +250,8 @@ with tab2:
 
 with tab3:
     try:
-        cats = pd.read_parquet(PROCESSED / "category_targets.parquet")
-        splits = pd.read_parquet(PROCESSED / "temporal_splits.parquet")
+        cats = pd.read_parquet(PROCESSED_B / "category_targets.parquet")
+        splits = pd.read_parquet(PROCESSED_SHARED / "temporal_splits.parquet")
         label_cols = [c for c in cats.columns if c not in ["acn_num_ACN", "primary_category"]]
         merged = splits.merge(cats, on="acn_num_ACN", how="inner")
 

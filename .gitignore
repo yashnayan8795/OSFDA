@@ -1,16 +1,28 @@
-# Data files
-data/raw/*.csv
-data/raw/*.parquet
-data/raw/bts_flights/*.parquet
-data/processed/*.parquet
-data/processed/*.npy
-data/processed/*.npy
-data/processed/*.json
+# Data files — large binaries (local only, not tracked by Git)
+# Hierarchical patterns cover the new data/ sub-directory structure
+data/**/*.parquet
+data/**/*.npy
+data/**/*.mdb
+data/**/*.zip
+
+# data/processed/ — large outputs (CSV, JSON) are local only
+# Exception: a few small result files are intentionally tracked (see negations below)
 data/processed/*.csv
-data/raw/column_inventory.csv
-data/raw/*.mdb
-data/raw/*.zip
-data/raw/ntsb_accidents.parquet
+data/processed/**/*.csv
+data/processed/*.json
+data/processed/**/*.json
+
+# data/metadata/ — intentionally tracked (small, useful for repo browsing)
+# Do NOT add data/metadata/*.csv here
+
+# Always track these specific result files (they are small and git-tracked)
+!data/processed/emerging_risks.csv
+!data/processed/factor_graph.json
+!data/processed/optuna.db
+
+# Always track data documentation
+!data/README.md
+!data/metadata/
 
 # Model files (large binary files)
 models/*.pkl
@@ -127,5 +139,4 @@ evaluation_results/*.csv
 # Keep only configuration files in evaluation_results
 !evaluation_results/*.yaml
 !evaluation_results/*.yml
-
-*.zip
+
