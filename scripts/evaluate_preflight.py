@@ -73,7 +73,7 @@ def _find(candidates):
 
 
 features_path = args.features_path or _find([
-    resolve_path("data/processed/preflight_features_final.parquet"),
+    resolve_path("data/processed/problem_c/preflight_features_final.parquet"),
     resolve_path("data/processed/preflight_features.parquet"),
 ])
 model_path = args.model_path or _find([

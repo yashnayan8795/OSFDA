@@ -194,7 +194,7 @@ class TestModelOutputs:
 
     def test_embeddings_exist(self):
         """Phase 3 embeddings must exist if Phase 3 has been run."""
-        emb_path = resolve_path("data/processed/emb_train.npy")
+        emb_path = resolve_path("data/processed/shared/embeddings/emb_train.npy")
         if not emb_path.exists():
             pytest.skip("Embeddings not generated yet (run Phase 3 first)")
         emb = np.load(emb_path)

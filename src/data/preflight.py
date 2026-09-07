@@ -12,8 +12,8 @@ def load_preflight_raw(data_dir: Path = Path('data/raw')) -> Tuple[pd.DataFrame,
     """
         Load NTSB and BTS raw parquets.
     """
-    ntsb = pd.read_parquet(data_dir / 'ntsb_accidents.parquet')
-    bts_files = sorted((data_dir / 'bts_flights').glob('bts_20??.parquet'))
+    ntsb = pd.read_parquet(data_dir / 'ntsb' / 'ntsb_accidents.parquet')
+    bts_files = sorted((data_dir / 'bts' / 'annual').glob('bts_20??.parquet'))
     bts = pd.concat([pd.read_parquet(f) for f in bts_files], ignore_index=True)
     return ntsb, bts
 

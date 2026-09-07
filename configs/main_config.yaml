@@ -3,7 +3,7 @@ project:
   version: "1.0.0"
 
 paths:
-  raw_data: "data/raw/asrs_full.parquet"
+  raw_data: "data/raw/asrs/asrs_full.parquet"
   processed_data: "data/processed/"
   configs: "configs/"
 
