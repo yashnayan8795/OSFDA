@@ -1,4 +1,4 @@
-﻿# OSFDA — Data Directory
+# OSFDA — Data Directory
 
 This directory holds all dataset files used by the OSFDA research pipeline.
 
@@ -56,21 +56,21 @@ data/
 - **Source:** HuggingFace dataset `elihoole/asrs-aviation-reports`
 - **Format:** Parquet
 - **Local path:** `data/raw/asrs/asrs_full.parquet`
-- **Download:** Run `notebooks/00_data_acquisition.ipynb`
+- **Download:** Run `notebooks/shared/00_data_acquisition.ipynb`
 - **Used by:** All problems (A, B, D, E)
 
 ### NTSB Accident Database
 - **Source:** NTSB Aviation Accident Database - original MDB format in `data/raw/ntsb/source/`
 - **Format:** Parquet (re-acquired via API)
 - **Local path:** `data/raw/ntsb/ntsb_accidents.parquet`
-- **Download:** Run `notebooks/05a_ntsb_acquisition.ipynb`
+- **Download:** Run `notebooks/problem_c/05a_ntsb_acquisition.ipynb`
 - **Used by:** Problem C only
 
 ### BTS Airline On-Time Performance
 - **Source:** BTS TranStats (transtats.bts.gov)
 - **Format:** Parquet (annual files are canonical)
 - **Local path:** `data/raw/bts/annual/bts_20{18,19,20}.parquet`
-- **Download:** Run `notebooks/05b_bts_flights.ipynb`
+- **Download:** Run `notebooks/problem_c/05b_bts_flights.ipynb`
 - **Used by:** Problem C only
 - **Note:** 36 monthly files in `data/raw/bts/monthly/` are record-level equivalent to annual files (SHA-256 verified). Monthly files are retained for reference but not used by the production pipeline.
 
@@ -85,10 +85,10 @@ data/
 
 ### Shared (Problems A, B, D, E)
 
-`
+```
 NASA ASRS (HuggingFace)
     |
-    v  notebooks/00_data_acquisition.ipynb
+    v  notebooks/shared/00_data_acquisition.ipynb
 data/raw/asrs/asrs_full.parquet
     |
     v  scripts/run_phase1.py
@@ -101,25 +101,25 @@ data/processed/shared/embeddings/emb_{train,val,test}.npy
     |
     v  scripts/run_phase4.py  --> Problem D outputs (data/processed/)
     v  scripts/run_phase5.py  --> Problem E outputs (data/processed/)
-`
+```
 
 ### Problem C (Pre-flight Risk)
 
-`
+```
 NTSB accidents + BTS flights (annual)
     |
-    v  notebooks/05c_case_control.ipynb
+    v  notebooks/problem_c/05c_case_control.ipynb
 data/interim/problem_c/preflight_casecontrol.parquet
     |
-    v  notebooks/05d_weather_enrichment.ipynb  (NOAA API)
+    v  notebooks/problem_c/05d_weather_enrichment.ipynb  (NOAA API)
 data/interim/problem_c/preflight_weather_enriched.parquet
     |
-    v  notebooks/05e_preflight_features.ipynb
+    v  notebooks/problem_c/05e_preflight_features.ipynb
 data/processed/problem_c/preflight_features_final.parquet
     |
     v  scripts/run_phase6.py
 models/preflight_lgbm_calibrated.joblib
-`
+```
 
 ---
 

@@ -140,7 +140,7 @@ OSFDA/
 │   ├── test_category_model.py     # Category model tests
 │   └── test_temporal_split.py     # Temporal split integrity tests
 │
-├── notebooks/                     # Exploratory notebooks (legacy)
+├── notebooks/                     # Research & exploratory notebooks (Problems A–E, Shared)
 ├── requirements.txt
 └── README.md
 ```

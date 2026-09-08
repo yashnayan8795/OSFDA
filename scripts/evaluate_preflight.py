@@ -82,11 +82,11 @@ model_path = args.model_path or _find([
 
 if features_path is None:
     print("ERROR: Could not find preflight_features_final.parquet.")
-    print("  Run notebooks/05e_preflight_features.ipynb first.")
+    print("  Run notebooks/problem_c/05e_preflight_features.ipynb first.")
     sys.exit(1)
 if model_path is None:
     print("ERROR: Could not find preflight_lgbm_calibrated.joblib.")
-    print("  Run notebooks/05f_preflight_model.ipynb first.")
+    print("  Run notebooks/problem_c/05f_preflight_model.ipynb first.")
     sys.exit(1)
 
 print(f"Features : {features_path}")
